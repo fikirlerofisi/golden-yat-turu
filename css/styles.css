@@ -64,7 +64,7 @@ body { font-family: var(--font); background: var(--cream); color: var(--navy); m
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
 .login-logo { text-align: center; margin-bottom: 24px; }
-.login-logo-img { width: 160px; height: auto; display: block; margin: 0 auto; }
+.login-logo-img { width: 120px; height: auto; display: block; margin: 0 auto; }
 hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); border: none; margin: 0 auto 24px; width: 50%; }
 
 #login-form .field-group { margin-bottom: 14px; }
@@ -91,7 +91,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   z-index: 100;
 }
 .brand { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-.topbar-logo { height: 36px; width: auto; object-fit: contain; flex-shrink: 0; }
+.topbar-logo { height: 30px; width: auto; object-fit: contain; flex-shrink: 0; }
 .brand-text { font-size: 1rem; font-weight: 700; color: var(--gold2); letter-spacing: .02em; }
 .brand-text em { color: #fff; font-style: normal; font-weight: 400; }
 .top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
