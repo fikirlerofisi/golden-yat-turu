@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0B1F3A"/>
+  <title>Golden — Yat Turu Operasyon</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="login-logo-icon">⛵</span>
+      <h1>Golden</h1>
+      <p>İstanbul Boğazı Yat Turları</p>
+    </div>
+    <hr class="login-div"/>
+    <form id="login-form" novalidate>
+      <div class="field-group">
+        <label for="login-email">E-posta</label>
+        <input id="login-email" type="email" autocomplete="email" placeholder="ad@firma.com" required/>
+      </div>
+      <div class="field-group">
+        <label for="login-password">Şifre</label>
+        <input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••" required/>
+      </div>
+      <div id="login-error" role="alert"></div>
+      <button type="submit">Giriş Yap</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ UYGULAMA ═══════════ -->
+<div id="app-screen" class="hidden">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">⛵ <em>Golden</em> Yat Turları</div>
+    <div class="top-right">
+      <span id="user-name"></span>
+      <button id="logout-btn">Çıkış</button>
+    </div>
+  </header>
+
+  <!-- Kontrol şeridi -->
+  <div class="ctrl-bar">
+    <input id="date-input" type="date" aria-label="Tarih seç"/>
+    <span id="date-label"></span>
+    <select id="tour-selector" aria-label="Tur seç"></select>
+    <button id="add-tour-btn">+ Tur</button>
+    <input class="search-box" id="search-box" type="search" placeholder="İsim veya telefon…" autocomplete="off"/>
+    <button id="add-booking-btn" disabled>+ Rezervasyon Ekle</button>
+    <button id="crews-btn" disabled>⚓ Ekipler</button>
+  </div>
+
+  <!-- İstatistik çubuğu -->
+  <div id="stats-bar"></div>
+
+  <!-- Seçim aksiyon çubuğu (seçim olunca görünür) -->
+  <div class="sel-bar hidden" id="sel-bar">
+    <div class="sel-plus">+</div>
+    <span class="sel-count" id="sel-count">0 seçildi</span>
+    <span class="sel-sep">|</span>
+    <div class="sel-field">
+      <label>Yacht</label>
+      <select id="sel-yacht">
+        <option value="">— Seçin —</option>
+        <option>River</option><option>River Mega</option><option>River Storm</option>
+      </select>
+    </div>
+    <div class="sel-field" id="sel-guide-field">
+      <label>Tour Guide</label>
+      <select id="sel-guide">
+        <option value="">— Seçin —</option>
+        <option>Doğancan</option><option>Metin</option><option>Ayşe</option>
+      </select>
+    </div>
+    <div class="sel-field" id="sel-staff-field">
+      <label>Staff</label>
+      <select id="sel-staff">
+        <option value="">— Seçin —</option>
+        <option>Betül</option><option>Nurşah</option><option>Aleyna</option>
+      </select>
+    </div>
+    <!-- Mevcut ekip kilitli iken gösterilir -->
+    <span class="sel-crew-locked hidden" id="sel-crew-locked"></span>
+    <button class="btn-sel-apply" id="btn-sel-apply" disabled>Uygula</button>
+    <button class="btn-sel-clear" id="btn-sel-clear">Temizle</button>
+  </div>
+
+  <!-- Tablo (scroll kapsayıcısı içinde) -->
+  <div class="table-scroll">
+    <table class="main-table">
+      <thead>
+        <tr>
+          <th class="col-chk">Check</th>
+          <th class="col-yacht">Yacht</th>
+          <th>Tour</th>
+          <th class="col-name">Name</th>
+          <th>Pax</th>
+          <th>Phone</th>
+          <th>Agency</th>
+          <th>Transfer</th>
+          <th>Source</th>
+          <th>Tour Guide</th>
+          <th>Payment</th>
+          <th>Staff</th>
+          <th>Remarks</th>
+          <th>Baby</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr class="empty-row"><td colspan="15">Tarih seçin ve tur oluşturun.</td></tr>
+      </tbody>
+      <tfoot id="tfoot"></tfoot>
+    </table>
+  </div>
+
+</div><!-- /app-screen -->
+
+<!-- ═══════════ REZERVASYON MODAL ═══════════ -->
+<div id="booking-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true" aria-labelledby="modal-title"
+     onclick="if(event.target===this)document.getElementById('booking-modal').classList.add('hidden')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modal-title">Yeni Rezervasyon</h2>
+      <button class="modal-x" id="modal-close" aria-label="Kapat">✕</button>
+    </div>
+    <form id="booking-form" novalidate>
+    <div class="modal-body">
+
+      <div class="frow3">
+        <div class="fg">
+          <label>Yat *</label>
+          <select id="f-yacht" name="yacht"></select>
+        </div>
+        <div class="fg">
+          <label>Tur</label>
+          <select id="f-tour" name="tour_code">
+            <option>T1</option><option>T2</option><option>T3</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Pax</label>
+          <input name="pax" type="number" min="1" max="99" value="1"/>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>İsim / Ad Soyad *</label>
+        <input name="name" type="text" placeholder="Ad Soyad" required autocomplete="off"/>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Telefon</label>
+          <input name="phone" type="tel" placeholder="+90 5xx xxx xx xx"/>
+        </div>
+        <div class="fg">
+          <label>Agency</label>
+          <select id="f-agency" name="agency"></select>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Kaynak</label>
+          <select id="f-source" name="source"></select>
+        </div>
+        <div class="fg">
+          <label>Ödeme</label>
+          <select id="f-payment" name="payment"></select>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Tur Rehberi</label>
+          <select id="f-guide" name="tour_guide"></select>
+        </div>
+        <div class="fg">
+          <label>Personel</label>
+          <select id="f-staff" name="staff"></select>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label>Not / Remarks</label>
+          <input name="remarks" type="text" placeholder="Night, VIP, vb."/>
+        </div>
+        <div class="fg">
+          <label>Bebek</label>
+          <input name="baby" type="number" min="0" max="20" value="0"/>
+        </div>
+      </div>
+
+      <label class="chk-label">
+        <input type="checkbox" name="transfer"/>
+        <span>Transfer var</span>
+      </label>
+
+    </div><!-- /modal-body -->
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="modal-cancel">Vazgeç</button>
+      <button type="submit" class="btn-save">Kaydet</button>
+    </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ YENİ TUR MODAL ═══════════ -->
+<div id="new-tour-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('new-tour-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-head">
+      <h2>Yeni Tur Seansı</h2>
+      <button class="modal-x" id="new-tour-close">✕</button>
+    </div>
+    <form id="new-tour-form" novalidate>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="fg">
+          <label>Tur Kodu *</label>
+          <select id="nt-code" name="code">
+            <option>T1</option><option>T2</option><option>T3</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Kalkış Saati</label>
+          <select id="nt-time" name="departure_time">
+            <option value="">—</option>
+            <option>10:00</option><option>12:00</option><option>14:00</option>
+            <option>16:00</option><option>18:00</option><option>20:00</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Not</label>
+        <input name="notes" type="text" placeholder="İsteğe bağlı"/>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="new-tour-cancel">Vazgeç</button>
+      <button type="submit" class="btn-save">Oluştur</button>
+    </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ EKİPLER MODALI ═══════════ -->
+<div id="crews-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('crews-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-head">
+      <h2>⚓ Yat Ekipleri</h2>
+      <button class="modal-x" id="crews-close">✕</button>
+    </div>
+    <div class="modal-body" id="crews-body">
+      <!-- JS ile doldurulur -->
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="crews-cancel">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
