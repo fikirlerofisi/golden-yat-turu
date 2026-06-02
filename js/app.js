@@ -63,11 +63,14 @@ async function init() {
     loadTours();
   });
 
-  // Tur değişimi
+  // Tur seçici (birden fazla tur varsa görünür)
   el('tour-selector').addEventListener('change', (e) => {
     state.tourId = e.target.value || null;
     loadBookings();
   });
+
+  // New butonu
+  el('new-tour-btn').addEventListener('click', () => el('new-tour-modal').classList.remove('hidden'));
 
   // Arama
   el('search-box').addEventListener('input', (e) => {
@@ -94,9 +97,8 @@ async function init() {
   el('booking-form').addEventListener('submit', handleBookingSubmit);
 
   // Yeni tur modal
-  el('add-tour-btn').addEventListener('click',     () => el('new-tour-modal').classList.remove('hidden'));
-  el('new-tour-close').addEventListener('click',   () => el('new-tour-modal').classList.add('hidden'));
-  el('new-tour-cancel').addEventListener('click',  () => el('new-tour-modal').classList.add('hidden'));
+  el('new-tour-close').addEventListener('click',  () => el('new-tour-modal').classList.add('hidden'));
+  el('new-tour-cancel').addEventListener('click', () => el('new-tour-modal').classList.add('hidden'));
   el('new-tour-form').addEventListener('submit', handleNewTour);
 }
 
@@ -147,23 +149,41 @@ async function loadTours() {
 }
 
 function renderTourSelector() {
-  const sel = el('tour-selector');
-  sel.innerHTML = '';
+  const sel  = el('tour-selector');
+  const info = el('tour-info');
+
   if (state.tours.length === 0) {
-    sel.innerHTML = '<option value="">— tur yok —</option>';
+    sel.classList.add('hidden');
+    info.textContent = '';
     el('add-booking-btn').disabled = true;
     el('crews-btn').disabled = true;
     return;
   }
+
   el('add-booking-btn').disabled = false;
   el('crews-btn').disabled = false;
-  state.tours.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t.id;
-    o.textContent = `${t.code}${t.departure_time ? ' · ' + t.departure_time.slice(0,5) : ''}`;
-    if (t.id === state.tourId) o.selected = true;
-    sel.appendChild(o);
-  });
+
+  const active = state.tours.find(t => t.id === state.tourId) || state.tours[0];
+
+  if (state.tours.length === 1) {
+    // Tek tur — sadece bilgi çipi göster
+    sel.classList.add('hidden');
+    info.textContent = tourChipText(active);
+  } else {
+    // Birden fazla tur — seçici göster
+    sel.classList.remove('hidden');
+    info.textContent = '';
+    sel.innerHTML = state.tours.map(t =>
+      `<option value="${t.id}" ${t.id === state.tourId ? 'selected' : ''}>${tourChipText(t)}</option>`
+    ).join('');
+  }
+}
+
+function tourChipText(t) {
+  const name  = t.tour_name || t.code || 'Tur';
+  const guide = t.tour_guide ? ` · ${t.tour_guide}` : '';
+  const ag    = t.agency     ? ` · ${t.agency}`     : '';
+  return `${name}${guide}${ag}`;
 }
 
 // ── Rezervasyonlar ─────────────────────────────────────────────
@@ -245,8 +265,6 @@ function renderTable() {
           ${b.checked_in ? '✓' : '○'}
         </button>
       </td>
-      <td class="col-yacht">${yachtBadge(b.yacht)}</td>
-      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
       <td class="col-name">
         <div class="name-cell">
           <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''}/>
@@ -254,6 +272,8 @@ function renderTable() {
         </div>
       </td>
       <td style="text-align:center;font-weight:600">${b.pax}</td>
+      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
+      <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
       <td>${esc(b.agency)}</td>
       <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
@@ -411,23 +431,25 @@ async function handleNewTour(e) {
   const f   = e.target;
   const btn = f.querySelector('button[type=submit]');
   btn.disabled = true;
+  const tourName = f.elements['tour_name'].value.trim();
+  if (!tourName) { alert('Tur ismi gereklidir.'); btn.disabled = false; return; }
   try {
     const { currentUser } = await import('./auth.js');
     const { data, error } = await supabase
       .from('tours')
       .insert({
-        tour_date:      state.date,
-        code:           f.elements['code'].value,
-        departure_time: f.elements['departure_time'].value || null,
-        notes:          f.elements['notes'].value.trim(),
-        created_by:     currentUser?.id,
+        tour_date:  state.date,
+        code:       tourName,       // code alanını isim olarak kullan
+        tour_name:  tourName,
+        tour_guide: f.elements['tour_guide'].value,
+        agency:     f.elements['agency'].value,
+        created_by: currentUser?.id,
       })
       .select().single();
     if (error) throw error;
     state.tours.push(data);
     state.tourId = data.id;
     renderTourSelector();
-    el('tour-selector').value = data.id;
     await loadBookings();
     el('new-tour-modal').classList.add('hidden');
     f.reset();

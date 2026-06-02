@@ -127,13 +127,24 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   cursor: pointer; outline: none; appearance: none; flex-shrink: 0; min-width: 80px;
 }
 #tour-selector option { background: var(--navy2); }
-#add-tour-btn {
-  padding: 5px 11px; background: linear-gradient(135deg,var(--gold),var(--gold2));
+#new-tour-btn {
+  padding: 5px 12px; background: linear-gradient(135deg,var(--gold),var(--gold2));
   border: none; border-radius: 6px; color: var(--navy);
-  font-family: var(--font); font-size: .72rem; font-weight: 700;
+  font-family: var(--font); font-size: .78rem; font-weight: 700;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
 }
-#add-tour-btn:hover { filter: brightness(1.08); }
+#new-tour-btn:hover { filter: brightness(1.08); }
+
+/* Aktif tur bilgi etiketi */
+.tour-info-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 6px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(201,151,43,.3);
+  color: var(--gold-pale); font-size: .78rem; font-weight: 500;
+  white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+}
+.tour-info-chip:empty { display: none; }
 .search-box {
   padding: 5px 9px 5px 28px;
   border: 1.5px solid rgba(255,255,255,.15); border-radius: 6px;
