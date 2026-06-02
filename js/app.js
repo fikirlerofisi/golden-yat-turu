@@ -272,17 +272,16 @@ function renderTable() {
         </div>
       </td>
       <td style="text-align:center;font-weight:600">${b.pax}</td>
-      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
+      <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
-      <td>${esc(b.agency)}</td>
-      <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
-      <td>${esc(b.source)}</td>
-      <td>${esc(b.tour_guide)}</td>
       <td>${payBadge(b.payment)}</td>
+      <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
+      <td>${esc(b.tour_guide)}</td>
       <td>${esc(b.staff)}</td>
-      <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td style="text-align:center">${b.baby ? `<span class="baby-v">${b.baby}</span>` : '—'}</td>
+      <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
+      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
       <td>
         <button class="act-btn edit" data-edit="${b.id}" title="Düzenle">✎</button>
         <button class="act-btn del"  data-del="${b.id}"  title="Sil">✕</button>
@@ -308,17 +307,15 @@ function renderTable() {
 }
 
 function renderFooter(data) {
+  // Kolon sırası: Check|Name|Pax|Source|Yacht|Phone|Payment|Transfer|Guide|Staff|Baby|Remarks|Tour|Actions
   const s = calcStats(data);
   el('tfoot').innerHTML = `<tr>
     <td class="col-chk"></td>
-    <td class="col-name" style="letter-spacing:.02em">📊 Özet — ${data.length} kişi</td>
+    <td class="col-name">📊 ${data.length} kişi &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span></td>
     <td style="text-align:center;font-weight:700">${s.totalPax}</td>
-    <td colspan="10"></td>
-    <td style="text-align:center">${s.totalBaby || '—'}</td>
-    <td>
-      <span class="s-arrived">▲&nbsp;${s.arrival}</span>&nbsp;
-      <span class="s-noshow">▼&nbsp;${s.noshow}</span>
-    </td>
+    <td colspan="7"></td>
+    <td style="text-align:center;font-weight:700">${s.totalBaby || '—'}</td>
+    <td colspan="3"></td>
   </tr>`;
 }
 
