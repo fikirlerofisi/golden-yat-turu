@@ -279,6 +279,7 @@ function renderTable() {
       <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
       <td>${esc(b.tour_guide)}</td>
       <td>${esc(b.staff)}</td>
+      <td>${esc(b.agency)}</td>
       <td style="text-align:center">${b.baby ? `<span class="baby-v">${b.baby}</span>` : '—'}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td style="font-weight:600">${esc(b.tour_code || '')}</td>
@@ -315,7 +316,7 @@ function renderFooter(data) {
     <td style="text-align:center;font-weight:700">${s.totalPax}</td>
     <td colspan="7"></td>
     <td style="text-align:center;font-weight:700">${s.totalBaby || '—'}</td>
-    <td colspan="3"></td>
+    <td colspan="4"></td>
   </tr>`;
 }
 
