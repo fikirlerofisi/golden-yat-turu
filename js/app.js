@@ -178,6 +178,7 @@ async function loadBookings() {
 
   subscribeBookings(state.tourId, {
     onInsert: async (b) => {
+      if (state.bookings.some(x => x.id === b.id)) return; // zaten eklendi
       const full = await fetchOne(b.id);
       if (full) state.bookings.push(full);
       renderTable(); renderStats();
@@ -186,6 +187,7 @@ async function loadBookings() {
       const full = await fetchOne(b.id);
       const i = state.bookings.findIndex(x => x.id === b.id);
       if (i >= 0 && full) state.bookings[i] = full;
+      else if (full) state.bookings.push(full);
       renderTable(); renderStats();
     },
     onDelete: (b) => {
