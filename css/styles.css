@@ -63,8 +63,8 @@ body { font-family: var(--font); background: var(--cream); color: var(--navy); m
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-.login-logo { text-align: center; margin-bottom: 24px; }
-.login-logo-img { width: 120px; height: auto; display: block; margin: 0 auto; }
+.login-logo { text-align: center; margin-bottom: 20px; }
+.login-logo-img { width: 100px !important; height: auto !important; display: block; margin: 0 auto; }
 hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); border: none; margin: 0 auto 24px; width: 50%; }
 
 #login-form .field-group { margin-bottom: 14px; }
@@ -90,10 +90,8 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   border-bottom: 2px solid var(--gold);
   z-index: 100;
 }
-.brand { display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; }
-.topbar-logo { height: 26px; max-height: 26px; width: auto; object-fit: contain; flex-shrink: 0; display: block; }
-.brand-text { font-size: .9rem; font-weight: 700; color: var(--gold2); letter-spacing: .02em; }
-.brand-text em { color: #fff; font-style: normal; font-weight: 400; }
+.brand { display: flex; align-items: center; overflow: hidden; max-height: 52px; }
+.topbar-logo { height: 38px !important; max-height: 38px !important; width: auto !important; max-width: 140px !important; object-fit: contain; display: block; flex-shrink: 0; }
 .top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 #user-name { font-size: .78rem; font-weight: 500; color: var(--gold-pale); white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 #logout-btn { padding: 5px 12px; border: 1.5px solid rgba(201,151,43,.4); border-radius: 20px; background: transparent; color: var(--gold-pale); font-family: var(--font); font-size: .72rem; font-weight: 500; cursor: pointer; transition: var(--tr); }
