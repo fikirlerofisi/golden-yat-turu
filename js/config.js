@@ -10,7 +10,7 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 export const OPTIONS = {
   yachts:         ['River', 'River Mega', 'River Storm'],
   tourCodes:      ['T1', 'T2', 'T3'],
-  departureTimes: ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+  departureTimes: ['15:45','16:00','16:15','16:30','16:45','17:00','17:15','17:30','17:45','18:00','18:15','18:30','18:45','19:00'],
   agencies:       ['', 'Rixos', 'Ramada', 'Çırağan'],
   sources:        ['', 'GYG', 'Klook', 'Viator', 'V2', 'Site - G', 'Site - T', 'Site - B'],
   tourGuides:     ['', 'Doğancan', 'Metin', 'Ayşe'],
