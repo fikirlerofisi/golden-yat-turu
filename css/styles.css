@@ -63,11 +63,9 @@ body { font-family: var(--font); background: var(--cream); color: var(--navy); m
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-.login-logo { text-align: center; margin-bottom: 28px; }
-.login-logo-icon { font-size: 36px; display: block; margin-bottom: 6px; }
-.login-logo h1 { font-size: 1.6rem; font-weight: 700; color: var(--navy); }
-.login-logo p  { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--gray4); margin-top: 3px; }
-hr.login-div   { height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); border: none; margin: 0 auto 24px; width: 50%; }
+.login-logo { text-align: center; margin-bottom: 24px; }
+.login-logo-img { width: 160px; height: auto; display: block; margin: 0 auto; }
+hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--gold),transparent); border: none; margin: 0 auto 24px; width: 50%; }
 
 #login-form .field-group { margin-bottom: 14px; }
 #login-form label { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--gray4); margin-bottom: 4px; }
@@ -92,8 +90,10 @@ hr.login-div   { height: 2px; background: linear-gradient(90deg,transparent,var(
   border-bottom: 2px solid var(--gold);
   z-index: 100;
 }
-.brand { font-size: 1.1rem; font-weight: 700; color: var(--gold2); white-space: nowrap; }
-.brand em { color: #fff; font-style: normal; font-weight: 500; }
+.brand { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.topbar-logo { height: 36px; width: auto; object-fit: contain; flex-shrink: 0; }
+.brand-text { font-size: 1rem; font-weight: 700; color: var(--gold2); letter-spacing: .02em; }
+.brand-text em { color: #fff; font-style: normal; font-weight: 400; }
 .top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 #user-name { font-size: .78rem; font-weight: 500; color: var(--gold-pale); white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 #logout-btn { padding: 5px 12px; border: 1.5px solid rgba(201,151,43,.4); border-radius: 20px; background: transparent; color: var(--gold-pale); font-family: var(--font); font-size: .72rem; font-weight: 500; cursor: pointer; transition: var(--tr); }
