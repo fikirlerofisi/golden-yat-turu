@@ -344,19 +344,16 @@ function openBookingModal(bookingId) {
   const b = bookingId ? state.bookings.find(x => x.id === bookingId) : null;
   el('modal-title').textContent = b ? 'Rezervasyonu Düzenle' : 'Yeni Rezervasyon';
   const f = el('booking-form');
-  f.elements['name'].value       = b?.name       || '';
-  f.elements['pax'].value        = b?.pax        || 1;
-  f.elements['baby'].value       = b?.baby       || 0;
-  f.elements['phone'].value      = b?.phone      || '';
-  f.elements['yacht'].value      = b?.yacht      || '';
-  f.elements['tour_code'].value  = b?.tour_code  || 'T1';
-  f.elements['agency'].value     = b?.agency     || '';
-  f.elements['source'].value     = b?.source     || '';
-  f.elements['payment'].value    = b?.payment    || '';
-  f.elements['tour_guide'].value = b?.tour_guide || '';
-  f.elements['staff'].value      = b?.staff      || '';
-  f.elements['remarks'].value    = b?.remarks    || '';
-  f.elements['transfer'].checked = b?.transfer   || false;
+  f.elements['name'].value       = b?.name      || '';
+  f.elements['pax'].value        = b?.pax       || 1;
+  f.elements['baby'].value       = b?.baby      || 0;
+  f.elements['phone'].value      = b?.phone     || '';
+  f.elements['tour_code'].value  = b?.tour_code || 'T1';
+  f.elements['agency'].value     = b?.agency    || '';
+  f.elements['source'].value     = b?.source    || '';
+  f.elements['payment'].value    = b?.payment   || '';
+  f.elements['remarks'].value    = b?.remarks   || '';
+  f.elements['transfer'].checked = b?.transfer  || false;
   el('booking-modal').classList.remove('hidden');
   setTimeout(() => f.elements['name'].focus(), 60);
 }
@@ -374,19 +371,16 @@ async function handleBookingSubmit(e) {
   btn.disabled = true;
 
   const fields = {
-    name:       f.elements['name'].value.trim(),
-    pax:        parseInt(f.elements['pax'].value)  || 1,
-    baby:       parseInt(f.elements['baby'].value) || 0,
-    phone:      f.elements['phone'].value.trim(),
-    yacht:      f.elements['yacht'].value,
-    tour_code:  f.elements['tour_code'].value,
-    agency:     f.elements['agency'].value,
-    source:     f.elements['source'].value,
-    payment:    f.elements['payment'].value,
-    tour_guide: f.elements['tour_guide'].value,
-    staff:      f.elements['staff'].value,
-    remarks:    f.elements['remarks'].value.trim(),
-    transfer:   f.elements['transfer'].checked,
+    name:      f.elements['name'].value.trim(),
+    pax:       parseInt(f.elements['pax'].value)  || 1,
+    baby:      parseInt(f.elements['baby'].value) || 0,
+    phone:     f.elements['phone'].value.trim(),
+    tour_code: f.elements['tour_code'].value,
+    agency:    f.elements['agency'].value,
+    source:    f.elements['source'].value,
+    payment:   f.elements['payment'].value,
+    remarks:   f.elements['remarks'].value.trim(),
+    transfer:  f.elements['transfer'].checked,
   };
 
   if (!fields.name) { alert('İsim gereklidir.'); btn.disabled = false; return; }
@@ -447,12 +441,9 @@ function fillFormSelects() {
     if (!sel) return;
     sel.innerHTML = opts.map(o => `<option value="${esc(o)}">${esc(o) || '—'}</option>`).join('');
   };
-  fill('f-yacht',   OPTIONS.yachts);
   fill('f-agency',  OPTIONS.agencies);
   fill('f-source',  OPTIONS.sources);
   fill('f-payment', OPTIONS.payments);
-  fill('f-guide',   OPTIONS.tourGuides);
-  fill('f-staff',   OPTIONS.staffList);
 }
 
 // ── Yardımcılar ────────────────────────────────────────────────
