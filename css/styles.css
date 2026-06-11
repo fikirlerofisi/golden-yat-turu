@@ -312,6 +312,14 @@ thead th.col-chk { z-index: 40; left: 0; }
 .main-table tfoot td.col-name { background: var(--navy) !important; }
 .s-arrived { color: #4ade80; font-size: .9rem; }
 .s-noshow  { color: #f87171; font-size: .9rem; }
+/* İki yapışkan tfoot satırı: istatistik üstte, tekne özeti en altta */
+.main-table tfoot tr.tfoot-stats td { bottom: 30px; }
+.main-table tfoot tr.tfoot-yachts td {
+  bottom: 0; height: 30px; box-sizing: border-box;
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding: 6px 10px; white-space: normal; font-size: .68rem;
+}
+.main-table tfoot tr.tfoot-yachts .yd { vertical-align: middle; }
 
 /* Seçim aksiyon çubuğu */
 .sel-bar {

@@ -105,7 +105,7 @@ URL: `https://KULLANICI.github.io/golden-yat/`
 `js/config.js` içindeki `OPTIONS` nesnesini düzenleyin:
 
 ```js
-yachts:     ['River', 'River Mega', 'River Storm'],
+yachts:     ['River', 'River Storm'],
 agencies:   ['', 'Rixos', 'Ramada', 'Çırağan'],
 staffList:  ['', 'Betül', 'Nurşah', 'Aleyna'],
 // ... vb.

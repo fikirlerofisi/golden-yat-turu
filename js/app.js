@@ -275,13 +275,24 @@ function renderTable() {
 function renderFooter(data) {
   // Kolon sırası: Check|Tour|Name|Pax|Source|Yacht|Phone|Payment|Transfer|Guide|Staff|Remarks|Actions
   const s = calcStats(data);
-  el('tfoot').innerHTML = `<tr>
+
+  // Tekne başına toplam pax
+  const byYacht = {};
+  for (const b of data) {
+    if (!b.yacht) continue;
+    byYacht[b.yacht] = (byYacht[b.yacht] || 0) + (b.pax || 0);
+  }
+  const yachtSummary = Object.entries(byYacht)
+    .map(([y, p]) => `${yachtBadge(y)} = <b>${p}</b>`)
+    .join('&nbsp;&nbsp;&nbsp;');
+
+  el('tfoot').innerHTML = `<tr class="tfoot-stats">
     <td class="col-chk"></td>
     <td></td>
     <td class="col-name">📊 ${s.totalPax} pax &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span> &nbsp; 👶 ${s.totalBaby} baby</td>
     <td></td>
     <td colspan="9"></td>
-  </tr>`;
+  </tr>` + (yachtSummary ? `<tr class="tfoot-yachts"><td colspan="13">⛵ ${yachtSummary}</td></tr>` : '');
 }
 
 // ── İstatistik çubuğu ──────────────────────────────────────────
@@ -526,7 +537,7 @@ function fillFormSelects() {
 // ── Yardımcılar ────────────────────────────────────────────────
 function yachtBadge(y) {
   if (y === 'River')       return `<span class="yd yd-river">River</span>`;
-  if (y === 'River Mega')  return `<span class="yd yd-mega">Mega</span>`;
+  if (y === 'River M')     return `<span class="yd yd-mega">River M</span>`;
   if (y === 'River Storm') return `<span class="yd yd-storm">Storm</span>`;
   return y ? `<span class="yd" style="background:#ccc;color:#555">${esc(y)}</span>` : '<span style="color:#bbb">—</span>';
 }
