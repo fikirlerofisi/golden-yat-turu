@@ -6,7 +6,22 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operasyon</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="css/styles.css?v=2"/>
+  <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/app.js":      "./js/app.js?v=2",
+      "./js/auth.js":     "./js/auth.js?v=2",
+      "./js/tours.js":    "./js/tours.js?v=2",
+      "./js/bookings.js": "./js/bookings.js?v=2",
+      "./js/checkin.js":  "./js/checkin.js?v=2",
+      "./js/realtime.js": "./js/realtime.js?v=2",
+      "./js/config.js":   "./js/config.js?v=2",
+      "./js/supabase.js": "./js/supabase.js?v=2"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -247,6 +262,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=2"></script>
 </body>
 </html>
