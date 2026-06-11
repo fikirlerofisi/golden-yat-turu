@@ -55,7 +55,7 @@ async function init() {
     try {
       await login(el('login-email').value.trim(), el('login-password').value);
     } catch (err) {
-      el('login-error').textContent = err.message || 'Giriş başarısız';
+      el('login-error').textContent = err.message || 'Login failed';
       btn.disabled = false;
     }
   });
@@ -208,12 +208,12 @@ function renderTable() {
   const data  = filtered();
 
   if (!state.tourId) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Tarih seçin ve tur oluşturun.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>`;
     el('tfoot').innerHTML = '';
     return;
   }
   if (data.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Kayıt bulunamadı.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">No records found.</td></tr>`;
     el('tfoot').innerHTML = '';
     return;
   }
@@ -230,7 +230,7 @@ function renderTable() {
       <td class="col-chk">
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
                 data-id="${b.id}"
-                title="${b.checked_in ? 'Gelmedi olarak işaretle' : 'Geldi olarak işaretle'}">
+                title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
           ${b.checked_in ? '✓' : '○'}
         </button>
       </td>
@@ -251,8 +251,8 @@ function renderTable() {
       <td>${esc(b.staff)}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td>
-        <button class="act-btn edit" data-edit="${b.id}" title="Düzenle">✎</button>
-        <button class="act-btn del"  data-del="${b.id}"  title="Sil">✕</button>
+        <button class="act-btn edit" data-edit="${b.id}" title="Edit">✎</button>
+        <button class="act-btn del"  data-del="${b.id}"  title="Delete">✕</button>
       </td>
     </tr>`;
   }).join('');
@@ -314,7 +314,7 @@ async function handleCheckin(e) {
 
 // ── Silme ──────────────────────────────────────────────────────
 async function handleDelete(id) {
-  if (!confirm('Bu rezervasyonu silmek istediğinizden emin misiniz?')) return;
+  if (!confirm('Are you sure you want to delete this booking?')) return;
   try {
     await deleteBooking(id);
     state.bookings = state.bookings.filter(x => x.id !== id);
@@ -348,7 +348,7 @@ function closeBookingModal() {
 
 async function handleBookingSubmit(e) {
   e.preventDefault();
-  if (!state.tourId) { alert('Önce bir tur seçin.'); return; }
+  if (!state.tourId) { alert('Select a tour first.'); return; }
   const f   = e.target;
   const btn = f.querySelector('button[type=submit]');
   btn.disabled = true;
@@ -365,7 +365,7 @@ async function handleBookingSubmit(e) {
     transfer:  f.elements['transfer'].checked,
   };
 
-  if (!fields.name) { alert('İsim gereklidir.'); btn.disabled = false; return; }
+  if (!fields.name) { alert('Name is required.'); btn.disabled = false; return; }
 
   try {
     if (state.editingId) {
@@ -425,7 +425,7 @@ function openOptModal() {
   optCat = null;
   el('opt-step1').classList.remove('hidden');
   el('opt-step2').classList.add('hidden');
-  el('opt-modal-title').textContent = 'Ne eklemek istiyorsunuz?';
+  el('opt-modal-title').textContent = 'What would you like to add?';
   el('new-tour-modal').classList.remove('hidden');
 
   // Kategori butonlarına listener
@@ -435,7 +435,7 @@ function openOptModal() {
   el('opt-back-btn').onclick = () => {
     el('opt-step2').classList.add('hidden');
     el('opt-step1').classList.remove('hidden');
-    el('opt-modal-title').textContent = 'Ne eklemek istiyorsunuz?';
+    el('opt-modal-title').textContent = 'What would you like to add?';
   };
   el('opt-add-btn').onclick = addOpt;
   el('opt-new-val').onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); addOpt(); } };
@@ -444,7 +444,7 @@ function openOptModal() {
 function openOptStep2(cat) {
   optCat = cat;
   const meta = OPT_META[cat];
-  el('opt-modal-title').textContent = meta.label + ' listesi';
+  el('opt-modal-title').textContent = meta.label + ' list';
   el('opt-step1').classList.add('hidden');
   el('opt-step2').classList.remove('hidden');
   el('opt-new-val').value = '';
@@ -459,7 +459,7 @@ function renderOptChips() {
     const isDef = meta.defaults.includes(v);
     return `<span class="opt-chip ${isDef ? 'default-opt' : ''}">
       ${esc(v)}
-      <button class="opt-chip-del" data-val="${esc(v)}" title="Sil">✕</button>
+      <button class="opt-chip-del" data-val="${esc(v)}" title="Delete">✕</button>
     </span>`;
   }).join('');
   el('opt-chips-wrap').querySelectorAll('.opt-chip-del').forEach(btn => {
@@ -478,7 +478,7 @@ async function addOpt() {
     fillFormSelects();
     el('opt-new-val').value = '';
     renderOptChips();
-  } catch (err) { alert('Hata: ' + err.message); }
+  } catch (err) { alert('Error: ' + err.message); }
 }
 
 async function removeOpt(val) {
@@ -488,7 +488,7 @@ async function removeOpt(val) {
     OPTIONS[meta.key] = OPTIONS[meta.key].filter(x => x !== val);
     fillFormSelects();
     renderOptChips();
-  } catch (err) { alert('Hata: ' + err.message); }
+  } catch (err) { alert('Error: ' + err.message); }
 }
 
 function closeOptModal() {
@@ -514,7 +514,7 @@ function fillFormSelects() {
     const sel = el(id);
     if (!sel) return;
     const cur = sel.value;
-    sel.innerHTML = `<option value="">— Seçin —</option>` +
+    sel.innerHTML = `<option value="">— Select —</option>` +
       opts.filter(x => x).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
     if (cur) sel.value = cur;
   };
@@ -561,7 +561,7 @@ function clearSelection() {
 function updateSelBar() {
   const bar = el('sel-bar');
   const n   = selected.size;
-  el('sel-count').textContent = n + ' seçildi';
+  el('sel-count').textContent = n + ' selected';
   el('btn-sel-apply').disabled = n === 0;
   if (n > 0) bar.classList.remove('hidden');
   else       bar.classList.add('hidden');
@@ -624,7 +624,7 @@ async function applySelection() {
   const yacht = el('sel-yacht').value;
   const guide = el('sel-guide').value;
   const staff = el('sel-staff').value;
-  if (!yacht) { alert('Lütfen Yacht seçin.'); return; }
+  if (!yacht) { alert('Please select a Yacht.'); return; }
 
   const btn = el('btn-sel-apply');
   btn.disabled = true;
@@ -690,10 +690,10 @@ async function openCrewsModal() {
       <span class="crew-yacht-label">${yachtBadge(y)}</span>
       <select class="crew-guide-sel" data-yacht="${esc(y)}">${mkOpts(guides, c.tour_guide || '')}</select>
       <select class="crew-staff-sel" data-yacht="${esc(y)}">${mkOpts(staffs, c.staff || '')}</select>
-      <button class="btn-crew-save" data-yacht="${esc(y)}" onclick="saveCrew('${esc(y)}',this)">Kaydet</button>
+      <button class="btn-crew-save" data-yacht="${esc(y)}" onclick="saveCrew('${esc(y)}',this)">Save</button>
     </div>`;
   }).join('') + `<p style="font-size:.73rem;color:var(--gray4);margin-top:12px">
-    Kaydetmek, o yata atanmış tüm mevcut rezervasyonları da günceller.</p>`;
+    Saving also updates all existing bookings assigned to that yacht.</p>`;
 
   el('crews-modal').classList.remove('hidden');
 }
@@ -719,12 +719,12 @@ async function saveCrew(yacht, btn) {
       if (i >= 0) state.bookings[i] = { ...state.bookings[i], ...patch };
     }
     renderTable(); renderStats();
-    btn.textContent = '✓ Kaydedildi';
+    btn.textContent = '✓ Saved';
     btn.style.background = 'var(--green)';
     btn.style.color = '#fff';
-    setTimeout(() => { btn.textContent = 'Kaydet'; btn.style = ''; btn.disabled = false; }, 1800);
+    setTimeout(() => { btn.textContent = 'Save'; btn.style = ''; btn.disabled = false; }, 1800);
   } catch (err) {
-    alert('Hata: ' + err.message);
+    alert('Error: ' + err.message);
     btn.disabled = false;
   }
 }

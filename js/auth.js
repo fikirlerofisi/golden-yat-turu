@@ -30,11 +30,11 @@ export async function login(username, password) {
   let email = username;
   if (!email.includes('@')) {
     const { data: found, error: rpcError } = await supabase.rpc('email_for_username', { p_username: username });
-    if (rpcError || !found) throw new Error('Kullanıcı adı veya şifre hatalı');
+    if (rpcError || !found) throw new Error('Incorrect username or password');
     email = found;
   }
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw new Error('Kullanıcı adı veya şifre hatalı');
+  if (error) throw new Error('Incorrect username or password');
   currentUser = data.user;
   currentProfile = await fetchProfile(data.user.id);
   return currentProfile;

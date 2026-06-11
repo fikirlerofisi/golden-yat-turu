@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="theme-color" content="#0B1F3A"/>
-  <title>Golden City Tours — Operasyon</title>
+  <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=5"/>
+  <link rel="stylesheet" href="css/styles.css?v=6"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=5",
-      "./js/auth.js":     "./js/auth.js?v=5",
-      "./js/tours.js":    "./js/tours.js?v=5",
-      "./js/bookings.js": "./js/bookings.js?v=5",
-      "./js/checkin.js":  "./js/checkin.js?v=5",
-      "./js/realtime.js": "./js/realtime.js?v=5",
-      "./js/config.js":   "./js/config.js?v=5",
-      "./js/supabase.js": "./js/supabase.js?v=5"
+      "./js/app.js":      "./js/app.js?v=6",
+      "./js/auth.js":     "./js/auth.js?v=6",
+      "./js/tours.js":    "./js/tours.js?v=6",
+      "./js/bookings.js": "./js/bookings.js?v=6",
+      "./js/checkin.js":  "./js/checkin.js?v=6",
+      "./js/realtime.js": "./js/realtime.js?v=6",
+      "./js/config.js":   "./js/config.js?v=6",
+      "./js/supabase.js": "./js/supabase.js?v=6"
     }
   }
   </script>
@@ -34,15 +34,15 @@
     <hr class="login-div"/>
     <form id="login-form" novalidate>
       <div class="field-group">
-        <label for="login-email">Kullanıcı Adı</label>
+        <label for="login-email">Username</label>
         <input id="login-email" type="text" autocomplete="username" placeholder="nursah" required/>
       </div>
       <div class="field-group">
-        <label for="login-password">Şifre</label>
+        <label for="login-password">Password</label>
         <input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••" required/>
       </div>
       <div id="login-error" role="alert"></div>
-      <button type="submit">Giriş Yap</button>
+      <button type="submit">Login</button>
     </form>
   </div>
 </div>
@@ -63,11 +63,11 @@
 
   <!-- Kontrol şeridi -->
   <div class="ctrl-bar">
-    <input id="date-input" type="date" aria-label="Tarih seç"/>
+    <input id="date-input" type="date" aria-label="Select date"/>
     <button id="new-tour-btn">New</button>
     <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
     <button id="add-booking-btn" disabled>+ New Booking</button>
-    <button id="crews-btn" disabled>⚓ Ekipler</button>
+    <button id="crews-btn" disabled>⚓ Crews</button>
   </div>
 
   <!-- İstatistik çubuğu -->
@@ -76,19 +76,19 @@
   <!-- Seçim aksiyon çubuğu (seçim olunca görünür) -->
   <div class="sel-bar hidden" id="sel-bar">
     <div class="sel-plus">+</div>
-    <span class="sel-count" id="sel-count">0 seçildi</span>
+    <span class="sel-count" id="sel-count">0 selected</span>
     <span class="sel-sep">|</span>
     <div class="sel-field">
       <label>Yacht</label>
       <select id="sel-yacht">
-        <option value="">— Seçin —</option>
+        <option value="">— Select —</option>
         <option>River</option><option>River Mega</option><option>River Storm</option>
       </select>
     </div>
     <div class="sel-field" id="sel-guide-field">
       <label>Tour Guide</label>
       <select id="sel-guide">
-        <option value="">— Seçin —</option>
+        <option value="">— Select —</option>
         <option>Erdem</option><option>Doğacan</option><option>Taner</option><option>Muhsin</option>
         <option>Erol</option><option>Özge</option><option>Bülent</option><option>Tülay</option>
         <option>Diyar</option><option>Şeyma</option><option>Celal</option><option>Özgür</option>
@@ -98,14 +98,14 @@
     <div class="sel-field" id="sel-staff-field">
       <label>Crew</label>
       <select id="sel-staff">
-        <option value="">— Seçin —</option>
+        <option value="">— Select —</option>
         <option>Betül</option><option>Nurşah</option><option>Aleyna</option>
       </select>
     </div>
     <!-- Mevcut ekip kilitli iken gösterilir -->
     <span class="sel-crew-locked hidden" id="sel-crew-locked"></span>
-    <button class="btn-sel-apply" id="btn-sel-apply" disabled>Uygula</button>
-    <button class="btn-sel-clear" id="btn-sel-clear">Temizle</button>
+    <button class="btn-sel-apply" id="btn-sel-apply" disabled>Apply</button>
+    <button class="btn-sel-clear" id="btn-sel-clear">Clear</button>
   </div>
 
   <!-- Tablo (scroll kapsayıcısı içinde) -->
@@ -129,7 +129,7 @@
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr class="empty-row"><td colspan="13">Tarih seçin ve tur oluşturun.</td></tr>
+        <tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>
       </tbody>
       <tfoot id="tfoot"></tfoot>
     </table>
@@ -144,7 +144,7 @@
   <div class="modal-box">
     <div class="modal-head">
       <h2 id="modal-title">Booking</h2>
-      <button class="modal-x" id="modal-close" aria-label="Kapat">✕</button>
+      <button class="modal-x" id="modal-close" aria-label="Close">✕</button>
     </div>
     <form id="booking-form" novalidate>
     <div class="modal-body">
@@ -164,7 +164,7 @@
 
       <div class="fg">
         <label>Name *</label>
-        <input name="name" type="text" placeholder="Ad Soyad" required autocomplete="off"/>
+        <input name="name" type="text" placeholder="Full name" required autocomplete="off"/>
       </div>
 
       <div class="fg">
@@ -186,7 +186,7 @@
       <div class="frow">
         <div class="fg">
           <label>Remarks</label>
-          <input name="remarks" type="text" placeholder="Night, VIP, vb."/>
+          <input name="remarks" type="text" placeholder="Night, VIP, etc."/>
         </div>
         <div class="fg">
           <label>Baby</label>
@@ -214,7 +214,7 @@
      onclick="if(event.target===this)closeOptModal()">
   <div class="modal-box" style="max-width:400px">
     <div class="modal-head">
-      <h2 id="opt-modal-title">Ne eklemek istiyorsunuz?</h2>
+      <h2 id="opt-modal-title">What would you like to add?</h2>
       <button class="modal-x" id="new-tour-close">✕</button>
     </div>
     <div class="modal-body">
@@ -234,10 +234,10 @@
           <!-- mevcut seçenekler JS ile doldurulur -->
         </div>
         <div class="opt-add-row">
-          <input type="text" id="opt-new-val" placeholder="Yeni değer girin…" autocomplete="off"/>
-          <button class="btn-save" id="opt-add-btn">+ Ekle</button>
+          <input type="text" id="opt-new-val" placeholder="Enter new value…" autocomplete="off"/>
+          <button class="btn-save" id="opt-add-btn">+ Add</button>
         </div>
-        <button class="opt-back-btn" id="opt-back-btn">← Geri</button>
+        <button class="opt-back-btn" id="opt-back-btn">← Back</button>
       </div>
 
     </div>
@@ -250,18 +250,18 @@
      onclick="if(event.target===this)document.getElementById('crews-modal').classList.add('hidden')">
   <div class="modal-box" style="max-width:440px">
     <div class="modal-head">
-      <h2>⚓ Yat Ekipleri</h2>
+      <h2>⚓ Yacht Crews</h2>
       <button class="modal-x" id="crews-close">✕</button>
     </div>
     <div class="modal-body" id="crews-body">
       <!-- JS ile doldurulur -->
     </div>
     <div class="modal-foot">
-      <button type="button" class="btn-cancel" id="crews-cancel">Kapat</button>
+      <button type="button" class="btn-cancel" id="crews-cancel">Close</button>
     </div>
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=5"></script>
+<script type="module" src="js/app.js?v=6"></script>
 </body>
 </html>
