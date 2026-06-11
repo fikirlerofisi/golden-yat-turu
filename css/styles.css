@@ -371,18 +371,6 @@ thead th.col-chk { z-index: 40; left: 0; }
 }
 .btn-sel-clear:hover { border-color: rgba(255,255,255,.4); color: #fff; }
 
-/* Kilitli ekip mesajı */
-.sel-crew-locked {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 10px; border-radius: 6px;
-  background: rgba(22,160,133,.25); border: 1px solid rgba(22,160,133,.4);
-  color: #4ade80; font-size: .72rem; font-weight: 600; white-space: nowrap;
-}
-/* Kilitli (disabled) dropdown stili */
-.sel-field select:disabled {
-  opacity: .5; cursor: not-allowed; background-color: rgba(255,255,255,.05);
-}
-
 /* ── Seçenek yönetimi (New) modal ── */
 .opt-cat-grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px;
@@ -429,6 +417,50 @@ thead th.col-chk { z-index: 40; left: 0; }
   font-family: var(--font); font-size: .8rem; cursor: pointer; padding: 0;
 }
 .opt-back-btn:hover { color: var(--navy); }
+
+/* Ekip (Crews) butonu */
+#crews-btn {
+  padding: 5px 11px; background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25); border-radius: 6px;
+  color: #fff; font-family: var(--font); font-size: .72rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
+}
+#crews-btn:hover:not(:disabled) { background: rgba(255,255,255,.2); }
+#crews-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Ekip modalı — her yat için bir satır */
+.crew-row {
+  display: grid; grid-template-columns: 72px 1fr auto;
+  gap: 10px; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid var(--gray2);
+}
+.crew-row:last-child { border-bottom: none; }
+.crew-yacht-label { font-size: .78rem; font-weight: 700; }
+.crew-controls { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.crew-guide-sel {
+  padding: 7px 24px 7px 9px;
+  border: 1.5px solid var(--cream2); border-radius: 7px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23AAA'/%3E%3C/svg%3E") no-repeat right 7px center;
+  font-family: var(--font); font-size: .82rem; color: var(--navy);
+  appearance: none; outline: none; width: 100%;
+}
+.crew-guide-sel:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12); }
+.crew-staff-group { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.crew-staff-group label {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .8rem; color: var(--navy); cursor: pointer;
+}
+.crew-staff-group input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; }
+.btn-crew-save {
+  align-self: start;
+  padding: 7px 14px; background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border: none; border-radius: 6px; color: var(--navy);
+  font-size: .75rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+  transition: var(--tr);
+}
+.btn-crew-save:hover:not(:disabled) { filter: brightness(1.07); }
+.btn-crew-save:disabled { opacity: .6; cursor: default; }
+.btn-crew-save.saved { background: var(--green); color: #fff; }
 
 /* Boş durum */
 .empty-row td { text-align: center; padding: 48px !important; color: var(--gray3); font-style: italic; height: auto !important; }

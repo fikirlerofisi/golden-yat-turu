@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=10"/>
+  <link rel="stylesheet" href="css/styles.css?v=11"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=10",
-      "./js/auth.js":     "./js/auth.js?v=10",
-      "./js/tours.js":    "./js/tours.js?v=10",
-      "./js/bookings.js": "./js/bookings.js?v=10",
-      "./js/checkin.js":  "./js/checkin.js?v=10",
-      "./js/realtime.js": "./js/realtime.js?v=10",
-      "./js/config.js":   "./js/config.js?v=10",
-      "./js/supabase.js": "./js/supabase.js?v=10"
+      "./js/app.js":      "./js/app.js?v=11",
+      "./js/auth.js":     "./js/auth.js?v=11",
+      "./js/tours.js":    "./js/tours.js?v=11",
+      "./js/bookings.js": "./js/bookings.js?v=11",
+      "./js/checkin.js":  "./js/checkin.js?v=11",
+      "./js/realtime.js": "./js/realtime.js?v=11",
+      "./js/config.js":   "./js/config.js?v=11",
+      "./js/supabase.js": "./js/supabase.js?v=11"
     }
   }
   </script>
@@ -67,6 +67,7 @@
     <button id="new-tour-btn">New</button>
     <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
     <button id="add-booking-btn" disabled>+ New Booking</button>
+    <button id="crews-btn" disabled>⚓ Crews</button>
   </div>
 
   <!-- İstatistik çubuğu -->
@@ -84,25 +85,6 @@
         <option>River</option><option>River Storm</option>
       </select>
     </div>
-    <div class="sel-field" id="sel-guide-field">
-      <label>Tour Guide</label>
-      <select id="sel-guide">
-        <option value="">— Select —</option>
-        <option>Erdem</option><option>Doğacan</option><option>Taner</option><option>Muhsin</option>
-        <option>Erol</option><option>Özge</option><option>Bülent</option><option>Tülay</option>
-        <option>Diyar</option><option>Şeyma</option><option>Celal</option><option>Özgür</option>
-        <option>Volkan</option><option>Sendi</option><option>Işıl</option>
-      </select>
-    </div>
-    <div class="sel-field" id="sel-staff-field">
-      <label>Crew</label>
-      <select id="sel-staff">
-        <option value="">— Select —</option>
-        <option>Betül</option><option>Nurşah</option><option>Aleyna</option>
-      </select>
-    </div>
-    <!-- Mevcut ekip kilitli iken gösterilir -->
-    <span class="sel-crew-locked hidden" id="sel-crew-locked"></span>
     <button class="btn-sel-apply" id="btn-sel-apply" disabled>Apply</button>
     <button class="btn-sel-clear" id="btn-sel-clear">Clear</button>
   </div>
@@ -252,6 +234,24 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=10"></script>
+<!-- ═══════════ YACHT CREWS MODAL ═══════════ -->
+<div id="crews-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('crews-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-head">
+      <h2>⚓ Yacht Crews</h2>
+      <button class="modal-x" id="crews-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="crews-body">
+      <!-- JS ile doldurulur -->
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="crews-cancel">Close</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js?v=11"></script>
 </body>
 </html>

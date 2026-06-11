@@ -145,3 +145,14 @@ grant execute on function public.email_for_username(text) to anon, authenticated
 -- Transfer işaretli rezervasyonlara serbest metin açıklama.
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists transfer_note text not null default '';
+
+-- ── 10. Migrasyon: yacht_crews.staff → text[] (2026-06) ──────
+-- Bir yata birden fazla personel atanabilsin diye staff dizi oldu.
+-- Rehber/personel artık yat seviyesinde (yacht_crews) tutulur;
+-- bookings.tour_guide / bookings.staff kolonları görüntü için
+-- kullanılmaz (liste değerleri yatın ekibinden türetilir).
+alter table public.yacht_crews
+  alter column staff drop default,
+  alter column staff type text[] using (
+    case when staff is null or btrim(staff)='' then '{}'::text[] else array[staff] end),
+  alter column staff set default '{}';

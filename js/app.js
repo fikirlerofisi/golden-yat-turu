@@ -82,7 +82,11 @@ async function init() {
   // Seçim aksiyon çubuğu
   el('btn-sel-apply').addEventListener('click', applySelection);
   el('btn-sel-clear').addEventListener('click', clearSelection);
-  el('sel-yacht').addEventListener('change', onSelYachtChange);
+
+  // Ekip (Crews) modalı
+  el('crews-btn').addEventListener('click',    openCrewsModal);
+  el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
+  el('crews-cancel').addEventListener('click', () => el('crews-modal').classList.add('hidden'));
 
   // Rezervasyon ekle
   el('add-booking-btn').addEventListener('click', () => openBookingModal(null));
@@ -150,6 +154,7 @@ async function loadTours() {
 
   state.tourId = state.tours[0]?.id || null;
   el('add-booking-btn').disabled = !state.tourId;
+  el('crews-btn').disabled = !state.tourId;
   await loadBookings();
 }
 
@@ -252,8 +257,8 @@ function renderTable() {
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
       <td>${payBadge(b.payment)}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
-      <td>${esc(b.tour_guide)}</td>
-      <td>${esc(b.staff)}</td>
+      <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
+      <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td>
         <button class="act-btn edit" data-edit="${b.id}" title="Edit">✎</button>
@@ -548,7 +553,6 @@ function fillFormSelects() {
     if (cur) sel.value = cur;
   };
   refillSel('sel-yacht',  OPTIONS.yachts);
-  refillSel('sel-guide',  OPTIONS.tourGuides);
 }
 
 // ── Yardımcılar ────────────────────────────────────────────────
@@ -609,45 +613,6 @@ function updateSelBar() {
   else       bar.classList.add('hidden');
 }
 
-// ── Yacht seçilince ekibi otomatik getir ──────────────────────
-async function onSelYachtChange() {
-  const yacht = el('sel-yacht').value;
-  const guideField = el('sel-guide-field');
-  const staffField = el('sel-staff-field');
-  const lockedMsg  = el('sel-crew-locked');
-  const guideEl    = el('sel-guide');
-  const staffEl    = el('sel-staff');
-
-  if (!yacht) {
-    guideEl.disabled = false; staffEl.disabled = false;
-    guideEl.value = ''; staffEl.value = '';
-    guideField.classList.remove('hidden');
-    staffField.classList.remove('hidden');
-    lockedMsg.classList.add('hidden');
-    return;
-  }
-
-  const crew = state.crews[yacht];
-  if (crew) {
-    // Ekip mevcut — otomatik doldur ve kilitle
-    guideEl.value = crew.tour_guide;
-    staffEl.value = crew.staff;
-    guideEl.disabled = true;
-    staffEl.disabled = true;
-    lockedMsg.textContent = `🔒 ${yacht}: ${crew.tour_guide || '—'} · ${crew.staff || '—'}`;
-    lockedMsg.classList.remove('hidden');
-    guideField.classList.add('hidden');
-    staffField.classList.add('hidden');
-  } else {
-    // Ekip yok — kullanıcı seçer
-    guideEl.disabled = false; staffEl.disabled = false;
-    guideEl.value = ''; staffEl.value = '';
-    guideField.classList.remove('hidden');
-    staffField.classList.remove('hidden');
-    lockedMsg.classList.add('hidden');
-  }
-}
-
 // ── Ekipleri yükle ─────────────────────────────────────────────
 async function loadCrews() {
   if (!state.tourId) { state.crews = {}; return; }
@@ -661,54 +626,78 @@ async function loadCrews() {
   } catch { state.crews = {}; }
 }
 
-// ── Toplu atama uygula ─────────────────────────────────────────
+// ── Toplu yat ataması (sadece yat) ─────────────────────────────
 async function applySelection() {
   const yacht = el('sel-yacht').value;
-  const guide = el('sel-guide').value;
-  const staff = el('sel-staff').value;
   if (!yacht) { alert('Please select a Yacht.'); return; }
 
   const btn = el('btn-sel-apply');
   btn.disabled = true;
 
-  // Ekip güncelleme/oluşturma (upsert)
-  const crewGuide = el('sel-guide').disabled ? state.crews[yacht]?.tour_guide : guide;
-  const crewStaff = el('sel-staff').disabled ? state.crews[yacht]?.staff      : staff;
-
   try {
-    // 1) yacht_crews upsert
-    await supabase.from('yacht_crews').upsert(
-      { tour_id: state.tourId, yacht, tour_guide: crewGuide || '', staff: crewStaff || '' },
-      { onConflict: 'tour_id,yacht' }
-    );
-    state.crews[yacht] = { tour_guide: crewGuide || '', staff: crewStaff || '' };
-
-    // 2) Seçili bookings'leri güncelle
     const ids = [...selected];
     for (const id of ids) {
-      const patch = { yacht, tour_guide: crewGuide || '', staff: crewStaff || '' };
-      await updateBooking(id, patch);
+      await updateBooking(id, { yacht });
       const i = state.bookings.findIndex(x => x.id === id);
-      if (i >= 0) state.bookings[i] = { ...state.bookings[i], ...patch };
+      if (i >= 0) state.bookings[i] = { ...state.bookings[i], yacht };
     }
-
-    // 3) Aynı turdaki mevcut tüm aynı-yat bookings'lerini de güncelle (tutarlılık)
-    const sameYacht = state.bookings.filter(b => b.yacht === yacht && !ids.includes(b.id));
-    for (const b of sameYacht) {
-      const patch = { tour_guide: crewGuide || '', staff: crewStaff || '' };
-      await updateBooking(b.id, patch);
-      const i = state.bookings.findIndex(x => x.id === b.id);
-      if (i >= 0) state.bookings[i] = { ...state.bookings[i], ...patch };
-    }
-
     clearSelection();
     el('sel-yacht').value = '';
-    el('sel-guide').value = ''; el('sel-guide').disabled = false;
-    el('sel-staff').value = ''; el('sel-staff').disabled = false;
-    el('sel-guide-field').classList.remove('hidden');
-    el('sel-staff-field').classList.remove('hidden');
-    el('sel-crew-locked').classList.add('hidden');
     renderTable(); renderStats();
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+    btn.disabled = false;
+  }
+}
+
+// ── Ekip (Crews) modalı ────────────────────────────────────────
+function openCrewsModal() {
+  const guides = ['', ...OPTIONS.tourGuides.filter(x => x)];
+  const staffList = OPTIONS.staffList.filter(x => x);
+
+  const guideOpts = (sel) => guides.map(g =>
+    `<option value="${esc(g)}" ${g === sel ? 'selected' : ''}>${g || '—'}</option>`
+  ).join('');
+
+  el('crews-body').innerHTML = OPTIONS.yachts.map(y => {
+    const crew  = state.crews[y] || {};
+    const staff = crew.staff || [];
+    const boxes = staffList.map(s =>
+      `<label><input type="checkbox" value="${esc(s)}" ${staff.includes(s) ? 'checked' : ''}/> ${esc(s)}</label>`
+    ).join('');
+    return `<div class="crew-row" data-yacht="${esc(y)}">
+      <div class="crew-yacht-label">${yachtBadge(y)}</div>
+      <div class="crew-controls">
+        <select class="crew-guide-sel">${guideOpts(crew.tour_guide || '')}</select>
+        <div class="crew-staff-group">${boxes || '<span style="color:var(--gray3)">No staff</span>'}</div>
+      </div>
+      <button class="btn-crew-save" data-yacht="${esc(y)}">Save</button>
+    </div>`;
+  }).join('');
+
+  el('crews-body').querySelectorAll('.btn-crew-save').forEach(btn =>
+    btn.addEventListener('click', () => saveCrew(btn.dataset.yacht, btn))
+  );
+
+  el('crews-modal').classList.remove('hidden');
+}
+
+async function saveCrew(yacht, btn) {
+  const row   = btn.closest('.crew-row');
+  const guide = row.querySelector('.crew-guide-sel').value;
+  const staff = [...row.querySelectorAll('.crew-staff-group input:checked')].map(i => i.value);
+  btn.disabled = true;
+  try {
+    await supabase.from('yacht_crews').upsert(
+      { tour_id: state.tourId, yacht, tour_guide: guide, staff },
+      { onConflict: 'tour_id,yacht' }
+    );
+    state.crews[yacht] = { tour_guide: guide, staff };
+    renderTable();
+    const old = btn.textContent;
+    btn.textContent = '✓ Saved';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = old; btn.classList.remove('saved'); btn.disabled = false; }, 1500);
   } catch (err) {
     alert('Error: ' + (err.message || err));
     btn.disabled = false;
