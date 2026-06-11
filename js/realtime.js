@@ -3,19 +3,21 @@ import { supabase } from './supabase.js';
 let bookingChannel = null;
 let tourChannel    = null;
 
-// ── Rezervasyon değişikliklerini dinle ────────────────────────
-export function subscribeBookings(tourId, { onInsert, onUpdate, onDelete }) {
+// ── Rezervasyon değişikliklerini dinle (tarihin tüm turları) ──
+export function subscribeBookings(tourIds, { onInsert, onUpdate, onDelete }) {
   unsubscribeBookings();
+  const ids    = Array.isArray(tourIds) ? tourIds : [tourIds];
+  const filter = `tour_id=in.(${ids.join(',')})`;
   bookingChannel = supabase
-    .channel(`bookings:tour_id=eq.${tourId}`)
+    .channel(`bookings:${ids.join(',')}`)
     .on('postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'bookings', filter: `tour_id=eq.${tourId}` },
+      { event: 'INSERT', schema: 'public', table: 'bookings', filter },
       (payload) => onInsert?.(payload.new))
     .on('postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'bookings', filter: `tour_id=eq.${tourId}` },
+      { event: 'UPDATE', schema: 'public', table: 'bookings', filter },
       (payload) => onUpdate?.(payload.new))
     .on('postgres_changes',
-      { event: 'DELETE', schema: 'public', table: 'bookings', filter: `tour_id=eq.${tourId}` },
+      { event: 'DELETE', schema: 'public', table: 'bookings', filter },
       (payload) => onDelete?.(payload.old))
     .subscribe();
   return bookingChannel;

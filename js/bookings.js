@@ -1,12 +1,12 @@
 import { supabase } from './supabase.js';
 import { currentUser } from './auth.js';
 
-// ── Tura ait rezervasyonları getir ────────────────────────────
-export async function getBookingsByTour(tourId) {
+// ── Turlara ait rezervasyonları getir ─────────────────────────
+export async function getBookingsByTours(tourIds) {
   const { data, error } = await supabase
     .from('bookings')
     .select('*, checked_in_by_profile:profiles!checked_in_by(full_name)')
-    .eq('tour_id', tourId)
+    .in('tour_id', tourIds)
     .order('created_at');
   if (error) throw error;
   return data || [];

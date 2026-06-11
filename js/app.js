@@ -1,9 +1,8 @@
 import { supabase }                        from './supabase.js';
 import { getSession, login, logout,
          onAuthChange }                    from './auth.js';
-import { getToursByDate, createTour,
-         today, formatDateTR }             from './tours.js';
-import { getBookingsByTour, createBooking,
+import { getToursByDate, today }           from './tours.js';
+import { getBookingsByTours, createBooking,
          updateBooking, deleteBooking,
          calcStats }                       from './bookings.js';
 import { toggleCheckin }                   from './checkin.js';
@@ -71,12 +70,6 @@ async function init() {
     loadTours();
   });
 
-  // Tur seçici (birden fazla tur varsa görünür)
-  el('tour-selector').addEventListener('change', (e) => {
-    state.tourId = e.target.value || null;
-    loadBookings();
-  });
-
   // New butonu → seçenek yönetimi modalı
   el('new-tour-btn').addEventListener('click', openOptModal);
 
@@ -120,95 +113,59 @@ async function showApp() {
   const { currentProfile } = await import('./auth.js');
   el('user-name').textContent = currentProfile?.full_name || '';
   el('date-input').value = state.date;
-  el('date-label').textContent = formatDateTR(state.date);
   await loadTours();
 }
 
 // ── Turlar ─────────────────────────────────────────────────────
+// Her tarih tek bir tur kaydıyla temsil edilir (yoksa otomatik
+// oluşturulur). Eski tarihlerde birden fazla tur kaydı varsa
+// hepsinin rezervasyonları tek listede gösterilir; yeni kayıtlar
+// ilk tura eklenir.
 async function loadTours() {
   unsubscribeBookings();
   unsubscribeTours();
-  el('date-label').textContent = formatDateTR(state.date);
   try { state.tours = await getToursByDate(state.date); }
   catch { state.tours = []; }
   clearSelection();
-  renderTourSelector();
-
-  subscribeTours(state.date, {
-    onInsert: (t) => { state.tours.push(t); renderTourSelector(); },
-    onDelete: (t) => {
-      state.tours = state.tours.filter(x => x.id !== t.id);
-      if (state.tourId === t.id) { state.tourId = null; state.bookings = []; }
-      renderTourSelector(); renderTable(); renderStats();
-    },
-  });
 
   if (state.tours.length === 0) {
     // Tarih için tur yoksa otomatik oluştur
     await autoCreateTour();
     try { state.tours = await getToursByDate(state.date); } catch { state.tours = []; }
-    renderTourSelector();
   }
 
-  if (state.tours.length > 0) {
-    const valid = state.tours.find(t => t.id === state.tourId);
-    state.tourId = valid ? state.tourId : state.tours[0].id;
-    el('tour-selector').value = state.tourId;
-    await loadBookings();
-  } else {
-    state.tourId = null; state.bookings = [];
-    renderTable(); renderStats();
-  }
-}
+  subscribeTours(state.date, {
+    onInsert: (t) => {
+      if (state.tours.some(x => x.id === t.id)) return;
+      state.tours.push(t);
+      if (!state.tourId) state.tourId = t.id;
+      loadBookings();
+    },
+    onDelete: (t) => {
+      state.tours = state.tours.filter(x => x.id !== t.id);
+      if (state.tourId === t.id) state.tourId = state.tours[0]?.id || null;
+      loadBookings();
+    },
+  });
 
-function renderTourSelector() {
-  const sel  = el('tour-selector');
-  const info = el('tour-info');
-
-  if (state.tours.length === 0) {
-    sel.classList.add('hidden');
-    info.textContent = '';
-    el('add-booking-btn').disabled = true;
-    el('crews-btn').disabled = true;
-    return;
-  }
-
-  el('add-booking-btn').disabled = false;
-  el('crews-btn').disabled = false;
-
-  const active = state.tours.find(t => t.id === state.tourId) || state.tours[0];
-
-  if (state.tours.length === 1) {
-    // Tek tur — sadece bilgi çipi göster
-    sel.classList.add('hidden');
-    info.textContent = tourChipText(active);
-  } else {
-    // Birden fazla tur — seçici göster
-    sel.classList.remove('hidden');
-    info.textContent = '';
-    sel.innerHTML = state.tours.map(t =>
-      `<option value="${t.id}" ${t.id === state.tourId ? 'selected' : ''}>${tourChipText(t)}</option>`
-    ).join('');
-  }
-}
-
-function tourChipText(t) {
-  const name  = t.tour_name || t.code || 'Tur';
-  const guide = t.tour_guide ? ` · ${t.tour_guide}` : '';
-  return `${name}${guide}`;
+  state.tourId = state.tours[0]?.id || null;
+  el('add-booking-btn').disabled = !state.tourId;
+  el('crews-btn').disabled = !state.tourId;
+  await loadBookings();
 }
 
 // ── Rezervasyonlar ─────────────────────────────────────────────
 async function loadBookings() {
   unsubscribeBookings();
-  if (!state.tourId) { state.bookings = []; state.crews = {}; clearSelection(); renderTable(); renderStats(); return; }
-  try { state.bookings = await getBookingsByTour(state.tourId); }
+  const tourIds = state.tours.map(t => t.id);
+  if (tourIds.length === 0) { state.bookings = []; state.crews = {}; clearSelection(); renderTable(); renderStats(); return; }
+  try { state.bookings = await getBookingsByTours(tourIds); }
   catch { state.bookings = []; }
   await loadCrews();
   clearSelection();
   renderTable(); renderStats();
 
-  subscribeBookings(state.tourId, {
+  subscribeBookings(tourIds, {
     onInsert: async (b) => {
       if (state.bookings.some(x => x.id === b.id)) return; // zaten eklendi
       const full = await fetchOne(b.id);
