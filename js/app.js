@@ -280,8 +280,8 @@ function renderFooter(data) {
   el('tfoot').innerHTML = `<tr>
     <td class="col-chk"></td>
     <td></td>
-    <td class="col-name">📊 ${data.length} kişi &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span></td>
-    <td style="text-align:center;font-weight:700">${s.totalPax}</td>
+    <td class="col-name">📊 ${s.totalPax} pax &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span> &nbsp; 👶 ${s.totalBaby} baby</td>
+    <td></td>
     <td colspan="9"></td>
   </tr>`;
 }
@@ -290,11 +290,9 @@ function renderFooter(data) {
 function renderStats() {
   const s = calcStats(state.bookings);
   el('stats-bar').innerHTML = `
-    <div class="stat-item arrived"><span class="stat-num">${s.arrival}</span><span class="stat-lbl">Geldi</span></div>
-    <div class="stat-item noshow"><span class="stat-num">${s.noshow}</span><span class="stat-lbl">Gelmedi</span></div>
-    <div class="stat-item total"><span class="stat-num">${s.totalPax}</span><span class="stat-lbl">Toplam Pax</span></div>
-    <div class="stat-item baby"><span class="stat-num">${s.totalBaby}</span><span class="stat-lbl">Bebek</span></div>
-    <div class="stat-item cnt"><span class="stat-num">${s.count}</span><span class="stat-lbl">Rezervasyon</span></div>
+    <div class="stat-item arrived"><span class="stat-num">${s.arrival}</span><span class="stat-lbl">Here</span></div>
+    <div class="stat-item noshow"><span class="stat-num">${s.noshow}</span><span class="stat-lbl">Absent</span></div>
+    <div class="stat-item total"><span class="stat-num">${s.totalPax}</span><span class="stat-lbl">Total Pax</span></div>
   `;
 }
 
