@@ -91,6 +91,7 @@ async function init() {
   el('modal-close').addEventListener('click',  closeBookingModal);
   el('modal-cancel').addEventListener('click', closeBookingModal);
   el('booking-form').addEventListener('submit', handleBookingSubmit);
+  el('chk-all-arrived').addEventListener('change', toggleSelectArrived);
   el('booking-form').elements['transfer'].addEventListener('change', (e) => {
     el('f-transfer-note-wrap').classList.toggle('hidden', !e.target.checked);
     if (e.target.checked) el('booking-form').elements['transfer_note'].focus();
@@ -205,14 +206,20 @@ function renderTable() {
   const tbody = el('tbody');
   const data  = filtered();
 
+  const resetChkAll = () => {
+    const c = el('chk-all-arrived');
+    if (c) { c.disabled = true; c.checked = false; c.indeterminate = false; }
+  };
   if (!state.tourId) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>`;
     el('tfoot').innerHTML = '';
+    resetChkAll();
     return;
   }
   if (data.length === 0) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="13">No records found.</td></tr>`;
     el('tfoot').innerHTML = '';
+    resetChkAll();
     return;
   }
 
@@ -268,6 +275,16 @@ function renderTable() {
   tbody.querySelectorAll('[data-del]').forEach(btn =>
     btn.addEventListener('click', () => handleDelete(btn.dataset.del))
   );
+
+  // "Gelenleri seç" başlık kutusunun durumu
+  const arr = arrivedUnassignedIds(data);
+  const chkAll = el('chk-all-arrived');
+  if (chkAll) {
+    const allSel = arr.length > 0 && arr.every(id => selected.has(id));
+    chkAll.disabled = arr.length === 0;
+    chkAll.checked = allSel;
+    chkAll.indeterminate = !allSel && arr.some(id => selected.has(id));
+  }
 
   renderFooter(data);
 }
@@ -554,6 +571,19 @@ function esc(s) {
 }
 
 // ── Seçim fonksiyonları ────────────────────────────────────────
+// Gelmiş (check'li) ama henüz bir yata atanmamış kayıtların id'leri
+function arrivedUnassignedIds(data) {
+  return data.filter(b => b.checked_in && !b.yacht).map(b => b.id);
+}
+
+function toggleSelectArrived(e) {
+  const ids = arrivedUnassignedIds(filtered());
+  if (e.target.checked) ids.forEach(id => selected.add(id));
+  else                  ids.forEach(id => selected.delete(id));
+  renderTable();
+  updateSelBar();
+}
+
 function toggleSel(id, checked) {
   if (checked) selected.add(id);
   else         selected.delete(id);
