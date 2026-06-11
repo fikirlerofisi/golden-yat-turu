@@ -326,7 +326,7 @@ async function handleDelete(id) {
 function openBookingModal(bookingId) {
   state.editingId = bookingId;
   const b = bookingId ? state.bookings.find(x => x.id === bookingId) : null;
-  el('modal-title').textContent = b ? 'Rezervasyonu Düzenle' : 'Yeni Rezervasyon';
+  el('modal-title').textContent = b ? 'Edit Booking' : 'Booking';
   const f = el('booking-form');
   f.elements['name'].value       = b?.name      || '';
   f.elements['pax'].value        = b?.pax       || 1;

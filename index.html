@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operasyon</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=4"/>
+  <link rel="stylesheet" href="css/styles.css?v=5"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=4",
-      "./js/auth.js":     "./js/auth.js?v=4",
-      "./js/tours.js":    "./js/tours.js?v=4",
-      "./js/bookings.js": "./js/bookings.js?v=4",
-      "./js/checkin.js":  "./js/checkin.js?v=4",
-      "./js/realtime.js": "./js/realtime.js?v=4",
-      "./js/config.js":   "./js/config.js?v=4",
-      "./js/supabase.js": "./js/supabase.js?v=4"
+      "./js/app.js":      "./js/app.js?v=5",
+      "./js/auth.js":     "./js/auth.js?v=5",
+      "./js/tours.js":    "./js/tours.js?v=5",
+      "./js/bookings.js": "./js/bookings.js?v=5",
+      "./js/checkin.js":  "./js/checkin.js?v=5",
+      "./js/realtime.js": "./js/realtime.js?v=5",
+      "./js/config.js":   "./js/config.js?v=5",
+      "./js/supabase.js": "./js/supabase.js?v=5"
     }
   }
   </script>
@@ -57,7 +57,7 @@
     </div>
     <div class="top-right">
       <span id="user-name"></span>
-      <button id="logout-btn">Çıkış</button>
+      <button id="logout-btn">Exit</button>
     </div>
   </header>
 
@@ -65,8 +65,8 @@
   <div class="ctrl-bar">
     <input id="date-input" type="date" aria-label="Tarih seç"/>
     <button id="new-tour-btn">New</button>
-    <input class="search-box" id="search-box" type="search" placeholder="İsim veya telefon…" autocomplete="off"/>
-    <button id="add-booking-btn" disabled>+ Rezervasyon Ekle</button>
+    <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
+    <button id="add-booking-btn" disabled>+ New Booking</button>
     <button id="crews-btn" disabled>⚓ Ekipler</button>
   </div>
 
@@ -143,7 +143,7 @@
      onclick="if(event.target===this)document.getElementById('booking-modal').classList.add('hidden')">
   <div class="modal-box">
     <div class="modal-head">
-      <h2 id="modal-title">Yeni Rezervasyon</h2>
+      <h2 id="modal-title">Booking</h2>
       <button class="modal-x" id="modal-close" aria-label="Kapat">✕</button>
     </div>
     <form id="booking-form" novalidate>
@@ -151,7 +151,7 @@
 
       <div class="frow">
         <div class="fg">
-          <label>Tur</label>
+          <label>Tour</label>
           <select id="f-tour" name="tour_code">
             <option>T1</option><option>TA</option><option>TB</option><option>TD</option><option>TN</option><option>PRV</option>
           </select>
@@ -163,46 +163,46 @@
       </div>
 
       <div class="fg">
-        <label>İsim / Ad Soyad *</label>
+        <label>Name *</label>
         <input name="name" type="text" placeholder="Ad Soyad" required autocomplete="off"/>
       </div>
 
       <div class="fg">
-        <label>Telefon</label>
+        <label>Phone</label>
         <input name="phone" type="tel" placeholder="+90 5xx xxx xx xx"/>
       </div>
 
       <div class="frow">
         <div class="fg">
-          <label>Kaynak</label>
+          <label>Source</label>
           <select id="f-source" name="source"></select>
         </div>
         <div class="fg">
-          <label>Ödeme</label>
+          <label>Payment</label>
           <select id="f-payment" name="payment"></select>
         </div>
       </div>
 
       <div class="frow">
         <div class="fg">
-          <label>Not / Remarks</label>
+          <label>Remarks</label>
           <input name="remarks" type="text" placeholder="Night, VIP, vb."/>
         </div>
         <div class="fg">
-          <label>Bebek</label>
+          <label>Baby</label>
           <input name="baby" type="number" min="0" max="20" value="0"/>
         </div>
       </div>
 
       <label class="chk-label">
         <input type="checkbox" name="transfer"/>
-        <span>Transfer var</span>
+        <span>Transfer</span>
       </label>
 
     </div><!-- /modal-body -->
     <div class="modal-foot">
-      <button type="button" class="btn-cancel" id="modal-cancel">Vazgeç</button>
-      <button type="submit" class="btn-save">Kaydet</button>
+      <button type="button" class="btn-cancel" id="modal-cancel">Cancel</button>
+      <button type="submit" class="btn-save">Save</button>
     </div>
     </form>
   </div>
@@ -262,6 +262,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=4"></script>
+<script type="module" src="js/app.js?v=5"></script>
 </body>
 </html>
