@@ -126,3 +126,17 @@ create policy "yc_delete" on public.yacht_crews for delete using (auth.role()='a
 -- ── 7. Migrasyon: agency kolonu kaldırıldı (2026-06) ─────────
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings drop column if exists agency;
+
+-- ── 8. Kullanıcı adı ile giriş (2026-06) ─────────────────────
+-- Giriş ekranı kullanıcı adı + şifre ister; kullanıcı adını
+-- e-postaya bu fonksiyon çevirir. SQL Editor'da bir kez çalıştırın.
+alter table public.profiles add column if not exists username text unique;
+
+create or replace function public.email_for_username(p_username text)
+returns text language sql security definer set search_path = public as $$
+  select u.email from auth.users u
+  join public.profiles p on p.id = u.id
+  where lower(p.username) = lower(trim(p_username))
+  limit 1;
+$$;
+grant execute on function public.email_for_username(text) to anon, authenticated;

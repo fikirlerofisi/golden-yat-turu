@@ -9,7 +9,7 @@ import { getBookingsByTour, createBooking,
 import { toggleCheckin }                   from './checkin.js';
 import { subscribeBookings, unsubscribeBookings,
          subscribeTours, unsubscribeTours } from './realtime.js';
-import { OPTIONS, LOGIN_EMAIL_DOMAIN }     from './config.js';
+import { OPTIONS }                         from './config.js';
 
 // ── Uygulama durumu ────────────────────────────────────────────
 const state = {
@@ -54,10 +54,7 @@ async function init() {
     const btn = e.target.querySelector('button[type=submit]');
     btn.disabled = true;
     try {
-      // Kullanıcı adı girildiyse e-postaya çevir (nursah → nursah@golden.com)
-      let user = el('login-email').value.trim().toLowerCase();
-      if (user && !user.includes('@')) user = `${user}@${LOGIN_EMAIL_DOMAIN}`;
-      await login(user, el('login-password').value);
+      await login(el('login-email').value.trim(), el('login-password').value);
     } catch (err) {
       el('login-error').textContent = err.message || 'Giriş başarısız';
       btn.disabled = false;

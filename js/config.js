@@ -6,10 +6,6 @@
 export const SUPABASE_URL      = 'https://ixsxstvlthkvossovwse.supabase.co';
 export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4c3hzdHZsdGhrdm9zc292d3NlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTk0ODcsImV4cCI6MjA5NTk3NTQ4N30.vtE7P2pzRJTPzD0Owk1v2WdR_c6n-A9w19ruMZ-KM0w';
 
-// ── Login: kullanıcı adı → e-posta eşlemesi ──────────────────
-// Giriş ekranına "nursah" yazılınca "nursah@golden.com" ile oturum açılır.
-export const LOGIN_EMAIL_DOMAIN = 'golden.com';
-
 // ── Dropdown seçenekleri ──────────────────────────────────────
 export const OPTIONS = {
   yachts:         ['River', 'River Mega', 'River Storm'],

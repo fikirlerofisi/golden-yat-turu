@@ -23,9 +23,18 @@ async function fetchProfile(userId) {
 }
 
 // ── Login ─────────────────────────────────────────────────────
-export async function login(email, password) {
+// Kullanıcı adı alır; e-postaya çeviriyi veritabanındaki
+// email_for_username() fonksiyonu yapar. '@' içeren girdi
+// doğrudan e-posta kabul edilir (yedek yol).
+export async function login(username, password) {
+  let email = username;
+  if (!email.includes('@')) {
+    const { data: found, error: rpcError } = await supabase.rpc('email_for_username', { p_username: username });
+    if (rpcError || !found) throw new Error('Kullanıcı adı veya şifre hatalı');
+    email = found;
+  }
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) throw new Error('Kullanıcı adı veya şifre hatalı');
   currentUser = data.user;
   currentProfile = await fetchProfile(data.user.id);
   return currentProfile;
