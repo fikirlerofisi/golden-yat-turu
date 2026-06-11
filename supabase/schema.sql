@@ -140,3 +140,8 @@ returns text language sql security definer set search_path = public as $$
   limit 1;
 $$;
 grant execute on function public.email_for_username(text) to anon, authenticated;
+
+-- ── 9. Migrasyon: transfer_note (2026-06) ────────────────────
+-- Transfer işaretli rezervasyonlara serbest metin açıklama.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists transfer_note text not null default '';

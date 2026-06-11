@@ -91,6 +91,10 @@ async function init() {
   el('modal-close').addEventListener('click',  closeBookingModal);
   el('modal-cancel').addEventListener('click', closeBookingModal);
   el('booking-form').addEventListener('submit', handleBookingSubmit);
+  el('booking-form').elements['transfer'].addEventListener('change', (e) => {
+    el('f-transfer-note-wrap').classList.toggle('hidden', !e.target.checked);
+    if (e.target.checked) el('booking-form').elements['transfer_note'].focus();
+  });
 
   // Opt modal kapat
   el('new-tour-close').addEventListener('click', closeOptModal);
@@ -240,7 +244,7 @@ function renderTable() {
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
       <td>${payBadge(b.payment)}</td>
-      <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
+      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(b.tour_guide)}</td>
       <td>${esc(b.staff)}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
@@ -313,7 +317,7 @@ async function handleDelete(id) {
     await deleteBooking(id);
     state.bookings = state.bookings.filter(x => x.id !== id);
     renderTable(); renderStats();
-  } catch (err) { alert('Hata: ' + (err.message || err)); }
+  } catch (err) { alert('Error: ' + (err.message || err)); }
 }
 
 // ── Rezervasyon modalı ─────────────────────────────────────────
@@ -331,6 +335,8 @@ function openBookingModal(bookingId) {
   f.elements['payment'].value    = b?.payment   || '';
   f.elements['remarks'].value    = b?.remarks   || '';
   f.elements['transfer'].checked = b?.transfer  || false;
+  f.elements['transfer_note'].value = b?.transfer_note || '';
+  el('f-transfer-note-wrap').classList.toggle('hidden', !f.elements['transfer'].checked);
   el('booking-modal').classList.remove('hidden');
   setTimeout(() => f.elements['name'].focus(), 60);
 }
@@ -357,6 +363,7 @@ async function handleBookingSubmit(e) {
     payment:   f.elements['payment'].value,
     remarks:   f.elements['remarks'].value.trim(),
     transfer:  f.elements['transfer'].checked,
+    transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
   };
 
   if (!fields.name) { alert('Name is required.'); btn.disabled = false; return; }
@@ -373,7 +380,7 @@ async function handleBookingSubmit(e) {
     closeBookingModal();
     renderTable(); renderStats();
   } catch (err) {
-    alert('Hata: ' + (err.message || err));
+    alert('Error: ' + (err.message || err));
   } finally {
     btn.disabled = false;
   }
@@ -526,7 +533,7 @@ function yachtBadge(y) {
 
 function payBadge(p) {
   if (!p) return '—';
-  const cls = p === 'Received' ? 'pay-received' : p === 'Card' ? 'pay-card' : p === 'Cash' ? 'pay-cash' : '';
+  const cls = p === 'Received' ? 'pay-received' : p === 'Unpaid' ? 'pay-unpaid' : '';
   return `<span class="pay ${cls}">${esc(p)}</span>`;
 }
 
@@ -662,7 +669,7 @@ async function applySelection() {
     el('sel-crew-locked').classList.add('hidden');
     renderTable(); renderStats();
   } catch (err) {
-    alert('Hata: ' + (err.message || err));
+    alert('Error: ' + (err.message || err));
     btn.disabled = false;
   }
 }

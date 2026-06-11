@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=7"/>
+  <link rel="stylesheet" href="css/styles.css?v=8"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=7",
-      "./js/auth.js":     "./js/auth.js?v=7",
-      "./js/tours.js":    "./js/tours.js?v=7",
-      "./js/bookings.js": "./js/bookings.js?v=7",
-      "./js/checkin.js":  "./js/checkin.js?v=7",
-      "./js/realtime.js": "./js/realtime.js?v=7",
-      "./js/config.js":   "./js/config.js?v=7",
-      "./js/supabase.js": "./js/supabase.js?v=7"
+      "./js/app.js":      "./js/app.js?v=8",
+      "./js/auth.js":     "./js/auth.js?v=8",
+      "./js/tours.js":    "./js/tours.js?v=8",
+      "./js/bookings.js": "./js/bookings.js?v=8",
+      "./js/checkin.js":  "./js/checkin.js?v=8",
+      "./js/realtime.js": "./js/realtime.js?v=8",
+      "./js/config.js":   "./js/config.js?v=8",
+      "./js/supabase.js": "./js/supabase.js?v=8"
     }
   }
   </script>
@@ -198,6 +198,11 @@
         <span>Transfer</span>
       </label>
 
+      <div class="fg hidden" id="f-transfer-note-wrap">
+        <label>Transfer Info</label>
+        <input name="transfer_note" type="text" placeholder="Pickup point, time, etc." autocomplete="off"/>
+      </div>
+
     </div><!-- /modal-body -->
     <div class="modal-foot">
       <button type="button" class="btn-cancel" id="modal-cancel">Cancel</button>
@@ -243,6 +248,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=7"></script>
+<script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>

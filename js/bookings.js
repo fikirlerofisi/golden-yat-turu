@@ -70,6 +70,7 @@ function sanitize(f) {
     staff:      f.staff      ?? '',
     remarks:    f.remarks    ?? '',
     transfer:   !!f.transfer,
+    transfer_note: f.transfer_note ?? '',
     tour_code:  f.tour_code  ?? '',
   };
 }

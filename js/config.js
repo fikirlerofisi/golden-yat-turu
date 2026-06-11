@@ -13,6 +13,6 @@ export const OPTIONS = {
   departureTimes: ['15:45','16:00','16:15','16:30','16:45','17:00','17:15','17:30','17:45','18:00','18:15','18:30','18:45','19:00'],
   sources:        ['', 'GYG', 'Klook', 'Viator', 'V2', 'Site - G', 'Site - T', 'Site - B'],
   tourGuides:     ['', 'Erdem', 'Doğacan', 'Taner', 'Muhsin', 'Erol', 'Özge', 'Bülent', 'Tülay', 'Diyar', 'Şeyma', 'Celal', 'Özgür', 'Volkan', 'Sendi', 'Işıl'],
-  payments:       ['', 'Received', 'Card', 'Cash'],
+  payments:       ['', 'Received', 'Unpaid'],
   staffList:      ['', 'Betül', 'Nurşah', 'Aleyna'],
 };

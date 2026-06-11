@@ -278,8 +278,7 @@ thead th.col-chk { z-index: 40; left: 0; }
 /* Ödeme badge */
 .pay { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: .65rem; font-weight: 600; }
 .pay-received { background: #DCFCE7; color: #166534; }
-.pay-card     { background: #DBEAFE; color: #1E40AF; }
-.pay-cash     { background: #FEF9C3; color: #854D0E; }
+.pay-unpaid   { background: #FEE2E2; color: #991B1B; }
 
 /* Transfer */
 .tf-yes { color: var(--green-dk); font-weight: 700; }
