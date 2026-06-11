@@ -64,7 +64,6 @@ function sanitize(f) {
     pax:        parseInt(f.pax)  || 1,
     baby:       parseInt(f.baby) || 0,
     phone:      f.phone      ?? '',
-    agency:     f.agency     ?? '',
     source:     f.source     ?? '',
     tour_guide: f.tour_guide ?? '',
     payment:    f.payment    ?? '',

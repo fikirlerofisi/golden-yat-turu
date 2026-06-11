@@ -19,8 +19,8 @@
     <hr class="login-div"/>
     <form id="login-form" novalidate>
       <div class="field-group">
-        <label for="login-email">E-posta</label>
-        <input id="login-email" type="email" autocomplete="email" placeholder="ad@firma.com" required/>
+        <label for="login-email">Kullanıcı Adı</label>
+        <input id="login-email" type="text" autocomplete="username" placeholder="nursah" required/>
       </div>
       <div class="field-group">
         <label for="login-password">Şifre</label>
@@ -78,7 +78,10 @@
       <label>Tour Guide</label>
       <select id="sel-guide">
         <option value="">— Seçin —</option>
-        <option>Doğancan</option><option>Metin</option><option>Ayşe</option>
+        <option>Erdem</option><option>Doğacan</option><option>Taner</option><option>Muhsin</option>
+        <option>Erol</option><option>Özge</option><option>Bülent</option><option>Tülay</option>
+        <option>Diyar</option><option>Şeyma</option><option>Celal</option><option>Özgür</option>
+        <option>Volkan</option><option>Sendi</option><option>Işıl</option>
       </select>
     </div>
     <div class="sel-field" id="sel-staff-field">
@@ -100,6 +103,7 @@
       <thead>
         <tr>
           <th class="col-chk">Check</th>
+          <th>Tour</th>
           <th class="col-name">Name</th>
           <th>Pax</th>
           <th>Source</th>
@@ -109,15 +113,12 @@
           <th>Transfer</th>
           <th>Tour guide</th>
           <th>Staff</th>
-          <th>Agency</th>
-          <th>Baby</th>
           <th>Remarks</th>
-          <th>Tour</th>
           <th></th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr class="empty-row"><td colspan="15">Tarih seçin ve tur oluşturun.</td></tr>
+        <tr class="empty-row"><td colspan="13">Tarih seçin ve tur oluşturun.</td></tr>
       </tbody>
       <tfoot id="tfoot"></tfoot>
     </table>
@@ -141,7 +142,7 @@
         <div class="fg">
           <label>Tur</label>
           <select id="f-tour" name="tour_code">
-            <option>T1</option><option>T2</option><option>T3</option><option>T4</option>
+            <option>T1</option><option>TA</option><option>TB</option><option>TD</option><option>TN</option><option>PRV</option>
           </select>
         </div>
         <div class="fg">
@@ -155,15 +156,9 @@
         <input name="name" type="text" placeholder="Ad Soyad" required autocomplete="off"/>
       </div>
 
-      <div class="frow">
-        <div class="fg">
-          <label>Telefon</label>
-          <input name="phone" type="tel" placeholder="+90 5xx xxx xx xx"/>
-        </div>
-        <div class="fg">
-          <label>Agency</label>
-          <select id="f-agency" name="agency"></select>
-        </div>
+      <div class="fg">
+        <label>Telefon</label>
+        <input name="phone" type="tel" placeholder="+90 5xx xxx xx xx"/>
       </div>
 
       <div class="frow">
@@ -202,41 +197,39 @@
   </div>
 </div>
 
-<!-- ═══════════ YENİ TUR MODAL ═══════════ -->
+<!-- ═══════════ SEÇENEK YÖNETİMİ MODALI (New) ═══════════ -->
 <div id="new-tour-modal" class="modal-overlay hidden"
      role="dialog" aria-modal="true"
-     onclick="if(event.target===this)document.getElementById('new-tour-modal').classList.add('hidden')">
-  <div class="modal-box" style="max-width:380px">
+     onclick="if(event.target===this)closeOptModal()">
+  <div class="modal-box" style="max-width:400px">
     <div class="modal-head">
-      <h2>Yeni Tur</h2>
+      <h2 id="opt-modal-title">Ne eklemek istiyorsunuz?</h2>
       <button class="modal-x" id="new-tour-close">✕</button>
     </div>
-    <form id="new-tour-form" novalidate>
     <div class="modal-body">
-      <div class="fg">
-        <label>Tur İsmi *</label>
-        <input name="tour_name" type="text" placeholder="ör. Boğaz Turu, Gece Turu…" required autocomplete="off"/>
+
+      <!-- Adım 1: Kategori seçimi -->
+      <div id="opt-step1">
+        <div class="opt-cat-grid">
+          <button class="opt-cat-btn" data-cat="yacht">⛵ Yacht</button>
+          <button class="opt-cat-btn" data-cat="tour_guide">🧭 Tour Guide</button>
+          <button class="opt-cat-btn" data-cat="tour_code">📋 Tour</button>
+        </div>
       </div>
-      <div class="fg">
-        <label>Tour Guide</label>
-        <select id="nt-guide" name="tour_guide">
-          <option value="">— Seçin —</option>
-          <option>Doğancan</option><option>Metin</option><option>Ayşe</option>
-        </select>
+
+      <!-- Adım 2: Liste + ekleme -->
+      <div id="opt-step2" class="hidden">
+        <div id="opt-chips-wrap">
+          <!-- mevcut seçenekler JS ile doldurulur -->
+        </div>
+        <div class="opt-add-row">
+          <input type="text" id="opt-new-val" placeholder="Yeni değer girin…" autocomplete="off"/>
+          <button class="btn-save" id="opt-add-btn">+ Ekle</button>
+        </div>
+        <button class="opt-back-btn" id="opt-back-btn">← Geri</button>
       </div>
-      <div class="fg">
-        <label>Agency</label>
-        <select id="nt-agency" name="agency">
-          <option value="">— Seçin —</option>
-          <option>Rixos</option><option>Ramada</option><option>Çırağan</option>
-        </select>
-      </div>
+
     </div>
-    <div class="modal-foot">
-      <button type="button" class="btn-cancel" id="new-tour-cancel">Vazgeç</button>
-      <button type="submit" class="btn-save">Oluştur</button>
-    </div>
-    </form>
   </div>
 </div>
 

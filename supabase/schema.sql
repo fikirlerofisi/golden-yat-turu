@@ -47,7 +47,6 @@ create table if not exists public.bookings (
   pax             int not null default 1,
   baby            int not null default 0,
   phone           text default '',
-  agency          text default '',
   source          text default '',
   tour_guide      text default '',
   payment         text default '',
@@ -123,3 +122,7 @@ create policy "yc_select" on public.yacht_crews for select using (auth.role()='a
 create policy "yc_insert" on public.yacht_crews for insert with check (auth.role()='authenticated');
 create policy "yc_update" on public.yacht_crews for update using (auth.role()='authenticated');
 create policy "yc_delete" on public.yacht_crews for delete using (auth.role()='authenticated');
+
+-- ── 7. Migrasyon: agency kolonu kaldırıldı (2026-06) ─────────
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings drop column if exists agency;

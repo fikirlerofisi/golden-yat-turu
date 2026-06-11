@@ -9,7 +9,7 @@ import { getBookingsByTour, createBooking,
 import { toggleCheckin }                   from './checkin.js';
 import { subscribeBookings, unsubscribeBookings,
          subscribeTours, unsubscribeTours } from './realtime.js';
-import { OPTIONS }                         from './config.js';
+import { OPTIONS, LOGIN_EMAIL_DOMAIN }     from './config.js';
 
 // ── Uygulama durumu ────────────────────────────────────────────
 const state = {
@@ -28,15 +28,23 @@ const el = (id) => document.getElementById(id);
 
 // ── Başlangıç ──────────────────────────────────────────────────
 async function init() {
-  fillFormSelects();
-
   const session = await getSession();
-  if (session) await showApp();
-  else         showLogin();
+  if (session) {
+    await loadAppOptions();   // önce seçenekleri yükle
+    fillFormSelects();        // sonra formları doldur
+    await showApp();
+  } else {
+    showLogin();
+  }
 
   onAuthChange(async (event, sess) => {
-    if (sess) await showApp();
-    else      showLogin();
+    if (sess) {
+      await loadAppOptions();
+      fillFormSelects();
+      await showApp();
+    } else {
+      showLogin();
+    }
   });
 
   // Login
@@ -46,7 +54,10 @@ async function init() {
     const btn = e.target.querySelector('button[type=submit]');
     btn.disabled = true;
     try {
-      await login(el('login-email').value.trim(), el('login-password').value);
+      // Kullanıcı adı girildiyse e-postaya çevir (nursah → nursah@golden.com)
+      let user = el('login-email').value.trim().toLowerCase();
+      if (user && !user.includes('@')) user = `${user}@${LOGIN_EMAIL_DOMAIN}`;
+      await login(user, el('login-password').value);
     } catch (err) {
       el('login-error').textContent = err.message || 'Giriş başarısız';
       btn.disabled = false;
@@ -69,8 +80,8 @@ async function init() {
     loadBookings();
   });
 
-  // New butonu
-  el('new-tour-btn').addEventListener('click', () => el('new-tour-modal').classList.remove('hidden'));
+  // New butonu → seçenek yönetimi modalı
+  el('new-tour-btn').addEventListener('click', openOptModal);
 
   // Arama
   el('search-box').addEventListener('input', (e) => {
@@ -96,10 +107,8 @@ async function init() {
   el('modal-cancel').addEventListener('click', closeBookingModal);
   el('booking-form').addEventListener('submit', handleBookingSubmit);
 
-  // Yeni tur modal
-  el('new-tour-close').addEventListener('click',  () => el('new-tour-modal').classList.add('hidden'));
-  el('new-tour-cancel').addEventListener('click', () => el('new-tour-modal').classList.add('hidden'));
-  el('new-tour-form').addEventListener('submit', handleNewTour);
+  // Opt modal kapat
+  el('new-tour-close').addEventListener('click', closeOptModal);
 }
 
 // ── Ekran geçişleri ────────────────────────────────────────────
@@ -136,6 +145,13 @@ async function loadTours() {
       renderTourSelector(); renderTable(); renderStats();
     },
   });
+
+  if (state.tours.length === 0) {
+    // Tarih için tur yoksa otomatik oluştur
+    await autoCreateTour();
+    try { state.tours = await getToursByDate(state.date); } catch { state.tours = []; }
+    renderTourSelector();
+  }
 
   if (state.tours.length > 0) {
     const valid = state.tours.find(t => t.id === state.tourId);
@@ -182,8 +198,7 @@ function renderTourSelector() {
 function tourChipText(t) {
   const name  = t.tour_name || t.code || 'Tur';
   const guide = t.tour_guide ? ` · ${t.tour_guide}` : '';
-  const ag    = t.agency     ? ` · ${t.agency}`     : '';
-  return `${name}${guide}${ag}`;
+  return `${name}${guide}`;
 }
 
 // ── Rezervasyonlar ─────────────────────────────────────────────
@@ -239,12 +254,12 @@ function renderTable() {
   const data  = filtered();
 
   if (!state.tourId) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="15">Tarih seçin ve tur oluşturun.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Tarih seçin ve tur oluşturun.</td></tr>`;
     el('tfoot').innerHTML = '';
     return;
   }
   if (data.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="15">Kayıt bulunamadı.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Kayıt bulunamadı.</td></tr>`;
     el('tfoot').innerHTML = '';
     return;
   }
@@ -265,6 +280,7 @@ function renderTable() {
           ${b.checked_in ? '✓' : '○'}
         </button>
       </td>
+      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
       <td class="col-name">
         <div class="name-cell">
           <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''}/>
@@ -279,10 +295,7 @@ function renderTable() {
       <td style="text-align:center">${b.transfer ? '<span class="tf-yes">✓</span>' : '<span class="tf-no">—</span>'}</td>
       <td>${esc(b.tour_guide)}</td>
       <td>${esc(b.staff)}</td>
-      <td>${esc(b.agency)}</td>
-      <td style="text-align:center">${b.baby ? `<span class="baby-v">${b.baby}</span>` : '—'}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
-      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
       <td>
         <button class="act-btn edit" data-edit="${b.id}" title="Düzenle">✎</button>
         <button class="act-btn del"  data-del="${b.id}"  title="Sil">✕</button>
@@ -308,15 +321,14 @@ function renderTable() {
 }
 
 function renderFooter(data) {
-  // Kolon sırası: Check|Name|Pax|Source|Yacht|Phone|Payment|Transfer|Guide|Staff|Baby|Remarks|Tour|Actions
+  // Kolon sırası: Check|Tour|Name|Pax|Source|Yacht|Phone|Payment|Transfer|Guide|Staff|Remarks|Actions
   const s = calcStats(data);
   el('tfoot').innerHTML = `<tr>
     <td class="col-chk"></td>
+    <td></td>
     <td class="col-name">📊 ${data.length} kişi &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span></td>
     <td style="text-align:center;font-weight:700">${s.totalPax}</td>
-    <td colspan="7"></td>
-    <td style="text-align:center;font-weight:700">${s.totalBaby || '—'}</td>
-    <td colspan="4"></td>
+    <td colspan="9"></td>
   </tr>`;
 }
 
@@ -369,7 +381,6 @@ function openBookingModal(bookingId) {
   f.elements['baby'].value       = b?.baby      || 0;
   f.elements['phone'].value      = b?.phone     || '';
   f.elements['tour_code'].value  = b?.tour_code || 'T1';
-  f.elements['agency'].value     = b?.agency    || '';
   f.elements['source'].value     = b?.source    || '';
   f.elements['payment'].value    = b?.payment   || '';
   f.elements['remarks'].value    = b?.remarks   || '';
@@ -396,7 +407,6 @@ async function handleBookingSubmit(e) {
     baby:      parseInt(f.elements['baby'].value) || 0,
     phone:     f.elements['phone'].value.trim(),
     tour_code: f.elements['tour_code'].value,
-    agency:    f.elements['agency'].value,
     source:    f.elements['source'].value,
     payment:   f.elements['payment'].value,
     remarks:   f.elements['remarks'].value.trim(),
@@ -423,49 +433,141 @@ async function handleBookingSubmit(e) {
   }
 }
 
-// ── Yeni tur ───────────────────────────────────────────────────
-async function handleNewTour(e) {
-  e.preventDefault();
-  const f   = e.target;
-  const btn = f.querySelector('button[type=submit]');
-  btn.disabled = true;
-  const tourName = f.elements['tour_name'].value.trim();
-  if (!tourName) { alert('Tur ismi gereklidir.'); btn.disabled = false; return; }
+// ── Otomatik tur oluştur (tarih seçilince arka planda) ───────────
+async function autoCreateTour() {
   try {
     const { currentUser } = await import('./auth.js');
-    const { data, error } = await supabase
-      .from('tours')
-      .insert({
-        tour_date:  state.date,
-        code:       tourName,       // code alanını isim olarak kullan
-        tour_name:  tourName,
-        tour_guide: f.elements['tour_guide'].value,
-        agency:     f.elements['agency'].value,
-        created_by: currentUser?.id,
-      })
-      .select().single();
-    if (error) throw error;
-    state.tours.push(data);
-    state.tourId = data.id;
-    renderTourSelector();
-    await loadBookings();
-    el('new-tour-modal').classList.add('hidden');
-    f.reset();
-  } catch (err) {
-    alert('Hata: ' + (err.message || err));
-  } finally { btn.disabled = false; }
+    await supabase.from('tours').insert({
+      tour_date: state.date,
+      code:      state.date,
+      created_by: currentUser?.id,
+    });
+  } catch { /* unique constraint: zaten var, sorun değil */ }
+}
+
+// ── Seçenek yönetimi (New modal) ──────────────────────────────
+let optCat = null; // aktif kategori
+
+const OPT_META = {
+  yacht:      { label: '⛵ Yacht',      key: 'yachts',     defaults: [] },
+  tour_guide: { label: '🧭 Tour Guide', key: 'tourGuides', defaults: [] },
+  tour_code:  { label: '📋 Tour',       key: 'tourCodes',  defaults: [] },
+};
+
+async function loadAppOptions() {
+  try {
+    const { data } = await supabase.from('app_options').select('*').order('created_at');
+    (data || []).forEach(o => {
+      const meta = OPT_META[o.category];
+      if (!meta) return;
+      if (!OPTIONS[meta.key].includes(o.value)) OPTIONS[meta.key].push(o.value);
+    });
+    // Varsayılanları meta'ya kaydet
+    OPT_META.yacht.defaults      = [...OPTIONS.yachts];
+    OPT_META.tour_guide.defaults = OPTIONS.tourGuides.filter(x => x);
+    OPT_META.tour_code.defaults  = [...OPTIONS.tourCodes];
+  } catch {}
+}
+
+function openOptModal() {
+  optCat = null;
+  el('opt-step1').classList.remove('hidden');
+  el('opt-step2').classList.add('hidden');
+  el('opt-modal-title').textContent = 'Ne eklemek istiyorsunuz?';
+  el('new-tour-modal').classList.remove('hidden');
+
+  // Kategori butonlarına listener
+  el('new-tour-modal').querySelectorAll('.opt-cat-btn').forEach(btn => {
+    btn.onclick = () => openOptStep2(btn.dataset.cat);
+  });
+  el('opt-back-btn').onclick = () => {
+    el('opt-step2').classList.add('hidden');
+    el('opt-step1').classList.remove('hidden');
+    el('opt-modal-title').textContent = 'Ne eklemek istiyorsunuz?';
+  };
+  el('opt-add-btn').onclick = addOpt;
+  el('opt-new-val').onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); addOpt(); } };
+}
+
+function openOptStep2(cat) {
+  optCat = cat;
+  const meta = OPT_META[cat];
+  el('opt-modal-title').textContent = meta.label + ' listesi';
+  el('opt-step1').classList.add('hidden');
+  el('opt-step2').classList.remove('hidden');
+  el('opt-new-val').value = '';
+  renderOptChips();
+  setTimeout(() => el('opt-new-val').focus(), 80);
+}
+
+function renderOptChips() {
+  const meta = OPT_META[optCat];
+  const vals = OPTIONS[meta.key].filter(x => x); // boş stringleri çıkar
+  el('opt-chips-wrap').innerHTML = vals.map(v => {
+    const isDef = meta.defaults.includes(v);
+    return `<span class="opt-chip ${isDef ? 'default-opt' : ''}">
+      ${esc(v)}
+      <button class="opt-chip-del" data-val="${esc(v)}" title="Sil">✕</button>
+    </span>`;
+  }).join('');
+  el('opt-chips-wrap').querySelectorAll('.opt-chip-del').forEach(btn => {
+    btn.onclick = () => removeOpt(btn.dataset.val);
+  });
+}
+
+async function addOpt() {
+  const val = el('opt-new-val').value.trim();
+  if (!val) return;
+  const meta = OPT_META[optCat];
+  if (OPTIONS[meta.key].includes(val)) { el('opt-new-val').value = ''; return; }
+  try {
+    await supabase.from('app_options').insert({ category: optCat, value: val });
+    OPTIONS[meta.key].push(val);
+    fillFormSelects();
+    el('opt-new-val').value = '';
+    renderOptChips();
+  } catch (err) { alert('Hata: ' + err.message); }
+}
+
+async function removeOpt(val) {
+  const meta = OPT_META[optCat];
+  try {
+    await supabase.from('app_options').delete().eq('category', optCat).eq('value', val);
+    OPTIONS[meta.key] = OPTIONS[meta.key].filter(x => x !== val);
+    fillFormSelects();
+    renderOptChips();
+  } catch (err) { alert('Hata: ' + err.message); }
+}
+
+function closeOptModal() {
+  el('new-tour-modal').classList.add('hidden');
+  optCat = null;
 }
 
 // ── Form selectleri doldur ─────────────────────────────────────
 function fillFormSelects() {
-  const fill = (id, opts) => {
+  const fill = (id, opts, hasBlank = true) => {
     const sel = el(id);
     if (!sel) return;
-    sel.innerHTML = opts.map(o => `<option value="${esc(o)}">${esc(o) || '—'}</option>`).join('');
+    const items = hasBlank ? ['', ...opts.filter(x => x)] : opts;
+    sel.innerHTML = items.map(o =>
+      `<option value="${esc(o)}">${esc(o) || '—'}</option>`
+    ).join('');
   };
-  fill('f-agency',  OPTIONS.agencies);
   fill('f-source',  OPTIONS.sources);
   fill('f-payment', OPTIONS.payments);
+  fill('f-tour',    OPTIONS.tourCodes, false);
+  // sel-bar seçicilerini de yenile
+  const refillSel = (id, opts) => {
+    const sel = el(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = `<option value="">— Seçin —</option>` +
+      opts.filter(x => x).map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+    if (cur) sel.value = cur;
+  };
+  refillSel('sel-yacht',  OPTIONS.yachts);
+  refillSel('sel-guide',  OPTIONS.tourGuides);
 }
 
 // ── Yardımcılar ────────────────────────────────────────────────
@@ -622,9 +724,9 @@ async function applySelection() {
 // ── Ekipler modalı ─────────────────────────────────────────────
 async function openCrewsModal() {
   await loadCrews();
-  const yachts = ['River', 'River Mega', 'River Storm'];
-  const guides = ['', 'Doğancan', 'Metin', 'Ayşe'];
-  const staffs = ['', 'Betül', 'Nurşah', 'Aleyna'];
+  const yachts = OPTIONS.yachts;
+  const guides = ['', ...OPTIONS.tourGuides.filter(x => x)];
+  const staffs = ['', ...OPTIONS.staffList.filter(x => x)];
 
   const mkOpts = (arr, val) => arr.map(o =>
     `<option value="${esc(o)}" ${o === val ? 'selected' : ''}>${o || '—'}</option>`

@@ -374,6 +374,53 @@ thead th.col-chk { z-index: 40; left: 0; }
   opacity: .5; cursor: not-allowed; background-color: rgba(255,255,255,.05);
 }
 
+/* ── Seçenek yönetimi (New) modal ── */
+.opt-cat-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px;
+}
+.opt-cat-btn {
+  padding: 16px 8px; border: 2px solid var(--cream2); border-radius: 10px;
+  background: var(--gray1); color: var(--navy);
+  font-family: var(--font); font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: var(--tr); text-align: center; line-height: 1.4;
+}
+.opt-cat-btn:hover { border-color: var(--gold); background: rgba(201,151,43,.07); }
+
+.opt-chips-wrap {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 14px; min-height: 32px;
+}
+.opt-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  background: var(--navy); color: var(--gold-pale);
+  font-size: .76rem; font-weight: 500;
+}
+.opt-chip-del {
+  background: none; border: none; color: rgba(255,255,255,.5);
+  cursor: pointer; font-size: .85rem; padding: 0; line-height: 1;
+  transition: color var(--tr);
+}
+.opt-chip-del:hover { color: #f87171; }
+.opt-chip.default-opt { background: var(--navy2); }
+.opt-chip.default-opt .opt-chip-del { display: none; }
+
+.opt-add-row {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+.opt-add-row input {
+  flex: 1; padding: 9px 12px;
+  border: 1.5px solid var(--cream2); border-radius: 7px;
+  font-family: var(--font); font-size: .88rem; color: var(--navy); outline: none;
+}
+.opt-add-row input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12); }
+.opt-add-row .btn-save { flex-shrink: 0; padding: 9px 16px; font-size: .82rem; }
+.opt-back-btn {
+  background: none; border: none; color: var(--gray4);
+  font-family: var(--font); font-size: .8rem; cursor: pointer; padding: 0;
+}
+.opt-back-btn:hover { color: var(--navy); }
+
 /* Ekipler butonu */
 #crews-btn {
   padding: 5px 11px; background: rgba(255,255,255,.12);
