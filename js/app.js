@@ -84,11 +84,6 @@ async function init() {
   el('btn-sel-clear').addEventListener('click', clearSelection);
   el('sel-yacht').addEventListener('change', onSelYachtChange);
 
-  // Ekipler modal
-  el('crews-btn').addEventListener('click',    openCrewsModal);
-  el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
-  el('crews-cancel').addEventListener('click', () => el('crews-modal').classList.add('hidden'));
-
   // Rezervasyon ekle
   el('add-booking-btn').addEventListener('click', () => openBookingModal(null));
 
@@ -150,7 +145,6 @@ async function loadTours() {
 
   state.tourId = state.tours[0]?.id || null;
   el('add-booking-btn').disabled = !state.tourId;
-  el('crews-btn').disabled = !state.tourId;
   await loadBookings();
 }
 
@@ -669,62 +663,6 @@ async function applySelection() {
     renderTable(); renderStats();
   } catch (err) {
     alert('Hata: ' + (err.message || err));
-    btn.disabled = false;
-  }
-}
-
-// ── Ekipler modalı ─────────────────────────────────────────────
-async function openCrewsModal() {
-  await loadCrews();
-  const yachts = OPTIONS.yachts;
-  const guides = ['', ...OPTIONS.tourGuides.filter(x => x)];
-  const staffs = ['', ...OPTIONS.staffList.filter(x => x)];
-
-  const mkOpts = (arr, val) => arr.map(o =>
-    `<option value="${esc(o)}" ${o === val ? 'selected' : ''}>${o || '—'}</option>`
-  ).join('');
-
-  el('crews-body').innerHTML = yachts.map(y => {
-    const c = state.crews[y] || {};
-    return `<div class="crew-row">
-      <span class="crew-yacht-label">${yachtBadge(y)}</span>
-      <select class="crew-guide-sel" data-yacht="${esc(y)}">${mkOpts(guides, c.tour_guide || '')}</select>
-      <select class="crew-staff-sel" data-yacht="${esc(y)}">${mkOpts(staffs, c.staff || '')}</select>
-      <button class="btn-crew-save" data-yacht="${esc(y)}" onclick="saveCrew('${esc(y)}',this)">Save</button>
-    </div>`;
-  }).join('') + `<p style="font-size:.73rem;color:var(--gray4);margin-top:12px">
-    Saving also updates all existing bookings assigned to that yacht.</p>`;
-
-  el('crews-modal').classList.remove('hidden');
-}
-
-async function saveCrew(yacht, btn) {
-  const row = btn.closest('.crew-row');
-  const guide = row.querySelector('.crew-guide-sel').value;
-  const staff = row.querySelector('.crew-staff-sel').value;
-  btn.disabled = true;
-  try {
-    await supabase.from('yacht_crews').upsert(
-      { tour_id: state.tourId, yacht, tour_guide: guide, staff },
-      { onConflict: 'tour_id,yacht' }
-    );
-    state.crews[yacht] = { tour_guide: guide, staff };
-
-    // Mevcut bookings'leri de güncelle
-    const same = state.bookings.filter(b => b.yacht === yacht);
-    for (const b of same) {
-      const patch = { tour_guide: guide, staff };
-      await updateBooking(b.id, patch);
-      const i = state.bookings.findIndex(x => x.id === b.id);
-      if (i >= 0) state.bookings[i] = { ...state.bookings[i], ...patch };
-    }
-    renderTable(); renderStats();
-    btn.textContent = '✓ Saved';
-    btn.style.background = 'var(--green)';
-    btn.style.color = '#fff';
-    setTimeout(() => { btn.textContent = 'Save'; btn.style = ''; btn.disabled = false; }, 1800);
-  } catch (err) {
-    alert('Error: ' + err.message);
     btn.disabled = false;
   }
 }

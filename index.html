@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=6"/>
+  <link rel="stylesheet" href="css/styles.css?v=7"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=6",
-      "./js/auth.js":     "./js/auth.js?v=6",
-      "./js/tours.js":    "./js/tours.js?v=6",
-      "./js/bookings.js": "./js/bookings.js?v=6",
-      "./js/checkin.js":  "./js/checkin.js?v=6",
-      "./js/realtime.js": "./js/realtime.js?v=6",
-      "./js/config.js":   "./js/config.js?v=6",
-      "./js/supabase.js": "./js/supabase.js?v=6"
+      "./js/app.js":      "./js/app.js?v=7",
+      "./js/auth.js":     "./js/auth.js?v=7",
+      "./js/tours.js":    "./js/tours.js?v=7",
+      "./js/bookings.js": "./js/bookings.js?v=7",
+      "./js/checkin.js":  "./js/checkin.js?v=7",
+      "./js/realtime.js": "./js/realtime.js?v=7",
+      "./js/config.js":   "./js/config.js?v=7",
+      "./js/supabase.js": "./js/supabase.js?v=7"
     }
   }
   </script>
@@ -67,7 +67,6 @@
     <button id="new-tour-btn">New</button>
     <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
     <button id="add-booking-btn" disabled>+ New Booking</button>
-    <button id="crews-btn" disabled>⚓ Crews</button>
   </div>
 
   <!-- İstatistik çubuğu -->
@@ -244,24 +243,6 @@
   </div>
 </div>
 
-<!-- ═══════════ EKİPLER MODALI ═══════════ -->
-<div id="crews-modal" class="modal-overlay hidden"
-     role="dialog" aria-modal="true"
-     onclick="if(event.target===this)document.getElementById('crews-modal').classList.add('hidden')">
-  <div class="modal-box" style="max-width:440px">
-    <div class="modal-head">
-      <h2>⚓ Yacht Crews</h2>
-      <button class="modal-x" id="crews-close">✕</button>
-    </div>
-    <div class="modal-body" id="crews-body">
-      <!-- JS ile doldurulur -->
-    </div>
-    <div class="modal-foot">
-      <button type="button" class="btn-cancel" id="crews-cancel">Close</button>
-    </div>
-  </div>
-</div>
-
-<script type="module" src="js/app.js?v=6"></script>
+<script type="module" src="js/app.js?v=7"></script>
 </body>
 </html>

@@ -420,45 +420,6 @@ thead th.col-chk { z-index: 40; left: 0; }
 }
 .opt-back-btn:hover { color: var(--navy); }
 
-/* Ekipler butonu */
-#crews-btn {
-  padding: 5px 11px; background: rgba(255,255,255,.12);
-  border: 1.5px solid rgba(255,255,255,.25); border-radius: 6px;
-  color: #fff; font-family: var(--font); font-size: .72rem; font-weight: 700;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
-}
-#crews-btn:hover { background: rgba(255,255,255,.2); }
-#crews-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-/* Ekipler modal içi — her yat için bir satır */
-.crew-row {
-  display: grid; grid-template-columns: 80px 1fr 1fr auto;
-  gap: 8px; align-items: center;
-  padding: 10px 0; border-bottom: 1px solid var(--gray2);
-}
-.crew-row:last-child { border-bottom: none; }
-.crew-yacht-label {
-  font-size: .78rem; font-weight: 700;
-}
-.crew-row .fg { margin-bottom: 0; }
-.crew-row select {
-  padding: 7px 24px 7px 9px;
-  border: 1.5px solid var(--cream2); border-radius: 7px;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23AAA'/%3E%3C/svg%3E") no-repeat right 7px center;
-  font-family: var(--font); font-size: .82rem; color: var(--navy);
-  appearance: none; outline: none; width: 100%;
-}
-.crew-row select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12); }
-.btn-crew-save {
-  padding: 7px 12px; background: linear-gradient(135deg, var(--gold), var(--gold2));
-  border: none; border-radius: 6px; color: var(--navy);
-  font-size: .75rem; font-weight: 700; cursor: pointer; white-space: nowrap;
-  transition: var(--tr); flex-shrink: 0;
-}
-.btn-crew-save:hover { filter: brightness(1.07); }
-.btn-crew-save:disabled { opacity: .4; cursor: not-allowed; }
-.crew-saved-msg { font-size: .7rem; color: var(--green); font-weight: 600; }
-
 /* Boş durum */
 .empty-row td { text-align: center; padding: 48px !important; color: var(--gray3); font-style: italic; height: auto !important; }
 
