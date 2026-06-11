@@ -190,7 +190,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 .stat-item.total   .stat-num { color: var(--navy); }
 .stat-item.baby    .stat-num { color: #92400e; }
 .stat-item.cnt     .stat-num { color: var(--gray4); }
-.stat-lbl { font-size: .58rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--gray3); margin-top: 2px; }
+.stat-lbl { font-size: .58rem; font-weight: 700; letter-spacing: .07em; color: var(--gray3); margin-top: 2px; }
 
 /* TABLO KABI — kalan yüksekliği kapla, scroll burada */
 .table-scroll {
@@ -334,7 +334,7 @@ thead th.col-chk { z-index: 40; left: 0; }
 .sel-field { display: flex; align-items: center; gap: 5px; }
 .sel-field label {
   color: rgba(255,255,255,.6); font-size: .67rem; font-weight: 700;
-  letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+  letter-spacing: .06em; white-space: nowrap;
 }
 .sel-field select {
   padding: 5px 22px 5px 8px;
