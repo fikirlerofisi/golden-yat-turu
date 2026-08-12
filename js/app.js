@@ -401,8 +401,12 @@ async function handleBookingSubmit(e) {
     transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
   };
 
-  if (!fields.name)    { alert('Name is required.'); btn.disabled = false; return; }
   if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }
+  if (!fields.name || !fields.phone || !fields.source || !fields.payment) {
+    alert('You must fill in the required fields.');
+    btn.disabled = false;
+    return;
+  }
 
   try {
     const dateChanged = bookingDate !== state.date;
