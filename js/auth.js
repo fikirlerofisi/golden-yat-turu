@@ -30,11 +30,15 @@ export async function login(username, password) {
   let email = username;
   if (!email.includes('@')) {
     const { data: found, error: rpcError } = await supabase.rpc('email_for_username', { p_username: username });
-    if (rpcError || !found) throw new Error('Incorrect username or password');
+    if (rpcError) throw new Error('Connection error — please try again in a moment');
+    if (!found)   throw new Error('Incorrect username or password');
     email = found;
   }
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw new Error('Incorrect username or password');
+  if (error) {
+    const isConnectionError = typeof error.status !== 'number';
+    throw new Error(isConnectionError ? 'Connection error — please try again in a moment' : 'Incorrect username or password');
+  }
   currentUser = data.user;
   currentProfile = await fetchProfile(data.user.id);
   return currentProfile;
