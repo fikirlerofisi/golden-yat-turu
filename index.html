@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=19"/>
+  <link rel="stylesheet" href="css/styles.css?v=20"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=19",
-      "./js/auth.js":     "./js/auth.js?v=19",
-      "./js/tours.js":    "./js/tours.js?v=19",
-      "./js/bookings.js": "./js/bookings.js?v=19",
-      "./js/checkin.js":  "./js/checkin.js?v=19",
-      "./js/realtime.js": "./js/realtime.js?v=19",
-      "./js/config.js":   "./js/config.js?v=19",
-      "./js/supabase.js": "./js/supabase.js?v=19"
+      "./js/app.js":      "./js/app.js?v=20",
+      "./js/auth.js":     "./js/auth.js?v=20",
+      "./js/tours.js":    "./js/tours.js?v=20",
+      "./js/bookings.js": "./js/bookings.js?v=20",
+      "./js/checkin.js":  "./js/checkin.js?v=20",
+      "./js/realtime.js": "./js/realtime.js?v=20",
+      "./js/config.js":   "./js/config.js?v=20",
+      "./js/supabase.js": "./js/supabase.js?v=20"
     }
   }
   </script>
@@ -200,6 +200,28 @@
         </div>
       </div>
 
+      <div class="fg hidden" id="f-prv-wrap">
+        <label>PRV Extras</label>
+        <div class="prv-extras-box">
+          <div class="prv-extra-row prv-extra-currency">
+            <span>Currency</span>
+            <select id="f-prv-currency" name="prv_extras_currency">
+              <option value="EUR">EUR</option>
+              <option value="TRY">TRY</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div class="prv-extra-row"><span>Belly Dancer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Belly Dancer" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Live Guitar Or Violin</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Live Guitar Or Violin" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Photographer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Photographer" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Dj</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Dj" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Tour Guide</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Tour Guide" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Menu Options</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Menu Options" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Laser</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Laser" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Swimming</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Swimming" placeholder="0.00"/></div>
+        </div>
+      </div>
+
       <div class="fg">
         <label>Name *</label>
         <input name="name" type="text" placeholder="Full name" required autocomplete="off"/>
@@ -321,6 +343,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=19"></script>
+<script type="module" src="js/app.js?v=20"></script>
 </body>
 </html>

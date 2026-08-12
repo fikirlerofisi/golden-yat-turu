@@ -72,5 +72,7 @@ function sanitize(f) {
     tour_code:  f.tour_code  ?? '',
     unpaid_amount:   f.unpaid_amount   ?? null,
     unpaid_currency: f.unpaid_currency ?? null,
+    prv_extras:          f.prv_extras          ?? {},
+    prv_extras_currency: f.prv_extras_currency ?? 'EUR',
   };
 }

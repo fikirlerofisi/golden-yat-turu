@@ -125,6 +125,9 @@ async function init() {
   el('booking-form').elements['payment'].addEventListener('change', (e) => {
     el('f-unpaid-wrap').classList.toggle('hidden', e.target.value !== 'Unpaid');
   });
+  el('booking-form').elements['tour_code'].addEventListener('change', (e) => {
+    el('f-prv-wrap').classList.toggle('hidden', e.target.value !== 'PRV');
+  });
 
   // Opt modal kapat
   el('new-tour-close').addEventListener('click', closeOptModal);
@@ -435,8 +438,13 @@ function openBookingModal(bookingId) {
   f.elements['transfer_note'].value = b?.transfer_note || '';
   f.elements['unpaid_amount'].value   = b?.unpaid_amount ?? '';
   f.elements['unpaid_currency'].value = b?.unpaid_currency || 'EUR';
+  f.elements['prv_extras_currency'].value = b?.prv_extras_currency || 'EUR';
+  f.querySelectorAll('.prv-extra-input').forEach(inp => {
+    inp.value = b?.prv_extras?.[inp.dataset.item] ?? '';
+  });
   el('f-transfer-note-wrap').classList.toggle('hidden', !f.elements['transfer'].checked);
   el('f-unpaid-wrap').classList.toggle('hidden', f.elements['payment'].value !== 'Unpaid');
+  el('f-prv-wrap').classList.toggle('hidden', f.elements['tour_code'].value !== 'PRV');
   el('booking-modal').classList.remove('hidden');
   setTimeout(() => f.elements['name'].focus(), 60);
 }
@@ -467,6 +475,8 @@ async function handleBookingSubmit(e) {
     transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
     unpaid_amount:   f.elements['payment'].value === 'Unpaid' ? (parseFloat(f.elements['unpaid_amount'].value) || null) : null,
     unpaid_currency: f.elements['payment'].value === 'Unpaid' ? f.elements['unpaid_currency'].value : null,
+    prv_extras:          f.elements['tour_code'].value === 'PRV' ? collectPrvExtras(f) : {},
+    prv_extras_currency: f.elements['tour_code'].value === 'PRV' ? f.elements['prv_extras_currency'].value : 'EUR',
   };
 
   if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }
@@ -507,6 +517,16 @@ async function handleBookingSubmit(e) {
   } finally {
     btn.disabled = false;
   }
+}
+
+// ── PRV ekstra hizmet formundan doldurulmuş kalemleri topla ────
+function collectPrvExtras(f) {
+  const extras = {};
+  f.querySelectorAll('.prv-extra-input').forEach(inp => {
+    const val = inp.value.trim();
+    if (val !== '') extras[inp.dataset.item] = parseFloat(val);
+  });
+  return extras;
 }
 
 // ── Belirli bir tarih için tur bul, yoksa oluştur ─────────────

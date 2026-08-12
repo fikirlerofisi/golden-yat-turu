@@ -162,3 +162,11 @@ alter table public.yacht_crews
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists unpaid_amount numeric;
 alter table public.bookings add column if not exists unpaid_currency text;
+
+-- ── 12. Migrasyon: PRV ekstra hizmetler (2026-08) ────────────
+-- Tour=PRV seçilince açılan ekstra hizmet + ücret alanları
+-- (Belly Dancer, DJ, Photographer, vb.) tek bir JSONB kolonunda
+-- tutulur; ortak bir para birimi de ayrı kolonda saklanır.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists prv_extras jsonb not null default '{}'::jsonb;
+alter table public.bookings add column if not exists prv_extras_currency text not null default 'EUR';
