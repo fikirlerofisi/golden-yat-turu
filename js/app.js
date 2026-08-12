@@ -679,16 +679,30 @@ async function applySelection() {
   }
 }
 
+// ── Bugün rezervasyonlara atanmış (veya daha önce ekip kaydedilmiş) yatlar ──
+function usedYachtsToday() {
+  const fromBookings = state.bookings.map(b => b.yacht).filter(Boolean);
+  const fromCrews     = Object.keys(state.crews);
+  return [...new Set([...fromBookings, ...fromCrews])].sort();
+}
+
 // ── Ekip (Crews) modalı ────────────────────────────────────────
 function openCrewsModal() {
   const guides = ['', ...OPTIONS.tourGuides.filter(x => x)];
   const staffList = OPTIONS.staffList.filter(x => x);
+  const yachts = usedYachtsToday();
 
   const guideOpts = (sel) => guides.map(g =>
     `<option value="${esc(g)}" ${g === sel ? 'selected' : ''}>${g || '—'}</option>`
   ).join('');
 
-  el('crews-body').innerHTML = OPTIONS.yachts.map(y => {
+  if (yachts.length === 0) {
+    el('crews-body').innerHTML = `<p style="color:var(--gray3);text-align:center;padding:20px 0">No yacht assigned yet — assign a yacht to a booking first.</p>`;
+    el('crews-modal').classList.remove('hidden');
+    return;
+  }
+
+  el('crews-body').innerHTML = yachts.map(y => {
     const crew  = state.crews[y] || {};
     const staff = crew.staff || [];
     const boxes = staffList.map(s =>
