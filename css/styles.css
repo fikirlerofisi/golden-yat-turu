@@ -97,6 +97,68 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 #logout-btn { padding: 5px 12px; border: 1.5px solid rgba(201,151,43,.4); border-radius: 20px; background: transparent; color: var(--gold-pale); font-family: var(--font); font-size: .72rem; font-weight: 500; cursor: pointer; transition: var(--tr); }
 #logout-btn:hover { border-color: var(--gold); color: var(--gold2); }
 
+/* Sidebar açma/kapama düğmesi (sadece dar ekranda görünür) */
+.sidebar-toggle {
+  display: none; flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 6px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font-size: 1rem; cursor: pointer;
+}
+
+/* ── SOL MENÜ + İÇERİK ── */
+.app-body { flex: 1; min-height: 0; display: flex; overflow: hidden; }
+
+.sidebar {
+  flex-shrink: 0; width: 190px; overflow-y: auto;
+  background: var(--navy2); border-right: 1px solid rgba(201,151,43,.18);
+}
+.sidebar-nav { display: flex; flex-direction: column; padding: 12px 8px; gap: 2px; }
+.sidebar-group-label {
+  margin: 10px 8px 2px; font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+}
+.sidebar-link {
+  display: block; width: 100%; text-align: left;
+  padding: 9px 10px; border: none; border-radius: 7px;
+  background: transparent; color: rgba(255,255,255,.8);
+  font-family: var(--font); font-size: .82rem; font-weight: 500;
+  cursor: pointer; transition: var(--tr);
+}
+.sidebar-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+.sidebar-link.active { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: var(--navy); font-weight: 700; }
+
+.main-content { flex: 1; min-width: 0; overflow: hidden; display: flex; flex-direction: column; }
+
+.view-section { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.view-placeholder {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; text-align: center; color: var(--gray3); padding: 24px;
+}
+.view-placeholder h2 { font-size: 1.1rem; color: var(--navy); }
+.view-placeholder p { font-size: .85rem; }
+
+.tourcode-banner {
+  flex-shrink: 0; padding: 7px 16px; background: rgba(201,151,43,.12);
+  border-bottom: 1px solid rgba(201,151,43,.25);
+  color: var(--gold-dk, var(--navy)); font-size: .82rem; font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .sidebar-toggle { display: block; }
+  .app-body { position: relative; }
+  .sidebar {
+    position: absolute; top: 0; left: 0; bottom: 0; z-index: 200;
+    transform: translateX(-100%); transition: transform var(--tr);
+    box-shadow: 2px 0 12px rgba(0,0,0,.3);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop {
+    position: absolute; inset: 0; z-index: 190;
+    background: rgba(0,0,0,.4);
+  }
+}
+
 /* KONTROL ŞERIDI — tam olarak var(--ctrlbar-h) yüksekliğinde */
 .ctrl-bar {
   flex-shrink: 0;

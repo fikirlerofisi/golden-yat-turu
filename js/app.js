@@ -19,8 +19,17 @@ const state = {
   crews:     {},   // { 'River': {tour_guide, staff}, ... }
   search:    '',
   editingId: null,
+  view:            'dashboard', // 'dashboard' | 'tourlist' | 'unpaid' | 'alcohol'
+  tourCodeFilter:  null,        // null | 'sunset' | 'TA' | 'TN' | 'PRV'
 };
 const selected = new Set();
+const SUNSET_CODES = ['T1', 'TD', 'TB'];
+const TOURCODE_META = {
+  sunset: { label: '🌅 Sunset' },
+  TA:     { label: 'TA' },
+  TN:     { label: 'TN' },
+  PRV:    { label: 'PRV — Private Tour' },
+};
 
 // ── DOM kısayolları ────────────────────────────────────────────
 const el = (id) => document.getElementById(id);
@@ -62,6 +71,19 @@ async function init() {
 
   // Logout
   el('logout-btn').addEventListener('click', () => logout());
+
+  // Sol menü (sidebar)
+  document.querySelectorAll('.sidebar-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      showView(btn.dataset.view, btn.dataset.filter || null);
+      closeSidebarMobile();
+    });
+  });
+  el('sidebar-toggle').addEventListener('click', () => {
+    el('sidebar').classList.toggle('open');
+    el('sidebar-backdrop').classList.toggle('hidden');
+  });
+  el('sidebar-backdrop').addEventListener('click', closeSidebarMobile);
 
   // Tarih değişimi
   el('date-input').addEventListener('change', (e) => {
@@ -120,7 +142,37 @@ async function showApp() {
   const { currentProfile } = await import('./auth.js');
   el('user-name').textContent = currentProfile?.full_name || '';
   el('date-input').value = state.date;
+  showView('dashboard');
   await loadTours();
+}
+
+// ── Sol menü / sayfa geçişi ────────────────────────────────────
+function showView(view, filter = null) {
+  state.view = view;
+  state.tourCodeFilter = view === 'tourlist' ? filter : null;
+
+  document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+  el('view-' + view).classList.remove('hidden');
+
+  document.querySelectorAll('.sidebar-link').forEach(btn => {
+    const btnFilter = btn.dataset.filter || null;
+    btn.classList.toggle('active', btn.dataset.view === view && btnFilter === state.tourCodeFilter);
+  });
+
+  const banner = el('tourcode-banner');
+  if (view === 'tourlist' && filter) {
+    banner.textContent = TOURCODE_META[filter]?.label || filter;
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  if (view === 'tourlist') { renderTable(); renderStats(); }
+}
+
+function closeSidebarMobile() {
+  el('sidebar').classList.remove('open');
+  el('sidebar-backdrop').classList.add('hidden');
 }
 
 // ── Turlar ─────────────────────────────────────────────────────
@@ -203,11 +255,19 @@ async function fetchOne(id) {
 
 // ── Tablo render ───────────────────────────────────────────────
 function filtered() {
-  if (!state.search) return state.bookings;
-  return state.bookings.filter(b =>
-    b.name.toLowerCase().includes(state.search) ||
-    (b.phone || '').toLowerCase().includes(state.search)
-  );
+  let data = state.bookings;
+  if (state.tourCodeFilter === 'sunset') {
+    data = data.filter(b => SUNSET_CODES.includes(b.tour_code));
+  } else if (state.tourCodeFilter) {
+    data = data.filter(b => b.tour_code === state.tourCodeFilter);
+  }
+  if (state.search) {
+    data = data.filter(b =>
+      b.name.toLowerCase().includes(state.search) ||
+      (b.phone || '').toLowerCase().includes(state.search)
+    );
+  }
+  return data;
 }
 
 function renderTable() {

@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=18"/>
+  <link rel="stylesheet" href="css/styles.css?v=19"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=18",
-      "./js/auth.js":     "./js/auth.js?v=18",
-      "./js/tours.js":    "./js/tours.js?v=18",
-      "./js/bookings.js": "./js/bookings.js?v=18",
-      "./js/checkin.js":  "./js/checkin.js?v=18",
-      "./js/realtime.js": "./js/realtime.js?v=18",
-      "./js/config.js":   "./js/config.js?v=18",
-      "./js/supabase.js": "./js/supabase.js?v=18"
+      "./js/app.js":      "./js/app.js?v=19",
+      "./js/auth.js":     "./js/auth.js?v=19",
+      "./js/tours.js":    "./js/tours.js?v=19",
+      "./js/bookings.js": "./js/bookings.js?v=19",
+      "./js/checkin.js":  "./js/checkin.js?v=19",
+      "./js/realtime.js": "./js/realtime.js?v=19",
+      "./js/config.js":   "./js/config.js?v=19",
+      "./js/supabase.js": "./js/supabase.js?v=19"
     }
   }
   </script>
@@ -52,6 +52,7 @@
 
   <!-- Topbar -->
   <header class="topbar">
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Menu">☰</button>
     <div class="brand">
       <img src="Logo/GoldenCity.png" alt="Golden City Tours" class="topbar-logo"/>
     </div>
@@ -61,64 +62,113 @@
     </div>
   </header>
 
-  <!-- Kontrol şeridi -->
-  <div class="ctrl-bar">
-    <input id="date-input" type="date" aria-label="Select date"/>
-    <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
-    <button id="add-booking-btn" disabled>+ New Booking</button>
-    <button id="crews-btn" disabled>⚓ Crews</button>
-    <button id="new-tour-btn">New</button>
-  </div>
+  <div class="app-body">
+    <!-- Sol menü -->
+    <div class="sidebar-backdrop hidden" id="sidebar-backdrop"></div>
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <button class="sidebar-link" data-view="dashboard">🏠 Dashboard</button>
+        <div class="sidebar-group-label">Tours</div>
+        <button class="sidebar-link" data-view="tourlist" data-filter="">📋 Tour List</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="sunset">🌅 Sunset</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="TA">TA</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="TN">TN</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="PRV">PRV</button>
+        <div class="sidebar-group-label">Finance</div>
+        <button class="sidebar-link" data-view="unpaid">💳 Unpaid List</button>
+        <button class="sidebar-link" data-view="alcohol">🍷 Alcohol Sales</button>
+      </nav>
+    </aside>
 
-  <!-- İstatistik çubuğu -->
-  <div id="stats-bar"></div>
+    <!-- Sayfa içerikleri -->
+    <main class="main-content">
 
-  <!-- Seçim aksiyon çubuğu (seçim olunca görünür) -->
-  <div class="sel-bar hidden" id="sel-bar">
-    <div class="sel-plus">+</div>
-    <span class="sel-count" id="sel-count">0 selected</span>
-    <span class="sel-sep">|</span>
-    <div class="sel-field">
-      <label>Yacht</label>
-      <select id="sel-yacht">
-        <option value="">— Select —</option>
-        <option>River</option><option>River Storm</option>
-      </select>
-    </div>
-    <button class="btn-sel-apply" id="btn-sel-apply" disabled>Apply</button>
-    <button class="btn-sel-clear" id="btn-sel-clear">Clear</button>
-  </div>
+      <section id="view-dashboard" class="view-section hidden">
+        <div class="view-placeholder">
+          <h2>🏠 Dashboard</h2>
+          <p>Content coming soon — we'll design this together.</p>
+        </div>
+      </section>
 
-  <!-- Tablo (scroll kapsayıcısı içinde) -->
-  <div class="table-scroll">
-    <table class="main-table">
-      <thead>
-        <tr>
-          <th class="col-chk">
-            <label class="chk-all-lbl" title="Select arrived not yet assigned to a yacht">
-              <input type="checkbox" id="chk-all-arrived"/> Check
-            </label>
-          </th>
-          <th>Tour</th>
-          <th class="col-name">Name</th>
-          <th>Pax</th>
-          <th>Source</th>
-          <th class="col-yacht">Yacht</th>
-          <th>Phone</th>
-          <th>Payment</th>
-          <th>Transfer</th>
-          <th>Tour Guide</th>
-          <th>Crew</th>
-          <th>Remarks</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>
-      </tbody>
-      <tfoot id="tfoot"></tfoot>
-    </table>
-  </div>
+      <section id="view-tourlist" class="view-section hidden">
+        <div class="tourcode-banner hidden" id="tourcode-banner"></div>
+
+        <!-- Kontrol şeridi -->
+        <div class="ctrl-bar">
+          <input id="date-input" type="date" aria-label="Select date"/>
+          <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
+          <button id="add-booking-btn" disabled>+ New Booking</button>
+          <button id="crews-btn" disabled>⚓ Crews</button>
+          <button id="new-tour-btn">New</button>
+        </div>
+
+        <!-- İstatistik çubuğu -->
+        <div id="stats-bar"></div>
+
+        <!-- Seçim aksiyon çubuğu (seçim olunca görünür) -->
+        <div class="sel-bar hidden" id="sel-bar">
+          <div class="sel-plus">+</div>
+          <span class="sel-count" id="sel-count">0 selected</span>
+          <span class="sel-sep">|</span>
+          <div class="sel-field">
+            <label>Yacht</label>
+            <select id="sel-yacht">
+              <option value="">— Select —</option>
+              <option>River</option><option>River Storm</option>
+            </select>
+          </div>
+          <button class="btn-sel-apply" id="btn-sel-apply" disabled>Apply</button>
+          <button class="btn-sel-clear" id="btn-sel-clear">Clear</button>
+        </div>
+
+        <!-- Tablo (scroll kapsayıcısı içinde) -->
+        <div class="table-scroll">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th class="col-chk">
+                  <label class="chk-all-lbl" title="Select arrived not yet assigned to a yacht">
+                    <input type="checkbox" id="chk-all-arrived"/> Check
+                  </label>
+                </th>
+                <th>Tour</th>
+                <th class="col-name">Name</th>
+                <th>Pax</th>
+                <th>Source</th>
+                <th class="col-yacht">Yacht</th>
+                <th>Phone</th>
+                <th>Payment</th>
+                <th>Transfer</th>
+                <th>Tour Guide</th>
+                <th>Crew</th>
+                <th>Remarks</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>
+            </tbody>
+            <tfoot id="tfoot"></tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-unpaid" class="view-section hidden">
+        <div class="view-placeholder">
+          <h2>💳 Unpaid List</h2>
+          <p>Content coming soon — we'll design this together.</p>
+        </div>
+      </section>
+
+      <section id="view-alcohol" class="view-section hidden">
+        <div class="view-placeholder">
+          <h2>🍷 Alcohol Sales</h2>
+          <p>Content coming soon — we'll design this together.</p>
+        </div>
+      </section>
+
+    </main>
+  </div><!-- /app-body -->
 
 </div><!-- /app-screen -->
 
@@ -271,6 +321,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=18"></script>
+<script type="module" src="js/app.js?v=19"></script>
 </body>
 </html>
