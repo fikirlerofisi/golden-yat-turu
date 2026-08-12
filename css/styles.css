@@ -128,6 +128,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 }
 #tour-selector option { background: var(--navy2); }
 #new-tour-btn {
+  margin-left: auto;
   padding: 5px 12px; background: linear-gradient(135deg,var(--gold),var(--gold2));
   border: none; border-radius: 6px; color: var(--navy);
   font-family: var(--font); font-size: .78rem; font-weight: 700;
