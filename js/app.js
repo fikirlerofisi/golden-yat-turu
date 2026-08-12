@@ -100,6 +100,9 @@ async function init() {
     el('f-transfer-note-wrap').classList.toggle('hidden', !e.target.checked);
     if (e.target.checked) el('booking-form').elements['transfer_note'].focus();
   });
+  el('booking-form').elements['payment'].addEventListener('change', (e) => {
+    el('f-unpaid-wrap').classList.toggle('hidden', e.target.value !== 'Unpaid');
+  });
 
   // Opt modal kapat
   el('new-tour-close').addEventListener('click', closeOptModal);
@@ -255,7 +258,7 @@ function renderTable() {
       <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
-      <td>${payBadge(b.payment)}</td>
+      <td>${payBadge(b.payment)}${b.payment === 'Unpaid' && b.unpaid_amount ? ` <span class="unpaid-amt">${b.unpaid_amount} ${esc(b.unpaid_currency || 'EUR')}</span>` : ''}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
@@ -370,7 +373,10 @@ function openBookingModal(bookingId) {
   f.elements['remarks'].value    = b?.remarks   || '';
   f.elements['transfer'].checked = b?.transfer  || false;
   f.elements['transfer_note'].value = b?.transfer_note || '';
+  f.elements['unpaid_amount'].value   = b?.unpaid_amount ?? '';
+  f.elements['unpaid_currency'].value = b?.unpaid_currency || 'EUR';
   el('f-transfer-note-wrap').classList.toggle('hidden', !f.elements['transfer'].checked);
+  el('f-unpaid-wrap').classList.toggle('hidden', f.elements['payment'].value !== 'Unpaid');
   el('booking-modal').classList.remove('hidden');
   setTimeout(() => f.elements['name'].focus(), 60);
 }
@@ -399,6 +405,8 @@ async function handleBookingSubmit(e) {
     remarks:   f.elements['remarks'].value.trim(),
     transfer:  f.elements['transfer'].checked,
     transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
+    unpaid_amount:   f.elements['payment'].value === 'Unpaid' ? (parseFloat(f.elements['unpaid_amount'].value) || null) : null,
+    unpaid_currency: f.elements['payment'].value === 'Unpaid' ? f.elements['unpaid_currency'].value : null,
   };
 
   if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }

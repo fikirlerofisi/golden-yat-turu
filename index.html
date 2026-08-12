@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=17"/>
+  <link rel="stylesheet" href="css/styles.css?v=18"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=17",
-      "./js/auth.js":     "./js/auth.js?v=17",
-      "./js/tours.js":    "./js/tours.js?v=17",
-      "./js/bookings.js": "./js/bookings.js?v=17",
-      "./js/checkin.js":  "./js/checkin.js?v=17",
-      "./js/realtime.js": "./js/realtime.js?v=17",
-      "./js/config.js":   "./js/config.js?v=17",
-      "./js/supabase.js": "./js/supabase.js?v=17"
+      "./js/app.js":      "./js/app.js?v=18",
+      "./js/auth.js":     "./js/auth.js?v=18",
+      "./js/tours.js":    "./js/tours.js?v=18",
+      "./js/bookings.js": "./js/bookings.js?v=18",
+      "./js/checkin.js":  "./js/checkin.js?v=18",
+      "./js/realtime.js": "./js/realtime.js?v=18",
+      "./js/config.js":   "./js/config.js?v=18",
+      "./js/supabase.js": "./js/supabase.js?v=18"
     }
   }
   </script>
@@ -171,6 +171,21 @@
         </div>
       </div>
 
+      <div class="frow hidden" id="f-unpaid-wrap">
+        <div class="fg">
+          <label>Amount</label>
+          <input name="unpaid_amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"/>
+        </div>
+        <div class="fg">
+          <label>Currency</label>
+          <select name="unpaid_currency">
+            <option value="EUR">EUR</option>
+            <option value="TRY">TRY</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+
       <div class="frow">
         <div class="fg">
           <label>Remarks</label>
@@ -256,6 +271,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=17"></script>
+<script type="module" src="js/app.js?v=18"></script>
 </body>
 </html>

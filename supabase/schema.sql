@@ -156,3 +156,9 @@ alter table public.yacht_crews
   alter column staff type text[] using (
     case when staff is null or btrim(staff)='' then '{}'::text[] else array[staff] end),
   alter column staff set default '{}';
+
+-- ── 11. Migrasyon: unpaid tutar + para birimi (2026-08) ──────
+-- Payment "Unpaid" seçilince ne kadar borç kaldığını kaydetmek için.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists unpaid_amount numeric;
+alter table public.bookings add column if not exists unpaid_currency text;

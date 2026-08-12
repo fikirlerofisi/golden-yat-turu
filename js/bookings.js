@@ -70,5 +70,7 @@ function sanitize(f) {
     transfer:   !!f.transfer,
     transfer_note: f.transfer_note ?? '',
     tour_code:  f.tour_code  ?? '',
+    unpaid_amount:   f.unpaid_amount   ?? null,
+    unpaid_currency: f.unpaid_currency ?? null,
   };
 }
