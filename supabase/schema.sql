@@ -170,3 +170,10 @@ alter table public.bookings add column if not exists unpaid_currency text;
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists prv_extras jsonb not null default '{}'::jsonb;
 alter table public.bookings add column if not exists prv_extras_currency text not null default 'EUR';
+
+-- ── 13. Migrasyon: PRV başlangıç saati + süre (2026-08) ──────
+-- Tour=PRV seçilince açılan Time (başlangıç saati) ve Duration
+-- (toplam saat) alanları.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists prv_start_time time;
+alter table public.bookings add column if not exists prv_duration_hours numeric;

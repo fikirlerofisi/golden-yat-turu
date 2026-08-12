@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=21"/>
+  <link rel="stylesheet" href="css/styles.css?v=22"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=21",
-      "./js/auth.js":     "./js/auth.js?v=21",
-      "./js/tours.js":    "./js/tours.js?v=21",
-      "./js/bookings.js": "./js/bookings.js?v=21",
-      "./js/checkin.js":  "./js/checkin.js?v=21",
-      "./js/realtime.js": "./js/realtime.js?v=21",
-      "./js/config.js":   "./js/config.js?v=21",
-      "./js/supabase.js": "./js/supabase.js?v=21"
+      "./js/app.js":      "./js/app.js?v=22",
+      "./js/auth.js":     "./js/auth.js?v=22",
+      "./js/tours.js":    "./js/tours.js?v=22",
+      "./js/bookings.js": "./js/bookings.js?v=22",
+      "./js/checkin.js":  "./js/checkin.js?v=22",
+      "./js/realtime.js": "./js/realtime.js?v=22",
+      "./js/config.js":   "./js/config.js?v=22",
+      "./js/supabase.js": "./js/supabase.js?v=22"
     }
   }
   </script>
@@ -247,6 +247,17 @@
         </div>
       </div>
 
+      <div class="frow hidden prv-only" id="f-prv-time-wrap">
+        <div class="fg">
+          <label>Time</label>
+          <input name="prv_start_time" type="time"/>
+        </div>
+        <div class="fg">
+          <label>Duration (hours)</label>
+          <input name="prv_duration_hours" type="number" min="0" step="0.5" placeholder="e.g. 3"/>
+        </div>
+      </div>
+
       <label class="chk-label">
         <input type="checkbox" name="transfer"/>
         <span>Transfer</span>
@@ -257,7 +268,7 @@
         <input name="transfer_note" type="text" placeholder="Pickup point, time, etc." autocomplete="off"/>
       </div>
 
-      <div class="fg hidden" id="f-prv-wrap">
+      <div class="fg hidden prv-only" id="f-prv-wrap">
         <label>PRV Extras</label>
         <div class="prv-extras-box">
           <div class="prv-extra-row prv-extra-currency">
@@ -343,6 +354,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=21"></script>
+<script type="module" src="js/app.js?v=22"></script>
 </body>
 </html>

@@ -74,5 +74,7 @@ function sanitize(f) {
     unpaid_currency: f.unpaid_currency ?? null,
     prv_extras:          f.prv_extras          ?? {},
     prv_extras_currency: f.prv_extras_currency ?? 'EUR',
+    prv_start_time:     f.prv_start_time     ?? null,
+    prv_duration_hours: f.prv_duration_hours ?? null,
   };
 }

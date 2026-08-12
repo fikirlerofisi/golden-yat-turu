@@ -126,7 +126,7 @@ async function init() {
     el('f-unpaid-wrap').classList.toggle('hidden', e.target.value !== 'Unpaid');
   });
   el('booking-form').elements['tour_code'].addEventListener('change', (e) => {
-    el('f-prv-wrap').classList.toggle('hidden', e.target.value !== 'PRV');
+    togglePrvFields(e.target.value === 'PRV');
   });
 
   // Opt modal kapat
@@ -439,12 +439,14 @@ function openBookingModal(bookingId) {
   f.elements['unpaid_amount'].value   = b?.unpaid_amount ?? '';
   f.elements['unpaid_currency'].value = b?.unpaid_currency || 'EUR';
   f.elements['prv_extras_currency'].value = b?.prv_extras_currency || 'EUR';
+  f.elements['prv_start_time'].value      = b?.prv_start_time      || '';
+  f.elements['prv_duration_hours'].value  = b?.prv_duration_hours  ?? '';
   f.querySelectorAll('.prv-extra-input').forEach(inp => {
     inp.value = b?.prv_extras?.[inp.dataset.item] ?? '';
   });
   el('f-transfer-note-wrap').classList.toggle('hidden', !f.elements['transfer'].checked);
   el('f-unpaid-wrap').classList.toggle('hidden', f.elements['payment'].value !== 'Unpaid');
-  el('f-prv-wrap').classList.toggle('hidden', f.elements['tour_code'].value !== 'PRV');
+  togglePrvFields(f.elements['tour_code'].value === 'PRV');
   el('booking-modal').classList.remove('hidden');
   setTimeout(() => f.elements['name'].focus(), 60);
 }
@@ -477,6 +479,8 @@ async function handleBookingSubmit(e) {
     unpaid_currency: f.elements['payment'].value === 'Unpaid' ? f.elements['unpaid_currency'].value : null,
     prv_extras:          f.elements['tour_code'].value === 'PRV' ? collectPrvExtras(f) : {},
     prv_extras_currency: f.elements['tour_code'].value === 'PRV' ? f.elements['prv_extras_currency'].value : 'EUR',
+    prv_start_time:     f.elements['tour_code'].value === 'PRV' ? (f.elements['prv_start_time'].value || null) : null,
+    prv_duration_hours: f.elements['tour_code'].value === 'PRV' ? (parseFloat(f.elements['prv_duration_hours'].value) || null) : null,
   };
 
   if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }
@@ -517,6 +521,11 @@ async function handleBookingSubmit(e) {
   } finally {
     btn.disabled = false;
   }
+}
+
+// ── PRV'ye özel alanları göster/gizle ──────────────────────────
+function togglePrvFields(isPrv) {
+  document.querySelectorAll('.prv-only').forEach(el => el.classList.toggle('hidden', !isPrv));
 }
 
 // ── PRV ekstra hizmet formundan doldurulmuş kalemleri topla ────
