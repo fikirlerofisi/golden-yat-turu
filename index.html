@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=13"/>
+  <link rel="stylesheet" href="css/styles.css?v=14"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=13",
-      "./js/auth.js":     "./js/auth.js?v=13",
-      "./js/tours.js":    "./js/tours.js?v=13",
-      "./js/bookings.js": "./js/bookings.js?v=13",
-      "./js/checkin.js":  "./js/checkin.js?v=13",
-      "./js/realtime.js": "./js/realtime.js?v=13",
-      "./js/config.js":   "./js/config.js?v=13",
-      "./js/supabase.js": "./js/supabase.js?v=13"
+      "./js/app.js":      "./js/app.js?v=14",
+      "./js/auth.js":     "./js/auth.js?v=14",
+      "./js/tours.js":    "./js/tours.js?v=14",
+      "./js/bookings.js": "./js/bookings.js?v=14",
+      "./js/checkin.js":  "./js/checkin.js?v=14",
+      "./js/realtime.js": "./js/realtime.js?v=14",
+      "./js/config.js":   "./js/config.js?v=14",
+      "./js/supabase.js": "./js/supabase.js?v=14"
     }
   }
   </script>
@@ -134,7 +134,11 @@
     <form id="booking-form" novalidate>
     <div class="modal-body">
 
-      <div class="frow">
+      <div class="frow3">
+        <div class="fg">
+          <label>Date</label>
+          <input name="booking_date" type="date" required/>
+        </div>
         <div class="fg">
           <label>Tour</label>
           <select id="f-tour" name="tour_code">
@@ -215,6 +219,7 @@
           <button class="opt-cat-btn" data-cat="yacht">⛵ Yacht</button>
           <button class="opt-cat-btn" data-cat="tour_guide">🧭 Tour Guide</button>
           <button class="opt-cat-btn" data-cat="tour_code">📋 Tour</button>
+          <button class="opt-cat-btn" data-cat="source">🌐 Source</button>
         </div>
       </div>
 
@@ -252,6 +257,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=13"></script>
+<script type="module" src="js/app.js?v=14"></script>
 </body>
 </html>

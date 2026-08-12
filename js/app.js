@@ -359,6 +359,7 @@ function openBookingModal(bookingId) {
   const b = bookingId ? state.bookings.find(x => x.id === bookingId) : null;
   el('modal-title').textContent = b ? 'Edit Booking' : 'Booking';
   const f = el('booking-form');
+  f.elements['booking_date'].value = state.date;
   f.elements['name'].value       = b?.name      || '';
   f.elements['pax'].value        = b?.pax       || 1;
   f.elements['baby'].value       = b?.baby      || 0;
@@ -386,6 +387,7 @@ async function handleBookingSubmit(e) {
   const btn = f.querySelector('button[type=submit]');
   btn.disabled = true;
 
+  const bookingDate = f.elements['booking_date'].value;
   const fields = {
     name:      f.elements['name'].value.trim(),
     pax:       parseInt(f.elements['pax'].value)  || 1,
@@ -399,16 +401,32 @@ async function handleBookingSubmit(e) {
     transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
   };
 
-  if (!fields.name) { alert('Name is required.'); btn.disabled = false; return; }
+  if (!fields.name)    { alert('Name is required.'); btn.disabled = false; return; }
+  if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }
 
   try {
+    const dateChanged = bookingDate !== state.date;
+    let targetTourId = state.tourId;
+    if (dateChanged) {
+      const tour = await getOrCreateTourForDate(bookingDate);
+      targetTourId = tour.id;
+    }
+
     if (state.editingId) {
+      if (dateChanged) fields.tour_id = targetTourId;
       const updated = await updateBooking(state.editingId, fields);
-      const i = state.bookings.findIndex(x => x.id === state.editingId);
-      if (i >= 0) state.bookings[i] = updated;
+      if (dateChanged) {
+        // Farklı bir tarihe taşındı — mevcut görünümden kaldır
+        state.bookings = state.bookings.filter(x => x.id !== state.editingId);
+        alert(`Booking moved to ${bookingDate}.`);
+      } else {
+        const i = state.bookings.findIndex(x => x.id === state.editingId);
+        if (i >= 0) state.bookings[i] = updated;
+      }
     } else {
-      const created = await createBooking(state.tourId, fields);
-      state.bookings.push(created);
+      const created = await createBooking(targetTourId, fields);
+      if (dateChanged) alert(`Booking created on ${bookingDate}.`);
+      else             state.bookings.push(created);
     }
     closeBookingModal();
     renderTable(); renderStats();
@@ -419,16 +437,25 @@ async function handleBookingSubmit(e) {
   }
 }
 
-// ── Otomatik tur oluştur (tarih seçilince arka planda) ───────────
-async function autoCreateTour() {
+// ── Belirli bir tarih için tur bul, yoksa oluştur ─────────────
+async function getOrCreateTourForDate(dateStr) {
+  let tours = await getToursByDate(dateStr);
+  if (tours.length > 0) return tours[0];
   try {
     const { currentUser } = await import('./auth.js');
     await supabase.from('tours').insert({
-      tour_date: state.date,
-      code:      state.date,
+      tour_date: dateStr,
+      code:      dateStr,
       created_by: currentUser?.id,
     });
   } catch { /* unique constraint: zaten var, sorun değil */ }
+  tours = await getToursByDate(dateStr);
+  return tours[0];
+}
+
+// ── Otomatik tur oluştur (tarih seçilince arka planda) ───────────
+async function autoCreateTour() {
+  await getOrCreateTourForDate(state.date);
 }
 
 // ── Seçenek yönetimi (New modal) ──────────────────────────────
@@ -438,6 +465,7 @@ const OPT_META = {
   yacht:      { label: '⛵ Yacht',      key: 'yachts',     defaults: [] },
   tour_guide: { label: '🧭 Tour Guide', key: 'tourGuides', defaults: [] },
   tour_code:  { label: '📋 Tour',       key: 'tourCodes',  defaults: [] },
+  source:     { label: '🌐 Source',     key: 'sources',    defaults: [] },
 };
 
 async function loadAppOptions() {
@@ -452,6 +480,7 @@ async function loadAppOptions() {
     OPT_META.yacht.defaults      = [...OPTIONS.yachts];
     OPT_META.tour_guide.defaults = OPTIONS.tourGuides.filter(x => x);
     OPT_META.tour_code.defaults  = [...OPTIONS.tourCodes];
+    OPT_META.source.defaults     = OPTIONS.sources.filter(x => x);
   } catch {}
 }
 

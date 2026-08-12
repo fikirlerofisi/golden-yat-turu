@@ -28,6 +28,7 @@ export async function updateBooking(bookingId, fields) {
   // Tüm alanlar varsa sanitize et, sadece birkaç alan varsa olduğu gibi gönder
   const isFullForm = 'name' in fields;
   const patch = isFullForm ? sanitize(fields) : fields;
+  if (fields.tour_id) patch.tour_id = fields.tour_id;
   const { data, error } = await supabase
     .from('bookings')
     .update(patch)
@@ -59,7 +60,6 @@ export function calcStats(bookings) {
 // ── Temizleyici ───────────────────────────────────────────────
 function sanitize(f) {
   return {
-    yacht:      f.yacht      ?? '',
     name:       f.name       ?? '',
     pax:        parseInt(f.pax)  || 1,
     baby:       parseInt(f.baby) || 0,

@@ -374,7 +374,7 @@ thead th.col-chk { z-index: 40; left: 0; }
 
 /* ── Seçenek yönetimi (New) modal ── */
 .opt-cat-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;
 }
 .opt-cat-btn {
   padding: 16px 8px; border: 2px solid var(--cream2); border-radius: 10px;
