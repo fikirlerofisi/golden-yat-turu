@@ -23,6 +23,11 @@ const state = {
   tourCodeFilter:  null,        // null | 'sunset' | 'TA' | 'TN' | 'PRV'
 };
 const selected = new Set();
+// Dinamik eklemeler daha yüklenmeden önceki sabit Source listesinin anlık
+// görüntüsü — "Office" ve New menüsünden sonradan eklenecek kaynaklar hariç,
+// bunlardan biri seçilince Payment otomatik "Received" olur.
+const RECEIVED_DEFAULT_SOURCES = OPTIONS.sources.filter(s => s && s !== 'Office');
+const isReceivedDefaultSource = (source) => RECEIVED_DEFAULT_SOURCES.includes(source);
 const SUNSET_CODES = ['T1', 'TD', 'TB'];
 const TOURCODE_META = {
   sunset: { label: '🌅 Sunset' },
@@ -129,7 +134,21 @@ async function init() {
     if (e.target.checked) el('booking-form').elements['transfer_note'].focus();
   });
   el('booking-form').elements['payment'].addEventListener('change', (e) => {
+    const f = el('booking-form');
+    if (e.target.value === 'Unpaid' && isReceivedDefaultSource(f.elements['source'].value)) {
+      if (!confirm('Do you approve?')) {
+        e.target.value = 'Received';
+        el('f-unpaid-wrap').classList.add('hidden');
+        return;
+      }
+    }
     el('f-unpaid-wrap').classList.toggle('hidden', e.target.value !== 'Unpaid');
+  });
+  el('booking-form').elements['source'].addEventListener('change', (e) => {
+    if (isReceivedDefaultSource(e.target.value)) {
+      el('booking-form').elements['payment'].value = 'Received';
+      el('f-unpaid-wrap').classList.add('hidden');
+    }
   });
   el('booking-form').elements['tour_code'].addEventListener('change', (e) => {
     togglePrvFields(e.target.value === 'PRV');
