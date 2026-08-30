@@ -466,6 +466,7 @@ function openBookingModal(bookingId) {
   f.elements['prv_extras_currency'].value = b?.prv_extras_currency || 'EUR';
   f.elements['prv_start_time'].value      = b?.prv_start_time      || '';
   f.elements['prv_duration_hours'].value  = b?.prv_duration_hours  ?? '';
+  f.elements['prv_pier'].value            = b?.prv_pier            || '';
   f.querySelectorAll('.prv-extra-input').forEach(inp => {
     inp.value = b?.prv_extras?.[inp.dataset.item] ?? '';
   });
@@ -489,23 +490,25 @@ async function handleBookingSubmit(e) {
   btn.disabled = true;
 
   const bookingDate = f.elements['booking_date'].value;
+  const isPrv = f.elements['tour_code'].value === 'PRV';
   const fields = {
     name:      f.elements['name'].value.trim(),
     pax:       parseInt(f.elements['pax'].value)  || 1,
-    baby:      parseInt(f.elements['baby'].value) || 0,
+    baby:      isPrv ? 0 : (parseInt(f.elements['baby'].value) || 0),
     phone:     f.elements['phone'].value.trim(),
     tour_code: f.elements['tour_code'].value,
     source:    f.elements['source'].value,
     payment:   f.elements['payment'].value,
     remarks:   f.elements['remarks'].value.trim(),
-    transfer:  f.elements['transfer'].checked,
-    transfer_note: f.elements['transfer'].checked ? f.elements['transfer_note'].value.trim() : '',
+    transfer:  isPrv ? false : f.elements['transfer'].checked,
+    transfer_note: (!isPrv && f.elements['transfer'].checked) ? f.elements['transfer_note'].value.trim() : '',
     unpaid_amount:   f.elements['payment'].value === 'Unpaid' ? (parseFloat(f.elements['unpaid_amount'].value) || null) : null,
     unpaid_currency: f.elements['payment'].value === 'Unpaid' ? f.elements['unpaid_currency'].value : null,
-    prv_extras:          f.elements['tour_code'].value === 'PRV' ? collectPrvExtras(f) : {},
-    prv_extras_currency: f.elements['tour_code'].value === 'PRV' ? f.elements['prv_extras_currency'].value : 'EUR',
-    prv_start_time:     f.elements['tour_code'].value === 'PRV' ? (f.elements['prv_start_time'].value || null) : null,
-    prv_duration_hours: f.elements['tour_code'].value === 'PRV' ? (parseFloat(f.elements['prv_duration_hours'].value) || null) : null,
+    prv_extras:          isPrv ? collectPrvExtras(f) : {},
+    prv_extras_currency: isPrv ? f.elements['prv_extras_currency'].value : 'EUR',
+    prv_start_time:     isPrv ? (f.elements['prv_start_time'].value || null) : null,
+    prv_duration_hours: isPrv ? (parseFloat(f.elements['prv_duration_hours'].value) || null) : null,
+    prv_pier:           isPrv ? (f.elements['prv_pier'].value || null) : null,
   };
 
   if (!bookingDate)    { alert('Date is required.');  btn.disabled = false; return; }
@@ -551,6 +554,15 @@ async function handleBookingSubmit(e) {
 // ── PRV'ye özel alanları göster/gizle ──────────────────────────
 function togglePrvFields(isPrv) {
   document.querySelectorAll('.prv-only').forEach(el => el.classList.toggle('hidden', !isPrv));
+  if (isPrv) {
+    document.querySelectorAll('.hide-for-prv').forEach(el => el.classList.add('hidden'));
+  } else {
+    // Baby ve Transfer her zamanki gibi görünsün; Transfer Info kendi
+    // checkbox durumuna göre yeniden senkronlanır.
+    el('f-baby-wrap').classList.remove('hidden');
+    el('f-transfer-chk').classList.remove('hidden');
+    el('f-transfer-note-wrap').classList.toggle('hidden', !el('booking-form').elements['transfer'].checked);
+  }
 }
 
 // ── PRV ekstra hizmet formundan doldurulmuş kalemleri topla ────

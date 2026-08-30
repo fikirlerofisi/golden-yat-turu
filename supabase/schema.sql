@@ -177,3 +177,11 @@ alter table public.bookings add column if not exists prv_extras_currency text no
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists prv_start_time time;
 alter table public.bookings add column if not exists prv_duration_hours numeric;
+
+-- ── 14. Migrasyon: PRV'de Baby yerine Pier, Transfer PRV Extras'a taşındı (2026-08) ──
+-- Tour=PRV seçilince Baby alanı yerine iskele (Pier) seçimi gösterilir;
+-- genel Transfer checkbox'ı PRV'de gizlenir, yerine PRV Extras
+-- listesinde fiyatlandırılabilen bir "Transfer" kalemi eklendi
+-- (prv_extras jsonb içinde saklanır, ayrı kolon gerekmez).
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists prv_pier text;

@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=27"/>
+  <link rel="stylesheet" href="css/styles.css?v=28"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=27",
-      "./js/auth.js":     "./js/auth.js?v=27",
-      "./js/tours.js":    "./js/tours.js?v=27",
-      "./js/bookings.js": "./js/bookings.js?v=27",
-      "./js/checkin.js":  "./js/checkin.js?v=27",
-      "./js/realtime.js": "./js/realtime.js?v=27",
-      "./js/config.js":   "./js/config.js?v=27",
-      "./js/supabase.js": "./js/supabase.js?v=27"
+      "./js/app.js":      "./js/app.js?v=28",
+      "./js/auth.js":     "./js/auth.js?v=28",
+      "./js/tours.js":    "./js/tours.js?v=28",
+      "./js/bookings.js": "./js/bookings.js?v=28",
+      "./js/checkin.js":  "./js/checkin.js?v=28",
+      "./js/realtime.js": "./js/realtime.js?v=28",
+      "./js/config.js":   "./js/config.js?v=28",
+      "./js/supabase.js": "./js/supabase.js?v=28"
     }
   }
   </script>
@@ -243,9 +243,20 @@
           <label>Remarks</label>
           <input name="remarks" type="text" placeholder="Night, VIP, etc."/>
         </div>
-        <div class="fg">
+        <div class="fg hide-for-prv" id="f-baby-wrap">
           <label>Baby</label>
           <input name="baby" type="number" min="0" max="20" value="0"/>
+        </div>
+        <div class="fg hidden prv-only" id="f-pier-wrap">
+          <label>Pier</label>
+          <select name="prv_pier">
+            <option value="">— Select —</option>
+            <option>Kuruçeşme</option>
+            <option>Kabataş</option>
+            <option>Karaköy</option>
+            <option>Beylerbeyi</option>
+            <option>Kuleli</option>
+          </select>
         </div>
       </div>
 
@@ -260,12 +271,12 @@
         </div>
       </div>
 
-      <label class="chk-label">
+      <label class="chk-label hide-for-prv" id="f-transfer-chk">
         <input type="checkbox" name="transfer"/>
         <span>Transfer</span>
       </label>
 
-      <div class="fg hidden" id="f-transfer-note-wrap">
+      <div class="fg hidden hide-for-prv" id="f-transfer-note-wrap">
         <label>Transfer Info</label>
         <input name="transfer_note" type="text" placeholder="Pickup point, time, etc." autocomplete="off"/>
       </div>
@@ -281,6 +292,7 @@
               <option value="USD">USD</option>
             </select>
           </div>
+          <div class="prv-extra-row"><span>Transfer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Transfer" placeholder="0.00"/></div>
           <div class="prv-extra-row"><span>Belly Dancer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Belly Dancer" placeholder="0.00"/></div>
           <div class="prv-extra-row"><span>Live Guitar Or Violin</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Live Guitar Or Violin" placeholder="0.00"/></div>
           <div class="prv-extra-row"><span>Photographer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Photographer" placeholder="0.00"/></div>
@@ -356,6 +368,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=27"></script>
+<script type="module" src="js/app.js?v=28"></script>
 </body>
 </html>
