@@ -28,11 +28,13 @@ const selected = new Set();
 // bunlardan biri seçilince Payment otomatik "Received" olur.
 const RECEIVED_DEFAULT_SOURCES = OPTIONS.sources.filter(s => s && s !== 'Office');
 const isReceivedDefaultSource = (source) => RECEIVED_DEFAULT_SOURCES.includes(source);
-const SUNSET_CODES = ['T1', 'TD', 'TB'];
+const SUNSET_CODES = ['T1', 'T1C', 'T1W', 'TD', 'TB'];
 const TOURCODE_META = {
   sunset: { label: '🌅 Sunset' },
   TA:     { label: 'TA' },
   TN:     { label: 'TN' },
+  TS:     { label: 'TS' },
+  TC:     { label: 'TC' },
   PRV:    { label: 'PRV — Private Tour' },
 };
 
