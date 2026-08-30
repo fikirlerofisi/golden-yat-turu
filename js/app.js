@@ -47,6 +47,12 @@ async function init() {
 
   onAuthChange(async (event, sess) => {
     if (sess) {
+      // Supabase, token yenileme / sekme odaklanma gibi durumlarda da
+      // bu olayı tetikler — uygulama zaten açıksa görünümü/veriyi
+      // sıfırlama, sadece gerçek bir girişte (login ekranından
+      // geliniyorsa) showApp() çalıştır.
+      const alreadyIn = !el('app-screen').classList.contains('hidden');
+      if (alreadyIn) return;
       await loadAppOptions();
       fillFormSelects();
       await showApp();
