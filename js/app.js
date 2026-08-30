@@ -308,13 +308,13 @@ function renderTable() {
   };
   if (!state.tourId) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>`;
-    el('tfoot').innerHTML = '';
+    el('list-footer-bar').innerHTML = '';
     resetChkAll();
     return;
   }
   if (data.length === 0) {
     tbody.innerHTML = `<tr class="empty-row"><td colspan="13">No records found.</td></tr>`;
-    el('tfoot').innerHTML = '';
+    el('list-footer-bar').innerHTML = '';
     resetChkAll();
     return;
   }
@@ -386,8 +386,12 @@ function renderTable() {
 }
 
 function renderFooter(data) {
-  // Kolon sırası: Check|Tour|Name|Pax|Source|Yacht|Phone|Payment|Transfer|Guide|Staff|Remarks|Actions
   const s = calcStats(data);
+
+  // Gelmiş (check'li) ama henüz bir yata gönderilmemiş kişi sayısı (pax toplamı)
+  const checkedNotSent = data
+    .filter(b => b.checked_in && !b.yacht)
+    .reduce((sum, b) => sum + (b.pax || 0), 0);
 
   // Tekne başına toplam pax
   const byYacht = {};
@@ -399,13 +403,9 @@ function renderFooter(data) {
     .map(([y, p]) => `${yachtBadge(y)} = <b>${p}</b>`)
     .join('&nbsp;&nbsp;&nbsp;');
 
-  el('tfoot').innerHTML = `<tr class="tfoot-stats">
-    <td class="col-chk"></td>
-    <td></td>
-    <td class="col-name">📊 ${s.totalPax} pax &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span> &nbsp; 👶 ${s.totalBaby} baby</td>
-    <td></td>
-    <td colspan="9"></td>
-  </tr>` + (yachtSummary ? `<tr class="tfoot-yachts"><td colspan="13">⛵ ${yachtSummary}</td></tr>` : '');
+  el('list-footer-bar').innerHTML = `
+    <div class="lf-stats">📊 ${s.totalPax} pax &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span> &nbsp; <span class="s-checked">✅ ${checkedNotSent} Checked</span> &nbsp; 👶 ${s.totalBaby} baby</div>
+  ` + (yachtSummary ? `<div class="lf-yachts">⛵ ${yachtSummary}</div>` : '');
 }
 
 // ── İstatistik çubuğu ──────────────────────────────────────────

@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=26"/>
+  <link rel="stylesheet" href="css/styles.css?v=27"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=26",
-      "./js/auth.js":     "./js/auth.js?v=26",
-      "./js/tours.js":    "./js/tours.js?v=26",
-      "./js/bookings.js": "./js/bookings.js?v=26",
-      "./js/checkin.js":  "./js/checkin.js?v=26",
-      "./js/realtime.js": "./js/realtime.js?v=26",
-      "./js/config.js":   "./js/config.js?v=26",
-      "./js/supabase.js": "./js/supabase.js?v=26"
+      "./js/app.js":      "./js/app.js?v=27",
+      "./js/auth.js":     "./js/auth.js?v=27",
+      "./js/tours.js":    "./js/tours.js?v=27",
+      "./js/bookings.js": "./js/bookings.js?v=27",
+      "./js/checkin.js":  "./js/checkin.js?v=27",
+      "./js/realtime.js": "./js/realtime.js?v=27",
+      "./js/config.js":   "./js/config.js?v=27",
+      "./js/supabase.js": "./js/supabase.js?v=27"
     }
   }
   </script>
@@ -148,9 +148,11 @@
             <tbody id="tbody">
               <tr class="empty-row"><td colspan="13">Select a date and create a tour.</td></tr>
             </tbody>
-            <tfoot id="tfoot"></tfoot>
           </table>
         </div>
+
+        <!-- Özet bandı: sayfanın altında sabit, tabloyu hiç kaplamaz -->
+        <div class="list-footer-bar" id="list-footer-bar"></div>
       </section>
 
       <section id="view-unpaid" class="view-section hidden">
@@ -354,6 +356,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=26"></script>
+<script type="module" src="js/app.js?v=27"></script>
 </body>
 </html>

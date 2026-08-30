@@ -365,28 +365,26 @@ thead th.col-chk { z-index: 40; left: 0; }
 .act-btn.del:hover  { border-color: var(--red);  color: var(--red);  background: var(--red-bg); }
 .act-btn:disabled   { opacity: .4; cursor: not-allowed; }
 
-/* Özet satırı (tfoot) */
-.main-table tfoot td {
-  background: var(--navy) !important;
-  color: var(--gold-pale) !important;
+/* Özet bandı — tablonun dışında, sayfanın altında sabit (flex-shrink:0),
+   yeni rezervasyonlar eklendikçe tabloyu kaplamaz, .table-scroll sadece
+   kalan alanı (flex:1) kullanır. */
+.list-footer-bar {
+  flex-shrink: 0;
+  background: var(--navy); color: var(--gold-pale);
   font-weight: 700; font-size: .72rem;
-  padding: 8px 8px;
   border-top: 2px solid var(--gold);
-  position: sticky; bottom: 0; z-index: 20;
-  white-space: nowrap;
 }
-.main-table tfoot td.col-chk,
-.main-table tfoot td.col-name { background: var(--navy) !important; }
+.list-footer-bar .lf-stats {
+  padding: 8px 14px; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
+}
+.list-footer-bar .lf-yachts {
+  padding: 6px 14px; white-space: normal; font-size: .68rem; font-weight: 500;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+.list-footer-bar .lf-yachts .yd { vertical-align: middle; }
 .s-arrived { color: #4ade80; font-size: .9rem; }
 .s-noshow  { color: #f87171; font-size: .9rem; }
-/* İki yapışkan tfoot satırı: istatistik üstte, tekne özeti en altta */
-.main-table tfoot tr.tfoot-stats td { bottom: 30px; }
-.main-table tfoot tr.tfoot-yachts td {
-  bottom: 0; height: 30px; box-sizing: border-box;
-  border-top: 1px solid rgba(255,255,255,.12);
-  padding: 6px 10px; white-space: normal; font-size: .68rem;
-}
-.main-table tfoot tr.tfoot-yachts .yd { vertical-align: middle; }
+.s-checked { color: #fbbf24; font-size: .9rem; }
 
 /* Seçim aksiyon çubuğu */
 .sel-bar {
