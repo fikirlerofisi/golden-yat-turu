@@ -123,6 +123,13 @@ async function init() {
   el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
   el('crews-cancel').addEventListener('click', () => el('crews-modal').classList.add('hidden'));
 
+  // Booking Status modalı (Noshow / Refunded)
+  el('status-close').addEventListener('click',  closeStatusModal);
+  el('status-cancel').addEventListener('click', closeStatusModal);
+  el('status-clear').addEventListener('click',  () => setAttendanceStatus(null));
+  el('status-btn-noshow').addEventListener('click',   () => setAttendanceStatus('noshow'));
+  el('status-btn-refunded').addEventListener('click', () => setAttendanceStatus('refunded'));
+
   // Rezervasyon ekle
   el('add-booking-btn').addEventListener('click', () => openBookingModal(null));
 
@@ -346,7 +353,10 @@ function renderTable() {
   });
 
   tbody.innerHTML = sorted.map(b => {
-    const rc = (b.checked_in ? 'row-arrived' : '') + (selected.has(b.id) ? ' row-selected' : '');
+    const statusClass = b.attendance_status === 'refunded' ? 'row-refunded'
+                       : b.attendance_status === 'noshow'   ? 'row-noshow'
+                       : b.checked_in ? 'row-arrived' : '';
+    const rc = statusClass + (selected.has(b.id) ? ' row-selected' : '');
     return `<tr class="${rc}">
       <td class="col-chk">
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
@@ -372,8 +382,9 @@ function renderTable() {
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td>
-        <button class="act-btn edit" data-edit="${b.id}" title="Edit">✎</button>
-        <button class="act-btn del"  data-del="${b.id}"  title="Delete">✕</button>
+        <button class="act-btn edit"     data-edit="${b.id}"     title="Edit">✎</button>
+        <button class="act-btn del"      data-del="${b.id}"      title="Delete">✕</button>
+        <button class="act-btn settings" data-settings="${b.id}" title="Status">⚙</button>
       </td>
     </tr>`;
   }).join('');
@@ -390,6 +401,9 @@ function renderTable() {
   );
   tbody.querySelectorAll('[data-del]').forEach(btn =>
     btn.addEventListener('click', () => handleDelete(btn.dataset.del))
+  );
+  tbody.querySelectorAll('[data-settings]').forEach(btn =>
+    btn.addEventListener('click', () => openStatusModal(btn.dataset.settings))
   );
 
   // "Gelenleri seç" başlık kutusunun durumu
@@ -462,6 +476,47 @@ async function handleDelete(id) {
     state.bookings = state.bookings.filter(x => x.id !== id);
     renderTable(); renderStats();
   } catch (err) { alert('Error: ' + (err.message || err)); }
+}
+
+// ── Booking Status modalı (Noshow / Refunded) ──────────────────
+let statusEditingId = null;
+
+function openStatusModal(bookingId) {
+  const b = state.bookings.find(x => x.id === bookingId);
+  if (!b) return;
+  statusEditingId = bookingId;
+
+  const noshowBtn   = el('status-btn-noshow');
+  const refundedBtn = el('status-btn-refunded');
+
+  // Noshow sadece check'lenmemiş kayıtlarda seçilebilir; Refunded her zaman etkin
+  noshowBtn.disabled = !!b.checked_in;
+  noshowBtn.title    = b.checked_in ? 'Only available for bookings not checked in' : '';
+  refundedBtn.disabled = false;
+
+  noshowBtn.classList.toggle('active',   b.attendance_status === 'noshow');
+  refundedBtn.classList.toggle('active', b.attendance_status === 'refunded');
+
+  el('status-modal').classList.remove('hidden');
+}
+
+function closeStatusModal() {
+  el('status-modal').classList.add('hidden');
+  statusEditingId = null;
+}
+
+async function setAttendanceStatus(status) {
+  if (!statusEditingId) return;
+  const id = statusEditingId;
+  try {
+    const updated = await updateBooking(id, { attendance_status: status });
+    const i = state.bookings.findIndex(x => x.id === id);
+    if (i >= 0) state.bookings[i] = updated;
+    closeStatusModal();
+    renderTable(); renderStats();
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+  }
 }
 
 // ── Rezervasyon modalı ─────────────────────────────────────────

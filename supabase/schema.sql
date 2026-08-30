@@ -185,3 +185,9 @@ alter table public.bookings add column if not exists prv_duration_hours numeric;
 -- (prv_extras jsonb içinde saklanır, ayrı kolon gerekmez).
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists prv_pier text;
+
+-- ── 15. Migrasyon: Noshow / Refunded durumu (2026-08) ────────
+-- ⚙ ikonundan işaretlenen kalıcı durum: null (normal) | 'noshow' | 'refunded'.
+-- Noshow sadece check'lenmemiş kayıtlarda, Refunded her zaman seçilebilir.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists attendance_status text;

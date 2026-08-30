@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=31"/>
+  <link rel="stylesheet" href="css/styles.css?v=32"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=31",
-      "./js/auth.js":     "./js/auth.js?v=31",
-      "./js/tours.js":    "./js/tours.js?v=31",
-      "./js/bookings.js": "./js/bookings.js?v=31",
-      "./js/checkin.js":  "./js/checkin.js?v=31",
-      "./js/realtime.js": "./js/realtime.js?v=31",
-      "./js/config.js":   "./js/config.js?v=31",
-      "./js/supabase.js": "./js/supabase.js?v=31"
+      "./js/app.js":      "./js/app.js?v=32",
+      "./js/auth.js":     "./js/auth.js?v=32",
+      "./js/tours.js":    "./js/tours.js?v=32",
+      "./js/bookings.js": "./js/bookings.js?v=32",
+      "./js/checkin.js":  "./js/checkin.js?v=32",
+      "./js/realtime.js": "./js/realtime.js?v=32",
+      "./js/config.js":   "./js/config.js?v=32",
+      "./js/supabase.js": "./js/supabase.js?v=32"
     }
   }
   </script>
@@ -370,6 +370,28 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=31"></script>
+<!-- ═══════════ BOOKING STATUS MODAL ═══════════ -->
+<div id="status-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('status-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:340px">
+    <div class="modal-head">
+      <h2>⚙ Booking Status</h2>
+      <button class="modal-x" id="status-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="status-opt-grid">
+        <button class="status-opt-btn" id="status-btn-noshow" data-status="noshow">🔵 Noshow</button>
+        <button class="status-opt-btn" id="status-btn-refunded" data-status="refunded">🔴 Refunded</button>
+      </div>
+      <button class="status-clear-btn" id="status-clear">Clear Status</button>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="status-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js?v=32"></script>
 </body>
 </html>

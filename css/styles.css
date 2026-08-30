@@ -304,8 +304,10 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 }
 .main-table tbody td:last-child { border-right: none; }
 
-/* Satır rengi: sadece arrived hafif yeşil, seçili sarı */
-.row-arrived td { background: #F0FDF4; }
+/* Satır rengi: arrived yeşil, noshow mavi, refunded kırmızı, seçili sarı */
+.row-arrived  td { background: #F0FDF4; }
+.row-noshow   td { background: #DBEAFE; }
+.row-refunded td { background: #FEE2E2; }
 .row-selected td { background: #FFFBEB !important; }
 
 /* Yapışkan sol: sadece Check */
@@ -313,6 +315,8 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 .col-name { min-width: 165px; }
 thead th.col-chk { z-index: 40; left: 0; }
 .row-arrived  td.col-chk { background: #F0FDF4; }
+.row-noshow   td.col-chk { background: #DBEAFE; }
+.row-refunded td.col-chk { background: #FEE2E2; }
 .row-selected td.col-chk { background: #FFFBEB !important; }
 
 /* İsim hücresi — checkbox + metin */
@@ -361,9 +365,28 @@ thead th.col-chk { z-index: 40; left: 0; }
   cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
   font-size: .7rem; color: var(--gray4); transition: var(--tr); margin: 0 1px;
 }
-.act-btn.edit:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,151,43,.08); }
-.act-btn.del:hover  { border-color: var(--red);  color: var(--red);  background: var(--red-bg); }
+.act-btn.edit:hover     { border-color: var(--gold); color: var(--gold); background: rgba(201,151,43,.08); }
+.act-btn.del:hover      { border-color: var(--red);  color: var(--red);  background: var(--red-bg); }
+.act-btn.settings:hover { border-color: #3b82f6; color: #3b82f6; background: #EFF6FF; }
 .act-btn:disabled   { opacity: .4; cursor: not-allowed; }
+
+/* Booking Status modalı — Noshow / Refunded */
+.status-opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.status-opt-btn {
+  padding: 14px 8px; border: 2px solid var(--cream2); border-radius: 10px;
+  background: var(--gray1); color: var(--navy);
+  font-family: var(--font); font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: var(--tr); text-align: center;
+}
+.status-opt-btn:hover:not(:disabled) { border-color: var(--gold); background: rgba(201,151,43,.07); }
+.status-opt-btn:disabled { opacity: .4; cursor: not-allowed; }
+.status-opt-btn.active   { border-color: var(--navy); background: var(--navy); color: #fff; }
+.status-clear-btn {
+  width: 100%; padding: 9px; border: 1.5px solid var(--gray2); border-radius: 7px;
+  background: #fff; color: var(--gray4); font-family: var(--font); font-size: .78rem;
+  font-weight: 600; cursor: pointer; transition: var(--tr);
+}
+.status-clear-btn:hover { border-color: var(--red); color: var(--red); }
 
 /* Özet bandı — tablonun dışında, sayfanın altında sabit (flex-shrink:0),
    yeni rezervasyonlar eklendikçe tabloyu kaplamaz, .table-scroll sadece
