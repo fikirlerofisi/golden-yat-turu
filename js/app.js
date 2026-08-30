@@ -851,6 +851,14 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// İsim karşılaştırmalarını Türkçe karakter/büyük-küçük harf farklarına
+// karşı toleranslı hale getirir (ör. "Nursah" ile "Nurşah" eşleşsin).
+function normalizeName(s) {
+  return (s || '').trim().toLowerCase()
+    .replace(/ı/g, 'i')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
 // ── Seçim fonksiyonları ────────────────────────────────────────
 // Gelmiş (check'li) ama henüz bir yata atanmamış kayıtların id'leri
 function arrivedUnassignedIds(data) {
@@ -1028,12 +1036,13 @@ function renderUnpaidTable() {
   // Ekip bazlı erişim: manager tüm tekneleri görür, diğerleri sadece
   // kendi eşleştiği (tour_guide veya staff olarak yer aldığı) tekneyi.
   if (currentProfile?.role !== 'manager') {
-    const myName = currentProfile?.full_name;
+    const myName = normalizeName(currentProfile?.full_name);
     data = data.filter(b => {
       if (!b.yacht) return false;
       const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
       if (!crew) return false;
-      return crew.tour_guide === myName || (crew.staff || []).includes(myName);
+      return normalizeName(crew.tour_guide) === myName ||
+             (crew.staff || []).some(s => normalizeName(s) === myName);
     });
   }
 
