@@ -309,7 +309,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 .row-selected td { background: #FFFBEB !important; }
 
 /* Yapışkan sol: sadece Check */
-.col-chk  { position: sticky; left: 0; z-index: 20; min-width: 50px; max-width: 50px; text-align: center; background: #fff; }
+.col-chk  { position: sticky; left: 0; z-index: 20; min-width: 82px; max-width: 82px; text-align: center; background: #fff; }
 .col-name { min-width: 165px; }
 thead th.col-chk { z-index: 40; left: 0; }
 .row-arrived  td.col-chk { background: #F0FDF4; }

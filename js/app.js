@@ -319,8 +319,26 @@ function renderTable() {
     return;
   }
 
-  // Geldi olanlar üste, gelmeyenler alta
+  // Yatlar, ilk atama sırasına göre gruplanır (o yata atanmış ilk kaydın
+  // updated_at'i en erken olan yat en üstte); henüz yata gönderilmemişler
+  // en altta. Her grubun içinde gelmiş olanlar üstte.
+  const yachtFirstAssigned = {};
+  for (const b of data) {
+    if (!b.yacht) continue;
+    const t = new Date(b.updated_at).getTime();
+    if (!(b.yacht in yachtFirstAssigned) || t < yachtFirstAssigned[b.yacht]) {
+      yachtFirstAssigned[b.yacht] = t;
+    }
+  }
+  const yachtRank = {};
+  Object.keys(yachtFirstAssigned)
+    .sort((a, b) => yachtFirstAssigned[a] - yachtFirstAssigned[b])
+    .forEach((y, i) => { yachtRank[y] = i; });
+
   const sorted = [...data].sort((a, b) => {
+    const rankA = a.yacht ? yachtRank[a.yacht] : Infinity;
+    const rankB = b.yacht ? yachtRank[b.yacht] : Infinity;
+    if (rankA !== rankB) return rankA - rankB;
     if (a.checked_in === b.checked_in) return 0;
     return a.checked_in ? -1 : 1;
   });
