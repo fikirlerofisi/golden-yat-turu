@@ -364,7 +364,7 @@ function renderTable() {
       <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
-      <td>${payBadge(b.payment)}${b.payment === 'Unpaid' && b.unpaid_amount ? ` <span class="unpaid-amt">${b.unpaid_amount} ${esc(b.unpaid_currency || 'EUR')}</span>` : ''}</td>
+      <td>${payBadge(b.payment)}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
