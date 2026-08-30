@@ -387,6 +387,21 @@ thead th.col-chk { z-index: 40; left: 0; }
   font-weight: 600; cursor: pointer; transition: var(--tr);
 }
 .status-clear-btn:hover { border-color: var(--red); color: var(--red); }
+.status-opt-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* Unpaid List — tur kodu filtre çubuğu */
+.tourcode-filter-bar { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.tourcode-filter-btn {
+  padding: 5px 11px; background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.18); border-radius: 20px;
+  color: rgba(255,255,255,.75); font-family: var(--font); font-size: .72rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
+}
+.tourcode-filter-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+.tourcode-filter-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold2)); border-color: transparent; color: var(--navy); }
+
+/* Unpaid List — ödemesi alınmış satır */
+.row-paid td, .row-paid td.col-chk { background: #F0FDF4; }
 
 /* Özet bandı — tablonun dışında, sayfanın altında sabit (flex-shrink:0),
    yeni rezervasyonlar eklendikçe tabloyu kaplamaz, .table-scroll sadece

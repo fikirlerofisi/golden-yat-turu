@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0B1F3A"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=32"/>
+  <link rel="stylesheet" href="css/styles.css?v=33"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=32",
-      "./js/auth.js":     "./js/auth.js?v=32",
-      "./js/tours.js":    "./js/tours.js?v=32",
-      "./js/bookings.js": "./js/bookings.js?v=32",
-      "./js/checkin.js":  "./js/checkin.js?v=32",
-      "./js/realtime.js": "./js/realtime.js?v=32",
-      "./js/config.js":   "./js/config.js?v=32",
-      "./js/supabase.js": "./js/supabase.js?v=32"
+      "./js/app.js":      "./js/app.js?v=33",
+      "./js/auth.js":     "./js/auth.js?v=33",
+      "./js/tours.js":    "./js/tours.js?v=33",
+      "./js/bookings.js": "./js/bookings.js?v=33",
+      "./js/checkin.js":  "./js/checkin.js?v=33",
+      "./js/realtime.js": "./js/realtime.js?v=33",
+      "./js/config.js":   "./js/config.js?v=33",
+      "./js/supabase.js": "./js/supabase.js?v=33"
     }
   }
   </script>
@@ -158,9 +158,45 @@
       </section>
 
       <section id="view-unpaid" class="view-section hidden">
-        <div class="view-placeholder">
-          <h2>💳 Unpaid List</h2>
-          <p>Content coming soon — we'll design this together.</p>
+        <!-- Kontrol şeridi -->
+        <div class="ctrl-bar">
+          <input id="unpaid-date-input" type="date" aria-label="Select date"/>
+          <div class="tourcode-filter-bar" id="unpaid-filter-bar">
+            <button class="tourcode-filter-btn active" data-ufilter="">All</button>
+            <button class="tourcode-filter-btn" data-ufilter="sunset">🌅 Sunset</button>
+            <button class="tourcode-filter-btn" data-ufilter="PRV">PRV</button>
+            <button class="tourcode-filter-btn" data-ufilter="TS">TS</button>
+            <button class="tourcode-filter-btn" data-ufilter="TC">TC</button>
+            <button class="tourcode-filter-btn" data-ufilter="TA">TA</button>
+            <button class="tourcode-filter-btn" data-ufilter="TN">TN</button>
+          </div>
+        </div>
+
+        <!-- Tablo (scroll kapsayıcısı içinde) -->
+        <div class="table-scroll">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th class="col-chk">Check</th>
+                <th>Tour</th>
+                <th class="col-name">Name</th>
+                <th>Pax</th>
+                <th>Source</th>
+                <th class="col-yacht">Yacht</th>
+                <th>Amount</th>
+                <th>Paid</th>
+                <th>Deliver</th>
+                <th>Crew</th>
+                <th>Transfer</th>
+                <th>Tour Guide</th>
+                <th>Remarks</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="unpaid-tbody">
+              <tr class="empty-row"><td colspan="14">Select a date.</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -392,6 +428,42 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=32"></script>
+<!-- ═══════════ PAY MODAL (Unpaid List) ═══════════ -->
+<div id="pay-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('pay-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-head">
+      <h2>💳 Record Payment</h2>
+      <button class="modal-x" id="pay-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Paid Method</label>
+        <div class="status-opt-grid cols-3" id="pay-method-grid">
+          <button type="button" class="status-opt-btn" data-method="Cash">Cash</button>
+          <button type="button" class="status-opt-btn" data-method="Card">Card</button>
+          <button type="button" class="status-opt-btn" data-method="Bank">Bank</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Deliver To</label>
+        <select id="pay-delivered-to">
+          <option value="">— Select —</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Remarks</label>
+        <input id="pay-remarks" type="text" placeholder="Optional note" autocomplete="off"/>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="pay-cancel">Cancel</button>
+      <button type="button" class="btn-save" id="pay-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js?v=33"></script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 import { supabase }                        from './supabase.js';
 import { getSession, login, logout,
-         onAuthChange }                    from './auth.js';
+         onAuthChange, currentUser,
+         currentProfile }                  from './auth.js';
 import { getToursByDate, today }           from './tours.js';
 import { getBookingsByTours, createBooking,
          updateBooking, deleteBooking,
+         getUnpaidBookings,
          calcStats }                       from './bookings.js';
 import { toggleCheckin }                   from './checkin.js';
 import { subscribeBookings, unsubscribeBookings,
@@ -21,6 +23,12 @@ const state = {
   editingId: null,
   view:            'dashboard', // 'dashboard' | 'tourlist' | 'unpaid' | 'alcohol'
   tourCodeFilter:  null,        // null | 'sunset' | 'TA' | 'TN' | 'PRV'
+  unpaidDate:       today(),
+  unpaidTours:      [],
+  unpaidBookings:   [],
+  unpaidYachtCrews: {},   // { 'tourId|Yacht': {tour_guide, staff} }
+  unpaidCodeFilter: null, // null | 'sunset' | 'TA' | 'TN' | 'PRV' | 'TS' | 'TC'
+  payEditingId:     null,
 };
 const selected = new Set();
 // Dinamik eklemeler daha yüklenmeden önceki sabit Source listesinin anlık
@@ -118,6 +126,32 @@ async function init() {
   el('btn-sel-apply').addEventListener('click', applySelection);
   el('btn-sel-clear').addEventListener('click', clearSelection);
 
+  // Unpaid List
+  el('unpaid-date-input').value = state.unpaidDate;
+  el('unpaid-date-input').addEventListener('change', (e) => {
+    state.unpaidDate = e.target.value;
+    loadUnpaidList();
+  });
+  el('unpaid-filter-bar').querySelectorAll('.tourcode-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.unpaidCodeFilter = btn.dataset.ufilter || null;
+      el('unpaid-filter-bar').querySelectorAll('.tourcode-filter-btn')
+        .forEach(b => b.classList.toggle('active', b === btn));
+      renderUnpaidTable();
+    });
+  });
+
+  // Pay modalı
+  el('pay-close').addEventListener('click',  () => el('pay-modal').classList.add('hidden'));
+  el('pay-cancel').addEventListener('click', () => el('pay-modal').classList.add('hidden'));
+  el('pay-save').addEventListener('click', savePayment);
+  el('pay-method-grid').querySelectorAll('.status-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el('pay-method-grid').querySelectorAll('.status-opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
   // Ekip (Crews) modalı
   el('crews-btn').addEventListener('click',    openCrewsModal);
   el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
@@ -205,6 +239,7 @@ function showView(view, filter = null) {
   }
 
   if (view === 'tourlist') { renderTable(); renderStats(); }
+  if (view === 'unpaid')   { loadUnpaidList(); }
 }
 
 function closeSidebarMobile() {
@@ -285,7 +320,7 @@ async function loadBookings() {
 async function fetchOne(id) {
   const { data } = await supabase
     .from('bookings')
-    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name)')
+    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
     .eq('id', id).single();
   return data;
 }
@@ -956,6 +991,164 @@ async function saveCrew(yacht, btn) {
     setTimeout(() => { btn.textContent = old; btn.classList.remove('saved'); btn.disabled = false; }, 1500);
   } catch (err) {
     alert('Error: ' + (err.message || err));
+    btn.disabled = false;
+  }
+}
+
+// ── Unpaid List sayfası ─────────────────────────────────────────
+async function loadUnpaidList() {
+  const tbody = el('unpaid-tbody');
+  try { state.unpaidTours = await getToursByDate(state.unpaidDate); }
+  catch { state.unpaidTours = []; }
+
+  if (state.unpaidTours.length === 0) {
+    state.unpaidBookings = [];
+    state.unpaidYachtCrews = {};
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="14">No tours for this date.</td></tr>`;
+    return;
+  }
+
+  const tourIds = state.unpaidTours.map(t => t.id);
+  try { state.unpaidBookings = await getUnpaidBookings(tourIds); }
+  catch { state.unpaidBookings = []; }
+
+  try {
+    const { data } = await supabase.from('yacht_crews').select('*').in('tour_id', tourIds);
+    state.unpaidYachtCrews = {};
+    (data || []).forEach(c => { state.unpaidYachtCrews[`${c.tour_id}|${c.yacht}`] = c; });
+  } catch { state.unpaidYachtCrews = {}; }
+
+  renderUnpaidTable();
+}
+
+function renderUnpaidTable() {
+  const tbody = el('unpaid-tbody');
+  let data = state.unpaidBookings;
+
+  // Ekip bazlı erişim: manager tüm tekneleri görür, diğerleri sadece
+  // kendi eşleştiği (tour_guide veya staff olarak yer aldığı) tekneyi.
+  if (currentProfile?.role !== 'manager') {
+    const myName = currentProfile?.full_name;
+    data = data.filter(b => {
+      if (!b.yacht) return false;
+      const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
+      if (!crew) return false;
+      return crew.tour_guide === myName || (crew.staff || []).includes(myName);
+    });
+  }
+
+  if (state.unpaidCodeFilter === 'sunset') {
+    data = data.filter(b => SUNSET_CODES.includes(b.tour_code));
+  } else if (state.unpaidCodeFilter) {
+    data = data.filter(b => b.tour_code === state.unpaidCodeFilter);
+  }
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="14">No unpaid bookings found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(b => {
+    const rc = b.paid_method ? 'row-paid' : '';
+    const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
+    return `<tr class="${rc}">
+      <td class="col-chk">
+        <button class="chk-btn ${b.checked_in ? 'on' : ''}"
+                data-id="${b.id}"
+                title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
+          ${b.checked_in ? '✓' : '○'}
+        </button>
+      </td>
+      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
+      <td class="col-name">${esc(b.name)}</td>
+      <td style="text-align:center;font-weight:600">${b.pax}</td>
+      <td>${esc(b.source)}</td>
+      <td class="col-yacht">${yachtBadge(b.yacht)}</td>
+      <td style="font-weight:600">${b.unpaid_amount != null ? `${b.unpaid_amount} ${esc(b.unpaid_currency || 'EUR')}` : '—'}</td>
+      <td>${esc(b.paid_method || '—')}</td>
+      <td>${esc(b.delivered_to || '—')}</td>
+      <td>${esc(b.paid_by_profile?.full_name || '—')}</td>
+      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
+      <td>${esc(crew?.tour_guide || '')}</td>
+      <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
+      <td><button class="act-btn edit" data-pay="${b.id}" title="Pay" style="width:auto;padding:0 8px;">Pay</button></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.chk-btn').forEach(btn =>
+    btn.addEventListener('click', handleUnpaidCheckin)
+  );
+  tbody.querySelectorAll('[data-pay]').forEach(btn =>
+    btn.addEventListener('click', () => openPayModal(btn.dataset.pay))
+  );
+}
+
+async function handleUnpaidCheckin(e) {
+  const btn = e.currentTarget;
+  const id  = btn.dataset.id;
+  const bk  = state.unpaidBookings.find(x => x.id === id);
+  if (!bk) return;
+  btn.disabled = true;
+  try {
+    const updated = await toggleCheckin(id, bk.checked_in);
+    const i = state.unpaidBookings.findIndex(x => x.id === id);
+    if (i >= 0) state.unpaidBookings[i] = updated;
+    renderUnpaidTable();
+  } catch (err) { console.error(err); }
+  finally { btn.disabled = false; }
+}
+
+function openPayModal(bookingId) {
+  const b = state.unpaidBookings.find(x => x.id === bookingId);
+  if (!b) return;
+  state.payEditingId = bookingId;
+
+  el('pay-method-grid').querySelectorAll('.status-opt-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.method === b.paid_method);
+  });
+
+  // Rehber hariç, sadece o teknenin personeli + jenerik Captain/Staff
+  const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
+  const staffNames = (crew?.staff || []).filter(Boolean);
+  const sel = el('pay-delivered-to');
+  sel.innerHTML = `<option value="">— Select —</option>
+    <option value="Captain">Captain</option>
+    <option value="Staff">Staff</option>` +
+    staffNames.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  sel.value = b.delivered_to || '';
+
+  el('pay-remarks').value = b.unpaid_remarks || '';
+
+  el('pay-modal').classList.remove('hidden');
+}
+
+async function savePayment() {
+  if (!state.payEditingId) return;
+  const id = state.payEditingId;
+  const methodBtn = el('pay-method-grid').querySelector('.status-opt-btn.active');
+  const method = methodBtn?.dataset.method;
+  if (!method) { alert('Please select a paid method.'); return; }
+
+  const btn = el('pay-save');
+  btn.disabled = true;
+  try {
+    const patch = {
+      paid_method:    method,
+      delivered_to:   el('pay-delivered-to').value || null,
+      unpaid_remarks: el('pay-remarks').value.trim(),
+      paid_by:        currentUser?.id,
+      paid_at:        new Date().toISOString(),
+      payment:        'Received',
+    };
+    const updated = await updateBooking(id, patch);
+    const i = state.unpaidBookings.findIndex(x => x.id === id);
+    if (i >= 0) state.unpaidBookings[i] = updated;
+    el('pay-modal').classList.add('hidden');
+    state.payEditingId = null;
+    renderUnpaidTable();
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+  } finally {
     btn.disabled = false;
   }
 }

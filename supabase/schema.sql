@@ -191,3 +191,13 @@ alter table public.bookings add column if not exists prv_pier text;
 -- Noshow sadece check'lenmemiş kayıtlarda, Refunded her zaman seçilebilir.
 -- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
 alter table public.bookings add column if not exists attendance_status text;
+
+-- ── 16. Migrasyon: Unpaid List sayfası (2026-08) ─────────────
+-- Tekne üzerinde tahsilat kaydı: yöntem, zaman, kaydeden kullanıcı,
+-- teslim edilen kişi/rol, serbest not.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.bookings add column if not exists paid_method    text;
+alter table public.bookings add column if not exists paid_at        timestamptz;
+alter table public.bookings add column if not exists paid_by        uuid references public.profiles(id);
+alter table public.bookings add column if not exists delivered_to   text;
+alter table public.bookings add column if not exists unpaid_remarks text;

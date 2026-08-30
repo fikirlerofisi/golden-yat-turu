@@ -5,8 +5,21 @@ import { currentUser } from './auth.js';
 export async function getBookingsByTours(tourIds) {
   const { data, error } = await supabase
     .from('bookings')
-    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name)')
+    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
     .in('tour_id', tourIds)
+    .order('created_at');
+  if (error) throw error;
+  return data || [];
+}
+
+// ── Turlara ait Unpaid rezervasyonları getir (Refunded hariç) ──
+export async function getUnpaidBookings(tourIds) {
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
+    .in('tour_id', tourIds)
+    .eq('payment', 'Unpaid')
+    .or('attendance_status.is.null,attendance_status.neq.refunded')
     .order('created_at');
   if (error) throw error;
   return data || [];
@@ -17,7 +30,7 @@ export async function createBooking(tourId, fields) {
   const { data, error } = await supabase
     .from('bookings')
     .insert({ tour_id: tourId, ...sanitize(fields), created_by: currentUser?.id })
-    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name)')
+    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
     .single();
   if (error) throw error;
   return data;
@@ -33,7 +46,7 @@ export async function updateBooking(bookingId, fields) {
     .from('bookings')
     .update(patch)
     .eq('id', bookingId)
-    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name)')
+    .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
     .single();
   if (error) throw error;
   return data;
