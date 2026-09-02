@@ -199,6 +199,15 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 }
 .ctrl-bar::-webkit-scrollbar { display: none; }
 
+/* Dar ekranda sığmayan son buton yatay scroll'a gidip gizlenmek yerine
+   alt satıra sarar. */
+@media (max-width: 640px) {
+  .ctrl-bar {
+    height: auto; flex-wrap: wrap; overflow-x: visible; row-gap: 8px;
+    padding: 8px 14px;
+  }
+}
+
 #date-input {
   padding: 5px 8px; background: rgba(255,255,255,.09);
   border: 1.5px solid rgba(201,151,43,.3); border-radius: var(--radius-sm);

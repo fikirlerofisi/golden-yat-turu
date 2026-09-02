@@ -37,13 +37,19 @@ const selected = new Set();
 const RECEIVED_DEFAULT_SOURCES = OPTIONS.sources.filter(s => s && s !== 'Office');
 const isReceivedDefaultSource = (source) => RECEIVED_DEFAULT_SOURCES.includes(source);
 const SUNSET_CODES = ['T1', 'T1C', 'T1W', 'TD', 'TB'];
+// "All" görünümünde grup başlıklarında ve tur koduna dair her yerde
+// gösterilecek insan-okunur isimler — her ham tur kodunun kendi adı.
 const TOURCODE_META = {
-  sunset: { label: 'Sunset' },
-  TA:     { label: 'TA' },
-  TN:     { label: 'TN' },
-  TS:     { label: 'TS' },
-  TC:     { label: 'TC' },
-  PRV:    { label: 'PRV — Private Tour' },
+  T1:  { label: 'Sunset Cruise' },
+  T1C: { label: 'City Tour + Sunset Cruise' },
+  T1W: { label: 'Sunset Cruise + Wine' },
+  TA:  { label: 'Afternoon Cruise' },
+  TB:  { label: 'Balat + Sunset Cruise' },
+  TC:  { label: 'City Tour' },
+  TD:  { label: 'Dolmabahçe + Sunset Cruise' },
+  TN:  { label: 'Night Cruise' },
+  TS:  { label: 'Swimming Tour' },
+  PRV: { label: 'Private Tour' },
 };
 
 // ── DOM kısayolları ────────────────────────────────────────────
@@ -434,8 +440,8 @@ function renderTable() {
   // "All" (ya da birden çok tur kodu içeren herhangi bir görünüm) tur
   // koduna göre gruplanır; tek bir kod filtrelenmişse (TS/TC/PRV/TA/TN)
   // düz liste olarak kalır — grup başlığı gösterilmez.
-  const groupKey = (b) => SUNSET_CODES.includes(b.tour_code) ? 'sunset' : (b.tour_code || '—');
-  const GROUP_ORDER = ['sunset', 'PRV', 'TS', 'TC', 'TA', 'TN'];
+  const groupKey = (b) => b.tour_code || '—';
+  const GROUP_ORDER = ['T1', 'T1C', 'T1W', 'TB', 'TD', 'PRV', 'TS', 'TC', 'TA', 'TN'];
   const groups = new Map();
   for (const b of data) {
     const k = groupKey(b);
@@ -457,7 +463,7 @@ function renderTable() {
     if (!showGroupHeaders) return rowsHtml;
     const label = TOURCODE_META[k]?.label || k;
     const gs = calcStats(groupBookings);
-    return `<tr class="tour-group-row"><td colspan="13">${esc(label)} &nbsp;·&nbsp; ${gs.count} booking${gs.count === 1 ? '' : 's'} &nbsp;·&nbsp; ${gs.totalPax} pax</td></tr>` + rowsHtml;
+    return `<tr class="tour-group-row"><td colspan="13">${esc(label)} &nbsp;·&nbsp; ${gs.totalPax} pax</td></tr>` + rowsHtml;
   }).join('');
 
   // Event delegation
