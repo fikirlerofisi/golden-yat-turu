@@ -410,12 +410,12 @@ function renderTable() {
       <td style="text-align:center;font-weight:600">${b.pax}</td>
       <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
-      <td style="color:#374151;font-size:.75rem">${esc(b.phone)}</td>
+      <td class="cell-secondary">${esc(b.phone)}</td>
       <td>${payBadge(b.payment)}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
-      <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
+      <td class="cell-remarks">${esc(b.remarks)}</td>
       <td>
         <button class="act-btn edit"     data-edit="${b.id}"     title="Edit">✎</button>
         <button class="act-btn del"      data-del="${b.id}"      title="Delete">✕</button>
@@ -837,7 +837,7 @@ function yachtBadge(y) {
   if (y === 'River')       return `<span class="yd yd-river">River</span>`;
   if (y === 'River M')     return `<span class="yd yd-mega">River M</span>`;
   if (y === 'River Storm') return `<span class="yd yd-storm">Storm</span>`;
-  return y ? `<span class="yd" style="background:#ccc;color:#555">${esc(y)}</span>` : '<span style="color:#bbb">—</span>';
+  return y ? `<span class="yd yd-default">${esc(y)}</span>` : '<span class="yd-empty">—</span>';
 }
 
 function payBadge(p) {
@@ -1077,7 +1077,7 @@ function renderUnpaidTable() {
       <td>${esc(b.delivered_to || '—')}</td>
       <td>${esc(b.paid_by_profile?.full_name || '—')}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
-      <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
+      <td class="cell-remarks">${esc(b.remarks)}</td>
       <td><button class="act-btn edit" data-pay="${b.id}" title="Pay" style="width:auto;padding:0 8px;">Pay</button></td>
     </tr>`;
   }).join('');
