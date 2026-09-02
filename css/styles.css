@@ -403,6 +403,10 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 .pay-received::before { background: #22C55E; }
 .pay-unpaid   { background: #FEE2E2; color: #991B1B; }
 .pay-unpaid::before   { background: #EF4444; }
+.pay-noshow   { background: var(--blue-bg); color: var(--blue-dk); }
+.pay-noshow::before   { background: var(--blue); }
+.pay-refunded { background: var(--red-bg);  color: var(--red); }
+.pay-refunded::before { background: var(--red); }
 .unpaid-amt   { font-size: .68rem; font-weight: 700; color: #991B1B; white-space: nowrap; }
 
 /* Telefon / Not hücreleri — küçük, ikincil metin (önceden inline style) */

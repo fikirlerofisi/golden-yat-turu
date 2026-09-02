@@ -379,7 +379,7 @@ function bookingRowHtml(b) {
       <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td class="cell-secondary">${esc(b.phone)}</td>
-      <td>${payBadge(b.payment)}</td>
+      <td>${payBadge(b.payment, b.attendance_status)}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
@@ -888,7 +888,13 @@ function yachtBadge(y) {
   return y ? `<span class="yd yd-default">${esc(y)}</span>` : '<span class="yd-empty">—</span>';
 }
 
-function payBadge(p) {
+// Liste görünümünde Payment sütunu: Noshow/Refunded işaretli kayıtlarda
+// gerçek ödeme durumu yerine (ör. Unpaid) durum adı gösterilir — bu
+// sadece görsel bir tercih, altta yatan `payment` alanına dokunulmaz,
+// dolayısıyla Unpaid List gibi başka yerlerdeki filtreleme etkilenmez.
+function payBadge(p, attendanceStatus) {
+  if (attendanceStatus === 'noshow')   return `<span class="pay pay-noshow">Noshow</span>`;
+  if (attendanceStatus === 'refunded') return `<span class="pay pay-refunded">Refunded</span>`;
   if (!p) return '—';
   const cls = p === 'Received' ? 'pay-received' : p === 'Unpaid' ? 'pay-unpaid' : '';
   return `<span class="pay ${cls}">${esc(p)}</span>`;
