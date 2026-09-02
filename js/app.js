@@ -96,7 +96,7 @@ async function init() {
   // Sol menü (sidebar)
   document.querySelectorAll('.sidebar-link').forEach(btn => {
     btn.addEventListener('click', () => {
-      showView(btn.dataset.view, btn.dataset.filter || null);
+      showView(btn.dataset.view);
       closeSidebarMobile();
     });
   });
@@ -111,6 +111,16 @@ async function init() {
     state.date   = e.target.value;
     state.tourId = null;
     loadTours();
+  });
+
+  // Tour List — tur kodu filtre çubuğu (sol menüden buraya taşındı)
+  el('tourlist-filter-bar').querySelectorAll('.tourcode-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.tourCodeFilter = btn.dataset.filter || null;
+      el('tourlist-filter-bar').querySelectorAll('.tourcode-filter-btn')
+        .forEach(b => b.classList.toggle('active', b === btn));
+      renderTable(); renderStats();
+    });
   });
 
   // New butonu → seçenek yönetimi modalı
@@ -218,28 +228,25 @@ async function showApp() {
 }
 
 // ── Sol menü / sayfa geçişi ────────────────────────────────────
-function showView(view, filter = null) {
+function showView(view) {
   state.view = view;
-  state.tourCodeFilter = view === 'tourlist' ? filter : null;
 
   document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
   el('view-' + view).classList.remove('hidden');
 
   document.querySelectorAll('.sidebar-link').forEach(btn => {
-    const btnFilter = btn.dataset.filter || null;
-    btn.classList.toggle('active', btn.dataset.view === view && btnFilter === state.tourCodeFilter);
+    btn.classList.toggle('active', btn.dataset.view === view);
   });
 
-  const banner = el('tourcode-banner');
-  if (view === 'tourlist' && filter) {
-    banner.textContent = TOURCODE_META[filter]?.label || filter;
-    banner.classList.remove('hidden');
-  } else {
-    banner.classList.add('hidden');
+  if (view === 'tourlist') {
+    // Sayfaya her girişte filtre "All"a döner — tur kodu filtreleri
+    // artık sayfanın kendi kontrol şeridinde (bkz. #tourlist-filter-bar).
+    state.tourCodeFilter = null;
+    el('tourlist-filter-bar').querySelectorAll('.tourcode-filter-btn')
+      .forEach(b => b.classList.toggle('active', !b.dataset.filter));
+    renderTable(); renderStats();
   }
-
-  if (view === 'tourlist') { renderTable(); renderStats(); }
-  if (view === 'unpaid')   { loadUnpaidList(); }
+  if (view === 'unpaid') { loadUnpaidList(); }
 }
 
 function closeSidebarMobile() {
@@ -342,6 +349,43 @@ function filtered() {
   return data;
 }
 
+function bookingRowHtml(b) {
+  const statusClass = b.attendance_status === 'refunded' ? 'row-refunded'
+                     : b.attendance_status === 'noshow'   ? 'row-noshow'
+                     : b.checked_in ? 'row-arrived' : '';
+  const rc = statusClass + (selected.has(b.id) ? ' row-selected' : '');
+  return `<tr class="${rc}">
+      <td class="col-chk">
+        <button class="chk-btn ${b.checked_in ? 'on' : ''}"
+                data-id="${b.id}"
+                title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
+          ${b.checked_in ? '✓' : ''}
+        </button>
+      </td>
+      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
+      <td class="col-name">
+        <div class="name-cell">
+          <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''}/>
+          ${esc(b.name)}
+        </div>
+      </td>
+      <td style="text-align:center;font-weight:600">${b.pax}</td>
+      <td>${esc(b.source)}</td>
+      <td class="col-yacht">${yachtBadge(b.yacht)}</td>
+      <td class="cell-secondary">${esc(b.phone)}</td>
+      <td>${payBadge(b.payment)}</td>
+      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
+      <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
+      <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
+      <td class="cell-remarks">${esc(b.remarks)}</td>
+      <td>
+        <button class="act-btn edit"     data-edit="${b.id}"     title="Edit">✎</button>
+        <button class="act-btn del"      data-del="${b.id}"      title="Delete">✕</button>
+        <button class="act-btn settings" data-settings="${b.id}" title="Status">⚙</button>
+      </td>
+    </tr>`;
+}
+
 function renderTable() {
   const tbody = el('tbody');
   const data  = filtered();
@@ -379,48 +423,41 @@ function renderTable() {
     .sort((a, b) => yachtFirstAssigned[a] - yachtFirstAssigned[b])
     .forEach((y, i) => { yachtRank[y] = i; });
 
-  const sorted = [...data].sort((a, b) => {
+  const byYachtThenArrival = (a, b) => {
     const rankA = a.yacht ? yachtRank[a.yacht] : Infinity;
     const rankB = b.yacht ? yachtRank[b.yacht] : Infinity;
     if (rankA !== rankB) return rankA - rankB;
     if (a.checked_in === b.checked_in) return 0;
     return a.checked_in ? -1 : 1;
-  });
+  };
 
-  tbody.innerHTML = sorted.map(b => {
-    const statusClass = b.attendance_status === 'refunded' ? 'row-refunded'
-                       : b.attendance_status === 'noshow'   ? 'row-noshow'
-                       : b.checked_in ? 'row-arrived' : '';
-    const rc = statusClass + (selected.has(b.id) ? ' row-selected' : '');
-    return `<tr class="${rc}">
-      <td class="col-chk">
-        <button class="chk-btn ${b.checked_in ? 'on' : ''}"
-                data-id="${b.id}"
-                title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
-        </button>
-      </td>
-      <td style="font-weight:600">${esc(b.tour_code || '')}</td>
-      <td class="col-name">
-        <div class="name-cell">
-          <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''}/>
-          ${esc(b.name)}
-        </div>
-      </td>
-      <td style="text-align:center;font-weight:600">${b.pax}</td>
-      <td>${esc(b.source)}</td>
-      <td class="col-yacht">${yachtBadge(b.yacht)}</td>
-      <td class="cell-secondary">${esc(b.phone)}</td>
-      <td>${payBadge(b.payment)}</td>
-      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
-      <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
-      <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
-      <td class="cell-remarks">${esc(b.remarks)}</td>
-      <td>
-        <button class="act-btn edit"     data-edit="${b.id}"     title="Edit">✎</button>
-        <button class="act-btn del"      data-del="${b.id}"      title="Delete">✕</button>
-        <button class="act-btn settings" data-settings="${b.id}" title="Status">⚙</button>
-      </td>
-    </tr>`;
+  // "All" (ya da birden çok tur kodu içeren herhangi bir görünüm) tur
+  // koduna göre gruplanır; tek bir kod filtrelenmişse (TS/TC/PRV/TA/TN)
+  // düz liste olarak kalır — grup başlığı gösterilmez.
+  const groupKey = (b) => SUNSET_CODES.includes(b.tour_code) ? 'sunset' : (b.tour_code || '—');
+  const GROUP_ORDER = ['sunset', 'PRV', 'TS', 'TC', 'TA', 'TN'];
+  const groups = new Map();
+  for (const b of data) {
+    const k = groupKey(b);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(b);
+  }
+  const groupKeys = [...groups.keys()].sort((a, b) => {
+    const ia = GROUP_ORDER.indexOf(a), ib = GROUP_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+  const showGroupHeaders = groupKeys.length > 1;
+
+  tbody.innerHTML = groupKeys.map(k => {
+    const groupBookings = [...groups.get(k)].sort(byYachtThenArrival);
+    const rowsHtml = groupBookings.map(bookingRowHtml).join('');
+    if (!showGroupHeaders) return rowsHtml;
+    const label = TOURCODE_META[k]?.label || k;
+    const gs = calcStats(groupBookings);
+    return `<tr class="tour-group-row"><td colspan="13">${esc(label)} &nbsp;·&nbsp; ${gs.count} booking${gs.count === 1 ? '' : 's'} &nbsp;·&nbsp; ${gs.totalPax} pax</td></tr>` + rowsHtml;
   }).join('');
 
   // Event delegation
@@ -1069,6 +1106,7 @@ function renderUnpaidTable() {
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
                 data-id="${b.id}"
                 title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
+          ${b.checked_in ? '✓' : ''}
         </button>
       </td>
       <td style="font-weight:600">${esc(b.tour_code || '')}</td>

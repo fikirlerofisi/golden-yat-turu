@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=37"/>
+  <link rel="stylesheet" href="css/styles.css?v=38"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=37",
-      "./js/auth.js":     "./js/auth.js?v=37",
-      "./js/tours.js":    "./js/tours.js?v=37",
-      "./js/bookings.js": "./js/bookings.js?v=37",
-      "./js/checkin.js":  "./js/checkin.js?v=37",
-      "./js/realtime.js": "./js/realtime.js?v=37",
-      "./js/config.js":   "./js/config.js?v=37",
-      "./js/supabase.js": "./js/supabase.js?v=37"
+      "./js/app.js":      "./js/app.js?v=38",
+      "./js/auth.js":     "./js/auth.js?v=38",
+      "./js/tours.js":    "./js/tours.js?v=38",
+      "./js/bookings.js": "./js/bookings.js?v=38",
+      "./js/checkin.js":  "./js/checkin.js?v=38",
+      "./js/realtime.js": "./js/realtime.js?v=38",
+      "./js/config.js":   "./js/config.js?v=38",
+      "./js/supabase.js": "./js/supabase.js?v=38"
     }
   }
   </script>
@@ -68,14 +68,7 @@
       </div>
       <nav class="sidebar-nav">
         <button class="sidebar-link" data-view="dashboard">Dashboard</button>
-        <div class="sidebar-group-label">Tours</div>
-        <button class="sidebar-link" data-view="tourlist" data-filter="">Tour List</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="sunset">Sunset</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="PRV">PRV</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="TS">TS</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="TC">TC</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="TA">TA</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="TN">TN</button>
+        <button class="sidebar-link" data-view="tourlist">Tour List</button>
         <div class="sidebar-group-label">Finance</div>
         <button class="sidebar-link" data-view="unpaid">Unpaid List</button>
         <button class="sidebar-link" data-view="alcohol">Alcohol Sales</button>
@@ -93,11 +86,18 @@
       </section>
 
       <section id="view-tourlist" class="view-section hidden">
-        <div class="tourcode-banner hidden" id="tourcode-banner"></div>
-
         <!-- Kontrol şeridi -->
         <div class="ctrl-bar">
           <input id="date-input" type="date" aria-label="Select date"/>
+          <div class="tourcode-filter-bar" id="tourlist-filter-bar">
+            <button class="tourcode-filter-btn active" data-filter="">All</button>
+            <button class="tourcode-filter-btn" data-filter="sunset">Sunset</button>
+            <button class="tourcode-filter-btn" data-filter="PRV">PRV</button>
+            <button class="tourcode-filter-btn" data-filter="TS">TS</button>
+            <button class="tourcode-filter-btn" data-filter="TC">TC</button>
+            <button class="tourcode-filter-btn" data-filter="TA">TA</button>
+            <button class="tourcode-filter-btn" data-filter="TN">TN</button>
+          </div>
           <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
           <button id="add-booking-btn" disabled>+ New Booking</button>
           <button id="crews-btn" disabled>Crews</button>
@@ -463,6 +463,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=37"></script>
+<script type="module" src="js/app.js?v=38"></script>
 </body>
 </html>

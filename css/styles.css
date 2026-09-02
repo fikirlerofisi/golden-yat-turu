@@ -321,7 +321,17 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 .chk-all-lbl input:disabled { cursor: default; opacity: .5; }
 
 /* Veri satırları */
-.main-table tbody tr { border-bottom: 1px solid var(--gray1); transition: background-color var(--tr); }
+.main-table tbody tr { border-bottom: 1px solid #E3E6EA; transition: background-color var(--tr); }
+
+/* Tur grubu başlık satırı ("All" gibi birden çok tur kodu görünürken) */
+.tour-group-row td {
+  background: var(--gold-tint) !important;
+  color: var(--navy); font-weight: 700; font-size: .74rem;
+  padding: 8px 10px; height: auto;
+  border-bottom: 1px solid rgba(201,151,43,.3);
+  border-top: 1px solid rgba(201,151,43,.3);
+}
+.tour-group-row:first-child td { border-top: none; }
 .main-table tbody tr:hover { background-color: #FAFAF8; }
 .main-table tbody td {
   padding: 0 10px;
