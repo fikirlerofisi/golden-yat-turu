@@ -277,10 +277,10 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   flex: 0 0 auto; min-width: 44px;
   display: flex; flex-direction: column; justify-content: center;
 }
-.stat-num { font-size: 1.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
+.stat-num { font-size: .95rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
 .stat-item.arrived .stat-num { color: #6ee7b7; }
 .stat-item.noshow  .stat-num { color: #fca5a5; }
-.stat-lbl { font-size: .58rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 3px; }
+.stat-lbl { font-size: .64rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 3px; }
 
 /* TABLO KABI — kalan yüksekliği kapla, scroll burada */
 .table-scroll {
@@ -484,11 +484,16 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 .lf-chip.s-noshow  b { color: #fca5a5; }
 .lf-chip.s-checked b { color: var(--gold2); }
 .list-footer-bar .lf-yachts {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px;
-  padding: 6px 14px; font-size: .68rem; font-weight: 500;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 14px;
+  padding: 6px 14px; font-size: .64rem; font-weight: 600; letter-spacing: .04em;
+  color: rgba(255,255,255,.5);
   border-top: 1px solid rgba(255,255,255,.12);
 }
-.list-footer-bar .lf-yachts .yd { vertical-align: middle; }
+.list-footer-bar .lf-yachts .yd { vertical-align: middle; font-size: .64rem; }
+.list-footer-bar .lf-yachts b {
+  font-size: .95rem; font-weight: 800; letter-spacing: 0;
+  color: #fff; font-variant-numeric: tabular-nums;
+}
 
 /* Seçim aksiyon çubuğu — ctrl-bar ile aynı koyu zemin, altın üst çizgi
    ile vurgulanan yüzen araç çubuğu */
