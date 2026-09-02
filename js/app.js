@@ -1053,13 +1053,12 @@ function renderUnpaidTable() {
   }
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="14">No unpaid bookings found.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="13">No unpaid bookings found.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = data.map(b => {
     const rc = b.paid_method ? 'row-paid' : '';
-    const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
     return `<tr class="${rc}">
       <td class="col-chk">
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
@@ -1078,7 +1077,6 @@ function renderUnpaidTable() {
       <td>${esc(b.delivered_to || '—')}</td>
       <td>${esc(b.paid_by_profile?.full_name || '—')}</td>
       <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
-      <td>${esc(crew?.tour_guide || '')}</td>
       <td style="color:#6b7280;max-width:110px;overflow:hidden;text-overflow:ellipsis">${esc(b.remarks)}</td>
       <td><button class="act-btn edit" data-pay="${b.id}" title="Pay" style="width:auto;padding:0 8px;">Pay</button></td>
     </tr>`;
