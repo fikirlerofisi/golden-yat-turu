@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=36"/>
+  <link rel="stylesheet" href="css/styles.css?v=37"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=36",
-      "./js/auth.js":     "./js/auth.js?v=36",
-      "./js/tours.js":    "./js/tours.js?v=36",
-      "./js/bookings.js": "./js/bookings.js?v=36",
-      "./js/checkin.js":  "./js/checkin.js?v=36",
-      "./js/realtime.js": "./js/realtime.js?v=36",
-      "./js/config.js":   "./js/config.js?v=36",
-      "./js/supabase.js": "./js/supabase.js?v=36"
+      "./js/app.js":      "./js/app.js?v=37",
+      "./js/auth.js":     "./js/auth.js?v=37",
+      "./js/tours.js":    "./js/tours.js?v=37",
+      "./js/bookings.js": "./js/bookings.js?v=37",
+      "./js/checkin.js":  "./js/checkin.js?v=37",
+      "./js/realtime.js": "./js/realtime.js?v=37",
+      "./js/config.js":   "./js/config.js?v=37",
+      "./js/supabase.js": "./js/supabase.js?v=37"
     }
   }
   </script>
@@ -53,9 +53,6 @@
   <!-- Topbar -->
   <header class="topbar">
     <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Menu">☰</button>
-    <div class="brand">
-      <img src="Logo/GoldenCity.png" alt="Golden City Tours" class="topbar-logo"/>
-    </div>
     <div class="top-right">
       <span id="user-name"></span>
       <button id="logout-btn">Exit</button>
@@ -66,19 +63,22 @@
     <!-- Sol menü -->
     <div class="sidebar-backdrop hidden" id="sidebar-backdrop"></div>
     <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="Logo/GoldenCity.png" alt="Golden City Tours"/>
+      </div>
       <nav class="sidebar-nav">
-        <button class="sidebar-link" data-view="dashboard">🏠 Dashboard</button>
+        <button class="sidebar-link" data-view="dashboard">Dashboard</button>
         <div class="sidebar-group-label">Tours</div>
-        <button class="sidebar-link" data-view="tourlist" data-filter="">📋 Tour List</button>
-        <button class="sidebar-link" data-view="tourlist" data-filter="sunset">🌅 Sunset</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="">Tour List</button>
+        <button class="sidebar-link" data-view="tourlist" data-filter="sunset">Sunset</button>
         <button class="sidebar-link" data-view="tourlist" data-filter="PRV">PRV</button>
         <button class="sidebar-link" data-view="tourlist" data-filter="TS">TS</button>
         <button class="sidebar-link" data-view="tourlist" data-filter="TC">TC</button>
         <button class="sidebar-link" data-view="tourlist" data-filter="TA">TA</button>
         <button class="sidebar-link" data-view="tourlist" data-filter="TN">TN</button>
         <div class="sidebar-group-label">Finance</div>
-        <button class="sidebar-link" data-view="unpaid">💳 Unpaid List</button>
-        <button class="sidebar-link" data-view="alcohol">🍷 Alcohol Sales</button>
+        <button class="sidebar-link" data-view="unpaid">Unpaid List</button>
+        <button class="sidebar-link" data-view="alcohol">Alcohol Sales</button>
       </nav>
     </aside>
 
@@ -87,7 +87,7 @@
 
       <section id="view-dashboard" class="view-section hidden">
         <div class="view-placeholder">
-          <h2>🏠 Dashboard</h2>
+          <h2>Dashboard</h2>
           <p>Content coming soon — we'll design this together.</p>
         </div>
       </section>
@@ -100,7 +100,7 @@
           <input id="date-input" type="date" aria-label="Select date"/>
           <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
           <button id="add-booking-btn" disabled>+ New Booking</button>
-          <button id="crews-btn" disabled>⚓ Crews</button>
+          <button id="crews-btn" disabled>Crews</button>
           <button id="new-tour-btn">New</button>
         </div>
 
@@ -163,7 +163,7 @@
           <input id="unpaid-date-input" type="date" aria-label="Select date"/>
           <div class="tourcode-filter-bar" id="unpaid-filter-bar">
             <button class="tourcode-filter-btn active" data-ufilter="">All</button>
-            <button class="tourcode-filter-btn" data-ufilter="sunset">🌅 Sunset</button>
+            <button class="tourcode-filter-btn" data-ufilter="sunset">Sunset</button>
             <button class="tourcode-filter-btn" data-ufilter="PRV">PRV</button>
             <button class="tourcode-filter-btn" data-ufilter="TS">TS</button>
             <button class="tourcode-filter-btn" data-ufilter="TC">TC</button>
@@ -201,7 +201,7 @@
 
       <section id="view-alcohol" class="view-section hidden">
         <div class="view-placeholder">
-          <h2>🍷 Alcohol Sales</h2>
+          <h2>Alcohol Sales</h2>
           <p>Content coming soon — we'll design this together.</p>
         </div>
       </section>
@@ -364,10 +364,10 @@
       <!-- Adım 1: Kategori seçimi -->
       <div id="opt-step1">
         <div class="opt-cat-grid">
-          <button class="opt-cat-btn" data-cat="yacht">⛵ Yacht</button>
-          <button class="opt-cat-btn" data-cat="tour_guide">🧭 Tour Guide</button>
-          <button class="opt-cat-btn" data-cat="tour_code">📋 Tour</button>
-          <button class="opt-cat-btn" data-cat="source">🌐 Source</button>
+          <button class="opt-cat-btn" data-cat="yacht">Yacht</button>
+          <button class="opt-cat-btn" data-cat="tour_guide">Tour Guide</button>
+          <button class="opt-cat-btn" data-cat="tour_code">Tour</button>
+          <button class="opt-cat-btn" data-cat="source">Source</button>
         </div>
       </div>
 
@@ -393,7 +393,7 @@
      onclick="if(event.target===this)document.getElementById('crews-modal').classList.add('hidden')">
   <div class="modal-box" style="max-width:560px">
     <div class="modal-head">
-      <h2>⚓ Yacht Crews</h2>
+      <h2>Yacht Crews</h2>
       <button class="modal-x" id="crews-close" aria-label="Close">✕</button>
     </div>
     <div class="modal-body" id="crews-body">
@@ -411,13 +411,13 @@
      onclick="if(event.target===this)document.getElementById('status-modal').classList.add('hidden')">
   <div class="modal-box" style="max-width:340px">
     <div class="modal-head">
-      <h2>⚙ Booking Status</h2>
+      <h2>Booking Status</h2>
       <button class="modal-x" id="status-close" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="status-opt-grid">
-        <button class="status-opt-btn" id="status-btn-noshow" data-status="noshow">🔵 Noshow</button>
-        <button class="status-opt-btn" id="status-btn-refunded" data-status="refunded">🔴 Refunded</button>
+        <button class="status-opt-btn" id="status-btn-noshow" data-status="noshow">Noshow</button>
+        <button class="status-opt-btn" id="status-btn-refunded" data-status="refunded">Refunded</button>
       </div>
       <button class="status-clear-btn" id="status-clear">Clear Status</button>
     </div>
@@ -433,7 +433,7 @@
      onclick="if(event.target===this)document.getElementById('pay-modal').classList.add('hidden')">
   <div class="modal-box" style="max-width:380px">
     <div class="modal-head">
-      <h2>💳 Record Payment</h2>
+      <h2>Record Payment</h2>
       <button class="modal-x" id="pay-close" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
@@ -463,6 +463,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=36"></script>
+<script type="module" src="js/app.js?v=37"></script>
 </body>
 </html>

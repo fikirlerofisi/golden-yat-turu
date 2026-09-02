@@ -38,7 +38,7 @@ const RECEIVED_DEFAULT_SOURCES = OPTIONS.sources.filter(s => s && s !== 'Office'
 const isReceivedDefaultSource = (source) => RECEIVED_DEFAULT_SOURCES.includes(source);
 const SUNSET_CODES = ['T1', 'T1C', 'T1W', 'TD', 'TB'];
 const TOURCODE_META = {
-  sunset: { label: '🌅 Sunset' },
+  sunset: { label: 'Sunset' },
   TA:     { label: 'TA' },
   TN:     { label: 'TN' },
   TS:     { label: 'TS' },
@@ -397,7 +397,6 @@ function renderTable() {
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
                 data-id="${b.id}"
                 title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
-          ${b.checked_in ? '✓' : '○'}
         </button>
       </td>
       <td style="font-weight:600">${esc(b.tour_code || '')}</td>
@@ -469,12 +468,18 @@ function renderFooter(data) {
     byYacht[b.yacht] = (byYacht[b.yacht] || 0) + (b.pax || 0);
   }
   const yachtSummary = Object.entries(byYacht)
-    .map(([y, p]) => `${yachtBadge(y)} = <b>${p}</b>`)
+    .map(([y, p]) => `${yachtBadge(y)} <b>${p}</b>`)
     .join('&nbsp;&nbsp;&nbsp;');
 
   el('list-footer-bar').innerHTML = `
-    <div class="lf-stats">📊 ${s.totalPax} pax &nbsp; <span class="s-arrived">▲ ${s.arrival}</span> <span class="s-noshow">▼ ${s.noshow}</span> &nbsp; <span class="s-checked">✅ ${checkedNotSent} Checked</span> &nbsp; 👶 ${s.totalBaby} baby</div>
-  ` + (yachtSummary ? `<div class="lf-yachts">⛵ ${yachtSummary}</div>` : '');
+    <div class="lf-stats">
+      <span class="lf-chip"><b>${s.totalPax}</b> Pax</span>
+      <span class="lf-chip s-arrived"><b>${s.arrival}</b> Arrived</span>
+      <span class="lf-chip s-noshow"><b>${s.noshow}</b> Absent</span>
+      <span class="lf-chip s-checked"><b>${checkedNotSent}</b> Checked</span>
+      <span class="lf-chip"><b>${s.totalBaby}</b> Baby</span>
+    </div>
+  ` + (yachtSummary ? `<div class="lf-yachts">${yachtSummary}</div>` : '');
 }
 
 // ── İstatistik çubuğu ──────────────────────────────────────────
@@ -710,10 +715,10 @@ async function autoCreateTour() {
 let optCat = null; // aktif kategori
 
 const OPT_META = {
-  yacht:      { label: '⛵ Yacht',      key: 'yachts',     defaults: [] },
-  tour_guide: { label: '🧭 Tour Guide', key: 'tourGuides', defaults: [] },
-  tour_code:  { label: '📋 Tour',       key: 'tourCodes',  defaults: [] },
-  source:     { label: '🌐 Source',     key: 'sources',    defaults: [] },
+  yacht:      { label: 'Yacht',      key: 'yachts',     defaults: [] },
+  tour_guide: { label: 'Tour Guide', key: 'tourGuides', defaults: [] },
+  tour_code:  { label: 'Tour',       key: 'tourCodes',  defaults: [] },
+  source:     { label: 'Source',     key: 'sources',    defaults: [] },
 };
 
 async function loadAppOptions() {
@@ -994,7 +999,7 @@ async function saveCrew(yacht, btn) {
     state.crews[yacht] = { tour_guide: guide, staff };
     renderTable();
     const old = btn.textContent;
-    btn.textContent = '✓ Saved';
+    btn.textContent = 'Saved';
     btn.classList.add('saved');
     setTimeout(() => { btn.textContent = old; btn.classList.remove('saved'); btn.disabled = false; }, 1500);
   } catch (err) {
@@ -1064,7 +1069,6 @@ function renderUnpaidTable() {
         <button class="chk-btn ${b.checked_in ? 'on' : ''}"
                 data-id="${b.id}"
                 title="${b.checked_in ? 'Mark as absent' : 'Mark as here'}">
-          ${b.checked_in ? '✓' : '○'}
         </button>
       </td>
       <td style="font-weight:600">${esc(b.tour_code || '')}</td>

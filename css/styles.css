@@ -114,9 +114,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   border-bottom: 2px solid var(--gold);
   z-index: 100;
 }
-.brand { display: flex; align-items: center; overflow: hidden; max-height: 52px; }
-.topbar-logo { height: 38px !important; max-height: 38px !important; width: auto !important; max-width: 140px !important; object-fit: contain; display: block; flex-shrink: 0; }
-.top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.top-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
 #user-name { font-size: .78rem; font-weight: 500; color: var(--gold-pale); white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 #logout-btn { padding: 5px 12px; border: 1.5px solid rgba(201,151,43,.4); border-radius: var(--radius-full); background: transparent; color: var(--gold-pale); font-family: var(--font); font-size: .72rem; font-weight: 500; cursor: pointer; transition: var(--tr); }
 #logout-btn:hover { border-color: var(--gold); color: var(--gold2); }
@@ -136,6 +134,12 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   flex-shrink: 0; width: 190px; overflow-y: auto;
   background: var(--navy2); border-right: 1px solid rgba(201,151,43,.18);
 }
+.sidebar-brand {
+  display: flex; justify-content: center;
+  padding: 18px 16px 14px; border-bottom: 1px solid rgba(201,151,43,.18);
+}
+.sidebar-brand img { width: 96px; height: auto; display: block; }
+
 .sidebar-nav { display: flex; flex-direction: column; padding: 12px 8px; gap: 2px; }
 .sidebar-group-label {
   margin: 10px 8px 2px; font-size: .65rem; font-weight: 700; letter-spacing: .09em;
@@ -183,104 +187,100 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
   }
 }
 
-/* KONTROL ŞERIDI — açık zemin üzerinde; tam olarak var(--ctrlbar-h) yüksekliğinde */
+/* KONTROL ŞERIDI — koyu lacivert; tam olarak var(--ctrlbar-h) yüksekliğinde */
 .ctrl-bar {
   flex-shrink: 0;
   height: var(--ctrlbar-h);
-  background: var(--white);
+  background: var(--navy);
   display: flex; align-items: center;
   padding: 0 14px; gap: 8px;
-  border-bottom: 1px solid var(--gray2);
+  border-bottom: 1px solid rgba(201,151,43,.18);
   overflow-x: auto; scrollbar-width: none;
 }
 .ctrl-bar::-webkit-scrollbar { display: none; }
 
 #date-input {
-  padding: 5px 8px; background: var(--gray1);
-  border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
-  color: var(--navy); font-family: var(--font); font-size: .78rem; font-weight: 600;
-  cursor: pointer; outline: none; flex-shrink: 0;
+  padding: 5px 8px; background: rgba(255,255,255,.09);
+  border: 1.5px solid rgba(201,151,43,.3); border-radius: var(--radius-sm);
+  color: #fff; font-family: var(--font); font-size: .78rem; font-weight: 600;
+  cursor: pointer; outline: none; color-scheme: dark; flex-shrink: 0;
 }
 #date-input:focus { border-color: var(--gold); }
 #date-label {
-  font-size: .85rem; font-weight: 700; color: var(--navy);
+  font-size: .85rem; font-weight: 700; color: var(--gold2);
   white-space: nowrap; flex: 1; min-width: 80px;
 }
 #tour-selector {
   padding: 5px 24px 5px 9px;
-  background: var(--gray1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23AAA'/%3E%3C/svg%3E") no-repeat right 7px center;
-  border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
-  color: var(--navy); font-family: var(--font); font-size: .78rem; font-weight: 500;
+  background: rgba(255,255,255,.09) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23E8B84B'/%3E%3C/svg%3E") no-repeat right 7px center;
+  border: 1.5px solid rgba(201,151,43,.3); border-radius: var(--radius-sm);
+  color: #fff; font-family: var(--font); font-size: .78rem; font-weight: 500;
   cursor: pointer; outline: none; appearance: none; flex-shrink: 0; min-width: 80px;
 }
 #tour-selector:focus { border-color: var(--gold); }
-#new-tour-btn {
-  margin-left: auto;
-  padding: 6px 14px; background: linear-gradient(135deg,var(--gold),var(--gold2));
-  border: none; border-radius: var(--radius-sm); color: var(--navy);
-  font-family: var(--font); font-size: .78rem; font-weight: 700;
+#tour-selector option { background: var(--navy2); }
+
+/* İkincil butonlar (Crews / New tur) — koyu şerit üzerinde açık, "hafif" buton */
+#crews-btn, #new-tour-btn {
+  padding: 6px 14px; background: var(--gray1);
+  border: 1.5px solid var(--gray2); border-radius: var(--radius-sm);
+  color: var(--navy); font-family: var(--font); font-size: .78rem; font-weight: 700;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
-  box-shadow: var(--shadow-1);
 }
-#new-tour-btn:hover { filter: brightness(1.05); }
+#crews-btn:hover:not(:disabled), #new-tour-btn:hover { background: #fff; border-color: var(--gray3); }
+#crews-btn:disabled { opacity: .4; cursor: not-allowed; }
+#new-tour-btn { margin-left: auto; }
 
 /* Aktif tur bilgi etiketi */
 .tour-info-chip {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 10px; border-radius: var(--radius-sm);
-  background: var(--gold-tint); border: 1px solid rgba(201,151,43,.35);
-  color: var(--gold-dk); font-size: .78rem; font-weight: 600;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(201,151,43,.3);
+  color: var(--gold-pale); font-size: .78rem; font-weight: 500;
   white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
   cursor: pointer;
 }
 .tour-info-chip:empty { display: none; }
 .search-box {
   padding: 5px 9px 5px 28px;
-  border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
-  background: var(--gray1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 8px center;
-  color: var(--navy); font-family: var(--font); font-size: .78rem; outline: none;
+  border: 1.5px solid rgba(255,255,255,.15); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 8px center;
+  color: #fff; font-family: var(--font); font-size: .78rem; outline: none;
   min-width: 120px; flex: 1; max-width: 220px; transition: var(--tr);
 }
 .search-box:focus { border-color: var(--gold); }
-.search-box::placeholder { color: var(--gray3); }
+.search-box::placeholder { color: rgba(255,255,255,.35); }
+
+/* Birincil aksiyon — altın gradient (mockup'taki "+New booking" ile aynı) */
 #add-booking-btn {
-  padding: 6px 14px; background: var(--green); border: none; border-radius: var(--radius-sm);
-  color: #fff; font-family: var(--font); font-size: .72rem; font-weight: 700;
+  padding: 6px 14px; background: linear-gradient(135deg,var(--gold),var(--gold2));
+  border: none; border-radius: var(--radius-sm); color: var(--navy);
+  font-family: var(--font); font-size: .78rem; font-weight: 700;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
 }
-#add-booking-btn:hover { background: var(--green-dk); }
+#add-booking-btn:hover:not(:disabled) { filter: brightness(1.06); }
 #add-booking-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-/* İSTATİSTİK ÇUBUĞU — tam olarak var(--statsbar-h) yüksekliğinde */
+/* İSTATİSTİK ÇUBUĞU — koyu lacivert; tam olarak var(--statsbar-h) yüksekliğinde */
 #stats-bar {
   flex-shrink: 0;
   height: var(--statsbar-h);
   display: flex; align-items: center;
-  gap: 26px;
+  gap: 30px;
   padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid var(--gray2);
+  background: var(--navy);
+  border-bottom: 1px solid rgba(201,151,43,.18);
   overflow-x: auto; scrollbar-width: none;
 }
 #stats-bar::-webkit-scrollbar { display: none; }
 .stat-item {
   flex: 0 0 auto; min-width: 44px;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 4px 0 5px; position: relative;
 }
-.stat-item::after { content: ''; position: absolute; bottom: 0; left: 0; right: 10px; height: 3px; border-radius: 2px; }
-.stat-item.arrived::after { background: var(--green); }
-.stat-item.noshow::after  { background: var(--red); }
-.stat-item.total::after   { background: var(--navy); }
-.stat-item.baby::after    { background: var(--gold); }
-.stat-item.cnt::after     { background: var(--gray3); }
-.stat-num { font-size: 1.45rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.stat-item.arrived .stat-num { color: var(--green-dk); }
-.stat-item.noshow  .stat-num { color: var(--red); }
-.stat-item.total   .stat-num { color: var(--navy); }
-.stat-item.baby    .stat-num { color: #92400e; }
-.stat-item.cnt     .stat-num { color: var(--gray4); }
-.stat-lbl { font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gray3); margin-top: 3px; }
+.stat-num { font-size: 1.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
+.stat-item.arrived .stat-num { color: #6ee7b7; }
+.stat-item.noshow  .stat-num { color: #fca5a5; }
+.stat-lbl { font-size: .58rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 3px; }
 
 /* TABLO KABI — kalan yüksekliği kapla, scroll burada */
 .table-scroll {
@@ -432,15 +432,15 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 .status-clear-btn:hover { border-color: var(--red); color: var(--red); }
 .status-opt-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-/* Unpaid List — tur kodu filtre çubuğu (açık zemin üzerinde) */
+/* Unpaid List — tur kodu filtre çubuğu (koyu ctrl-bar üzerinde) */
 .tourcode-filter-bar { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
 .tourcode-filter-btn {
-  padding: 5px 12px; background: var(--gray1);
-  border: 1.5px solid var(--gray2); border-radius: var(--radius-full);
-  color: var(--gray4); font-family: var(--font); font-size: .72rem; font-weight: 600;
+  padding: 5px 12px; background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(255,255,255,.18); border-radius: var(--radius-full);
+  color: rgba(255,255,255,.75); font-family: var(--font); font-size: .72rem; font-weight: 600;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
 }
-.tourcode-filter-btn:hover { border-color: var(--gold); color: var(--navy); }
+.tourcode-filter-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
 .tourcode-filter-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold2)); border-color: transparent; color: var(--navy); }
 
 /* Unpaid List — ödemesi alınmış satır */
@@ -458,25 +458,35 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
   box-shadow: 0 -4px 12px rgba(10,24,48,.12);
 }
 .list-footer-bar .lf-stats {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 18px;
   padding: 8px 14px; white-space: nowrap; overflow-x: auto; scrollbar-width: none;
 }
+.lf-chip {
+  display: inline-flex; align-items: baseline; gap: 5px;
+  font-size: .64rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+}
+.lf-chip b {
+  font-size: .95rem; font-weight: 800; letter-spacing: 0; text-transform: none;
+  color: #fff; font-variant-numeric: tabular-nums;
+}
+.lf-chip.s-arrived b { color: #6ee7b7; }
+.lf-chip.s-noshow  b { color: #fca5a5; }
+.lf-chip.s-checked b { color: var(--gold2); }
 .list-footer-bar .lf-yachts {
-  padding: 6px 14px; white-space: normal; font-size: .68rem; font-weight: 500;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px;
+  padding: 6px 14px; font-size: .68rem; font-weight: 500;
   border-top: 1px solid rgba(255,255,255,.12);
 }
 .list-footer-bar .lf-yachts .yd { vertical-align: middle; }
-.s-arrived { color: #4ade80; font-size: .9rem; }
-.s-noshow  { color: #f87171; font-size: .9rem; }
-.s-checked { color: #fbbf24; font-size: .9rem; }
 
-/* Seçim aksiyon çubuğu — açık zemin, altın üst çizgi ile vurgulanan
-   yüzen araç çubuğu */
+/* Seçim aksiyon çubuğu — ctrl-bar ile aynı koyu zemin, altın üst çizgi
+   ile vurgulanan yüzen araç çubuğu */
 .sel-bar {
   flex-shrink: 0;
   display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
   padding: 8px 14px;
-  background: var(--white); border-bottom: 2px solid var(--gold);
-  box-shadow: var(--shadow-1);
+  background: var(--navy); border-bottom: 2px solid var(--gold);
   animation: fadeInBar .15s ease;
 }
 @keyframes fadeInBar { from{opacity:0} to{opacity:1} }
@@ -486,20 +496,21 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
   border: none; color: var(--navy); font-size: 1.05rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.sel-count { color: var(--navy); font-size: .8rem; font-weight: 700; white-space: nowrap; }
-.sel-sep   { color: var(--gray2); }
+.sel-count { color: var(--gold2); font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.sel-sep   { color: rgba(255,255,255,.2); }
 .sel-field { display: flex; align-items: center; gap: 5px; }
 .sel-field label {
-  color: var(--gray4); font-size: .67rem; font-weight: 700;
+  color: rgba(255,255,255,.6); font-size: .67rem; font-weight: 700;
   letter-spacing: .06em; white-space: nowrap;
 }
 .sel-field select {
   padding: 5px 22px 5px 8px;
-  background: var(--gray1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23AAA'/%3E%3C/svg%3E") no-repeat right 7px center;
-  border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
-  color: var(--navy); font-family: var(--font); font-size: .76rem;
+  background: #1E3F6E url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23E8B84B'/%3E%3C/svg%3E") no-repeat right 7px center;
+  border: 1.5px solid rgba(201,151,43,.35); border-radius: var(--radius-sm);
+  color: #fff; font-family: var(--font); font-size: .76rem;
   appearance: none; outline: none; cursor: pointer; min-width: 88px;
 }
+.sel-field select option { background: var(--navy2); }
 .btn-sel-apply {
   padding: 6px 14px;
   background: linear-gradient(135deg, var(--gold), var(--gold2));
@@ -511,11 +522,11 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 .btn-sel-apply:not(:disabled):hover { filter: brightness(1.08); }
 .btn-sel-clear {
   padding: 6px 10px; background: transparent;
-  border: 1.5px solid var(--gray2); border-radius: var(--radius-sm);
-  color: var(--gray4); font-family: var(--font); font-size: .73rem;
+  border: 1.5px solid rgba(255,255,255,.2); border-radius: var(--radius-sm);
+  color: rgba(255,255,255,.6); font-family: var(--font); font-size: .73rem;
   font-weight: 600; cursor: pointer; white-space: nowrap; transition: var(--tr);
 }
-.btn-sel-clear:hover { border-color: var(--gray3); color: var(--navy); }
+.btn-sel-clear:hover { border-color: rgba(255,255,255,.4); color: #fff; }
 
 /* ── Seçenek yönetimi (New) modal ── */
 .opt-cat-grid {
@@ -563,16 +574,6 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
   font-family: var(--font); font-size: .8rem; cursor: pointer; padding: 0;
 }
 .opt-back-btn:hover { color: var(--navy); }
-
-/* Ekip (Crews) butonu — açık ctrl-bar üzerinde ikincil buton */
-#crews-btn {
-  padding: 6px 12px; background: var(--gray1);
-  border: 1.5px solid var(--gray2); border-radius: var(--radius-sm);
-  color: var(--navy); font-family: var(--font); font-size: .72rem; font-weight: 700;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
-}
-#crews-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold-tint); }
-#crews-btn:disabled { opacity: .4; cursor: not-allowed; }
 
 /* Ekip modalı — her yat için bir satır */
 .crew-row {
