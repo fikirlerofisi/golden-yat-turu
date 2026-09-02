@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=42"/>
+  <link rel="stylesheet" href="css/styles.css?v=43"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=42",
-      "./js/auth.js":     "./js/auth.js?v=42",
-      "./js/tours.js":    "./js/tours.js?v=42",
-      "./js/bookings.js": "./js/bookings.js?v=42",
-      "./js/checkin.js":  "./js/checkin.js?v=42",
-      "./js/realtime.js": "./js/realtime.js?v=42",
-      "./js/config.js":   "./js/config.js?v=42",
-      "./js/supabase.js": "./js/supabase.js?v=42"
+      "./js/app.js":      "./js/app.js?v=43",
+      "./js/auth.js":     "./js/auth.js?v=43",
+      "./js/tours.js":    "./js/tours.js?v=43",
+      "./js/bookings.js": "./js/bookings.js?v=43",
+      "./js/checkin.js":  "./js/checkin.js?v=43",
+      "./js/realtime.js": "./js/realtime.js?v=43",
+      "./js/config.js":   "./js/config.js?v=43",
+      "./js/supabase.js": "./js/supabase.js?v=43"
     }
   }
   </script>
@@ -208,9 +208,31 @@
       </section>
 
       <section id="view-alcohol" class="view-section hidden">
-        <div class="view-placeholder">
-          <h2>Alcohol Sales</h2>
-          <p>Content coming soon — we'll design this together.</p>
+        <!-- Kontrol şeridi -->
+        <div class="ctrl-bar">
+          <input id="alcohol-date-input" type="date" aria-label="Select date"/>
+          <button id="new-sale-btn" style="margin-left:auto">+ New Sale</button>
+        </div>
+
+        <!-- Tablo (scroll kapsayıcısı içinde) -->
+        <div class="table-scroll">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th class="col-name">Remarks</th>
+                <th>Tour</th>
+                <th class="col-yacht">Yacht</th>
+                <th>Amount</th>
+                <th>Paid</th>
+                <th>Deliver</th>
+                <th>Crew</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="alcohol-tbody">
+              <tr class="empty-row"><td colspan="8">Select a date.</td></tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -471,6 +493,71 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=42"></script>
+<!-- ═══════════ NEW SALE MODAL (Alcohol Sales) ═══════════ -->
+<div id="alcohol-sale-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('alcohol-sale-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-head">
+      <h2>New Sale</h2>
+      <button class="modal-x" id="alcohol-sale-close" aria-label="Close">✕</button>
+    </div>
+    <form id="alcohol-sale-form">
+      <div class="modal-body">
+        <div class="fg">
+          <label>Tour</label>
+          <select id="alcohol-sale-tour"></select>
+        </div>
+        <div class="fg">
+          <label>Menu</label>
+          <div class="prv-extras-box" id="alcohol-menu-body"></div>
+        </div>
+        <div class="sale-total-row">Total <span id="alcohol-sale-total">0 ₺</span></div>
+        <div class="fg">
+          <label>Remarks</label>
+          <input id="alcohol-sale-remarks" type="text" placeholder="e.g. yellow hat guy" autocomplete="off" required/>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="alcohol-sale-cancel">Cancel</button>
+        <button type="submit" class="btn-save" id="alcohol-sale-save">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════ PAY MODAL (Alcohol Sales) ═══════════ -->
+<div id="alcohol-pay-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('alcohol-pay-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-head">
+      <h2>Record Payment</h2>
+      <button class="modal-x" id="alcohol-pay-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Paid Method</label>
+        <div class="status-opt-grid cols-3" id="alcohol-pay-method-grid">
+          <button type="button" class="status-opt-btn" data-method="Cash">Cash</button>
+          <button type="button" class="status-opt-btn" data-method="Card">Card</button>
+          <button type="button" class="status-opt-btn" data-method="Bank">Bank</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Deliver To</label>
+        <select id="alcohol-pay-delivered-to">
+          <option value="">— Select —</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="alcohol-pay-cancel">Cancel</button>
+      <button type="button" class="btn-save" id="alcohol-pay-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js?v=43"></script>
 </body>
 </html>

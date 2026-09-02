@@ -261,13 +261,13 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 .search-box::placeholder { color: rgba(255,255,255,.35); }
 
 /* Birincil aksiyon — altın gradient (mockup'taki "+New booking" ile aynı) */
-#add-booking-btn {
+#add-booking-btn, #new-sale-btn {
   padding: 6px 14px; background: linear-gradient(135deg,var(--gold),var(--gold2));
   border: none; border-radius: var(--radius-sm); color: var(--navy);
   font-family: var(--font); font-size: .78rem; font-weight: 700;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
 }
-#add-booking-btn:hover:not(:disabled) { filter: brightness(1.06); }
+#add-booking-btn:hover:not(:disabled), #new-sale-btn:hover { filter: brightness(1.06); }
 #add-booking-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 /* İSTATİSTİK ÇUBUĞU — koyu lacivert; tam olarak var(--statsbar-h) yüksekliğinde */
@@ -666,6 +666,40 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
   padding: 5px 22px 5px 8px; border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
   background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23AAA'/%3E%3C/svg%3E") no-repeat right 6px center;
   font-family: var(--font); font-size: .82rem; color: var(--navy); appearance: none; outline: none;
+}
+
+/* Alcohol Sales — menü (New Sale modalı) */
+.menu-group-label {
+  font-size: .63rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--gray4); padding: 9px 0 4px;
+}
+.menu-group-label:first-child { padding-top: 2px; }
+.menu-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid var(--gray2);
+  font-size: .82rem; color: var(--navy);
+}
+.menu-row:last-child { border-bottom: none; }
+.menu-row span:first-child { flex: 1; }
+.menu-price { color: var(--gray4); font-size: .76rem; white-space: nowrap; }
+.menu-qty {
+  width: 52px; text-align: center;
+  padding: 5px 4px; border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
+  font-family: var(--font); font-size: .82rem; color: var(--navy); outline: none;
+}
+.menu-qty:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12); }
+.sale-total-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 10px 2px; margin-bottom: 10px;
+  font-size: .82rem; font-weight: 700; color: var(--navy);
+}
+.sale-total-row span { font-size: 1.05rem; color: var(--gold-dk); }
+
+/* Alcohol Sales — liste satırı tıklanabilir; alt satır kalem dökümü */
+tr.sale-row { cursor: pointer; }
+.sale-detail-row td {
+  background: var(--gray1) !important; color: var(--gray4); font-size: .74rem;
+  padding: 8px 10px 8px 18px; height: auto; line-height: 1.6;
 }
 
 /* Boş durum */

@@ -11,6 +11,8 @@ import { toggleCheckin }                   from './checkin.js';
 import { subscribeBookings, unsubscribeBookings,
          subscribeTours, unsubscribeTours } from './realtime.js';
 import { OPTIONS }                         from './config.js';
+import { getAlcoholSales, createAlcoholSale,
+         updateAlcoholSale }               from './alcohol.js';
 
 // ── Uygulama durumu ────────────────────────────────────────────
 const state = {
@@ -29,6 +31,12 @@ const state = {
   unpaidYachtCrews: {},   // { 'tourId|Yacht': {tour_guide, staff} }
   unpaidCodeFilter: null, // null | 'sunset' | 'TA' | 'TN' | 'PRV' | 'TS' | 'TC'
   payEditingId:     null,
+  alcoholDate:        today(),
+  alcoholTours:       [],
+  alcoholBookings:    [],   // günün TÜM rezervasyonları (hangi yat hangi tur kodunu işletiyor bilgisi için)
+  alcoholYachtCrews:  {},   // { 'tourId|Yacht': {tour_guide, staff} }
+  alcoholSales:       [],
+  alcoholPayEditingId: null,
 };
 const selected = new Set();
 // Dinamik eklemeler daha yüklenmeden önceki sabit Source listesinin anlık
@@ -50,6 +58,31 @@ const TOURCODE_META = {
   TN:  { label: 'Night Cruise' },
   TS:  { label: 'Swimming Tour' },
   PRV: { label: 'Private Tour' },
+};
+
+// Alcohol Sales — sabit menü/fiyat listesi (tamamı ₺). Yönetilebilir bir
+// ayar ekranı istenmedi; TOURCODE_META gibi sabit tutuluyor.
+const ALCOHOL_MENU = {
+  Glass: [
+    { name: 'Beer',               price: 500 },
+    { name: 'Wine',                price: 600 },
+    { name: 'Prosecco',           price: 650 },
+    { name: 'Raki',               price: 650 },
+    { name: 'Whiskey',            price: 1000 },
+    { name: 'Vodka',              price: 650 },
+    { name: 'Vodka and Redbull',  price: 750 },
+    { name: 'Gin and Tonic',      price: 650 },
+  ],
+  Bottle: [
+    { name: 'Wine (Red, White, Rose)', price: 3000 },
+    { name: 'Prosecco',                price: 3500 },
+    { name: 'Vodka 35cl',              price: 2500 },
+    { name: 'Vodka 70cl',              price: 4000 },
+    { name: 'Raki (35cl)',             price: 3000 },
+    { name: 'Raki (70cl)',             price: 5000 },
+    { name: 'Whiskey (35cl)',          price: 4500 },
+    { name: 'Whiskey (70cl)',          price: 7000 },
+  ],
 };
 
 // ── DOM kısayolları ────────────────────────────────────────────
@@ -168,6 +201,29 @@ async function init() {
     });
   });
 
+  // Alcohol Sales
+  el('alcohol-date-input').value = state.alcoholDate;
+  el('alcohol-date-input').addEventListener('change', (e) => {
+    state.alcoholDate = e.target.value;
+    loadAlcoholSales();
+  });
+  el('new-sale-btn').addEventListener('click', openAlcoholSaleModal);
+  el('alcohol-sale-close').addEventListener('click',  () => el('alcohol-sale-modal').classList.add('hidden'));
+  el('alcohol-sale-cancel').addEventListener('click', () => el('alcohol-sale-modal').classList.add('hidden'));
+  el('alcohol-sale-form').addEventListener('submit', handleAlcoholSaleSubmit);
+  el('alcohol-menu-body').addEventListener('input', renderAlcoholSaleTotal);
+
+  // Alcohol Sales — Pay modalı
+  el('alcohol-pay-close').addEventListener('click',  () => el('alcohol-pay-modal').classList.add('hidden'));
+  el('alcohol-pay-cancel').addEventListener('click', () => el('alcohol-pay-modal').classList.add('hidden'));
+  el('alcohol-pay-save').addEventListener('click', saveAlcoholPayment);
+  el('alcohol-pay-method-grid').querySelectorAll('.status-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el('alcohol-pay-method-grid').querySelectorAll('.status-opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
   // Ekip (Crews) modalı
   el('crews-btn').addEventListener('click',    openCrewsModal);
   el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
@@ -252,7 +308,8 @@ function showView(view) {
       .forEach(b => b.classList.toggle('active', !b.dataset.filter));
     renderTable(); renderStats();
   }
-  if (view === 'unpaid') { loadUnpaidList(); }
+  if (view === 'unpaid')   { loadUnpaidList(); }
+  if (view === 'alcohol')  { loadAlcoholSales(); }
 }
 
 function closeSidebarMobile() {
@@ -1212,6 +1269,239 @@ async function savePayment() {
   } finally {
     btn.disabled = false;
   }
+}
+
+// ── Alcohol Sales ──────────────────────────────────────────────
+// Misafir listesinden bağımsız: tekne üzerinde satılan alkolün
+// (bardak/şişe) kaydı. Görünürlük Unpaid List'ten farklı — ekip
+// bazlı değil, SAHİPLİK bazlı: herkes sadece kendi girdiği satışları
+// görür, manager hepsini görür.
+async function loadAlcoholSales() {
+  const tbody = el('alcohol-tbody');
+  try { state.alcoholTours = await getToursByDate(state.alcoholDate); }
+  catch { state.alcoholTours = []; }
+
+  if (state.alcoholTours.length === 0) {
+    state.alcoholBookings = [];
+    state.alcoholYachtCrews = {};
+    state.alcoholSales = [];
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No tour for this date yet.</td></tr>`;
+    return;
+  }
+
+  const tourIds = state.alcoholTours.map(t => t.id);
+  try { state.alcoholBookings = await getBookingsByTours(tourIds); }
+  catch { state.alcoholBookings = []; }
+
+  try {
+    const { data } = await supabase.from('yacht_crews').select('*').in('tour_id', tourIds);
+    state.alcoholYachtCrews = {};
+    (data || []).forEach(c => { state.alcoholYachtCrews[`${c.tour_id}|${c.yacht}`] = c; });
+  } catch { state.alcoholYachtCrews = {}; }
+
+  try { state.alcoholSales = await getAlcoholSales(tourIds); }
+  catch { state.alcoholSales = []; }
+
+  renderAlcoholTable();
+}
+
+// Kullanıcının bugün ekibinde yer aldığı yatlardan geçen, benzersiz
+// (tur kodu, yat) çiftleri — manager hepsini görür. Aynı yat gün
+// içinde farklı tur kodlarıyla sefer yapabildiği için (Sunset + PRV
+// gibi) bir kişi doğal olarak birden fazla seçenek görebilir.
+function myAlcoholTourOptions() {
+  const isManager = currentProfile?.role === 'manager';
+  const myName = normalizeName(currentProfile?.full_name);
+  const seen = new Set();
+  const opts = [];
+  for (const b of state.alcoholBookings) {
+    if (!b.yacht || !b.tour_code) continue;
+    const crew = state.alcoholYachtCrews[`${b.tour_id}|${b.yacht}`];
+    const isCrew = isManager || (crew && (
+      normalizeName(crew.tour_guide) === myName ||
+      (crew.staff || []).some(s => normalizeName(s) === myName)
+    ));
+    if (!isCrew) continue;
+    const key = `${b.tour_code}|${b.yacht}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    opts.push({ key, label: `${TOURCODE_META[b.tour_code]?.label || b.tour_code} — ${b.yacht}` });
+  }
+  return opts.sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function renderAlcoholTable() {
+  const tbody = el('alcohol-tbody');
+  let data = state.alcoholSales;
+  if (currentProfile?.role !== 'manager') {
+    data = data.filter(s => s.sold_by === currentUser?.id);
+  }
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No alcohol sales yet.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(s => {
+    const rc = s.paid_method ? 'row-paid' : '';
+    const items = Array.isArray(s.items) ? s.items : [];
+    const detailHtml = items.map(it =>
+      `<div>${it.qty} ${esc(pluralUnit(it.unit, it.qty))} ${esc(it.name)} : ${formatTRY(it.qty * it.unit_price)}</div>`
+    ).join('') || '<div>—</div>';
+    return `<tr class="sale-row ${rc}" data-toggle="${s.id}">
+        <td class="cell-remarks" style="max-width:160px">${esc(s.remarks)}</td>
+        <td style="font-weight:600">${esc(TOURCODE_META[s.tour_code]?.label || s.tour_code)}</td>
+        <td class="col-yacht">${yachtBadge(s.yacht)}</td>
+        <td style="font-weight:600">${formatTRY(s.amount)}</td>
+        <td>${esc(s.paid_method || '—')}</td>
+        <td>${esc(s.delivered_to || '—')}</td>
+        <td>${esc(s.sold_by_profile?.full_name || '—')}</td>
+        <td><button class="act-btn edit" data-pay="${s.id}" title="Pay" style="width:auto;padding:0 8px;">Pay</button></td>
+      </tr>
+      <tr class="sale-detail-row hidden" data-detail="${s.id}"><td colspan="8">${detailHtml}</td></tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.sale-row').forEach(tr =>
+    tr.addEventListener('click', () => toggleAlcoholDetail(tr.dataset.toggle))
+  );
+  tbody.querySelectorAll('[data-pay]').forEach(btn =>
+    btn.addEventListener('click', (e) => { e.stopPropagation(); openAlcoholPayModal(btn.dataset.pay); })
+  );
+}
+
+function toggleAlcoholDetail(id) {
+  document.querySelector(`.sale-detail-row[data-detail="${id}"]`)?.classList.toggle('hidden');
+}
+
+// ── Alcohol Sales — New Sale modalı ──────────────────────────────
+function openAlcoholSaleModal() {
+  const opts = myAlcoholTourOptions();
+  const sel = el('alcohol-sale-tour');
+  if (opts.length === 0) {
+    sel.innerHTML = `<option value="">— No tour assigned to you today —</option>`;
+  } else {
+    sel.innerHTML = opts.map(o => `<option value="${esc(o.key)}">${esc(o.label)}</option>`).join('');
+  }
+
+  el('alcohol-menu-body').innerHTML = Object.entries(ALCOHOL_MENU).map(([unit, items]) => `
+    <div class="menu-group-label">${unit === 'Glass' ? 'Glasses' : 'Bottles'}</div>
+    ${items.map(it => `
+      <div class="menu-row" data-unit="${unit}" data-name="${esc(it.name)}" data-price="${it.price}">
+        <span>${esc(it.name)}</span>
+        <span class="menu-price">${formatTRY(it.price)}</span>
+        <input type="number" min="0" step="1" value="0" class="menu-qty"/>
+      </div>`).join('')}
+  `).join('');
+
+  el('alcohol-sale-form').reset();
+  renderAlcoholSaleTotal();
+  el('alcohol-sale-modal').classList.remove('hidden');
+}
+
+function collectAlcoholItems() {
+  return [...el('alcohol-menu-body').querySelectorAll('.menu-row')].map(row => ({
+    unit:       row.dataset.unit,
+    name:       row.dataset.name,
+    unit_price: parseFloat(row.dataset.price),
+    qty:        parseInt(row.querySelector('.menu-qty').value) || 0,
+  })).filter(it => it.qty > 0);
+}
+
+function renderAlcoholSaleTotal() {
+  const total = collectAlcoholItems().reduce((sum, it) => sum + it.qty * it.unit_price, 0);
+  el('alcohol-sale-total').textContent = formatTRY(total);
+}
+
+async function handleAlcoholSaleSubmit(e) {
+  e.preventDefault();
+  const key = el('alcohol-sale-tour').value;
+  if (!key) { alert('Please select a tour.'); return; }
+  const [tour_code, yacht] = key.split('|');
+
+  const remarks = el('alcohol-sale-remarks').value.trim();
+  if (!remarks) { alert('Remarks is required.'); return; }
+
+  const items = collectAlcoholItems();
+  if (items.length === 0) { alert('Please select at least one item.'); return; }
+  const amount = items.reduce((sum, it) => sum + it.qty * it.unit_price, 0);
+
+  const btn = el('alcohol-sale-save');
+  btn.disabled = true;
+  try {
+    const tourId = state.alcoholTours[0]?.id;
+    const sale = await createAlcoholSale(tourId, { tour_code, yacht, items, amount, currency: 'TRY', remarks });
+    state.alcoholSales.unshift(sale);
+    el('alcohol-sale-modal').classList.add('hidden');
+    renderAlcoholTable();
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Alcohol Sales — Pay modalı ────────────────────────────────────
+function openAlcoholPayModal(saleId) {
+  const s = state.alcoholSales.find(x => x.id === saleId);
+  if (!s) return;
+  state.alcoholPayEditingId = saleId;
+
+  el('alcohol-pay-method-grid').querySelectorAll('.status-opt-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.method === s.paid_method);
+  });
+
+  // Kendisi hariç diğer personel + jenerik Captain/Staff (Unpaid
+  // List'in aksine tek bir yatın ekibiyle sınırlı değil).
+  const myName = normalizeName(currentProfile?.full_name);
+  const otherStaff = OPTIONS.staffList.filter(n => n && normalizeName(n) !== myName);
+  const sel = el('alcohol-pay-delivered-to');
+  sel.innerHTML = `<option value="">— Select —</option>
+    <option value="Captain">Captain</option>
+    <option value="Staff">Staff</option>` +
+    otherStaff.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  sel.value = s.delivered_to || '';
+
+  el('alcohol-pay-modal').classList.remove('hidden');
+}
+
+async function saveAlcoholPayment() {
+  if (!state.alcoholPayEditingId) return;
+  const id = state.alcoholPayEditingId;
+  const methodBtn = el('alcohol-pay-method-grid').querySelector('.status-opt-btn.active');
+  const method = methodBtn?.dataset.method;
+  if (!method) { alert('Please select a paid method.'); return; }
+
+  const btn = el('alcohol-pay-save');
+  btn.disabled = true;
+  try {
+    const patch = {
+      paid_method:  method,
+      delivered_to: el('alcohol-pay-delivered-to').value || null,
+      paid_by:      currentUser?.id,
+      paid_at:      new Date().toISOString(),
+    };
+    const updated = await updateAlcoholSale(id, patch);
+    const i = state.alcoholSales.findIndex(x => x.id === id);
+    if (i >= 0) state.alcoholSales[i] = updated;
+    el('alcohol-pay-modal').classList.add('hidden');
+    state.alcoholPayEditingId = null;
+    renderAlcoholTable();
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function formatTRY(n) {
+  return (n || 0).toLocaleString('tr-TR') + ' ₺';
+}
+
+// "Glass"→"Glasses", "Bottle"→"Bottles" (basit +s yeterli değil, Glass
+// zaten s ile bitiyor).
+function pluralUnit(unit, qty) {
+  if (qty === 1) return unit;
+  return unit === 'Glass' ? 'Glasses' : unit + 's';
 }
 
 init();

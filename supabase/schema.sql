@@ -201,3 +201,33 @@ alter table public.bookings add column if not exists paid_at        timestamptz;
 alter table public.bookings add column if not exists paid_by        uuid references public.profiles(id);
 alter table public.bookings add column if not exists delivered_to   text;
 alter table public.bookings add column if not exists unpaid_remarks text;
+
+-- ── 17. Migrasyon: Alcohol Sales sayfası (2026-09) ───────────
+-- Misafir listesinden bağımsız, tekne üzerinde satılan alkol
+-- (bardak/şişe) kayıtları. Kalemler (isim/adet/birim fiyat) tek bir
+-- JSONB kolonunda tutulur (bookings.prv_extras ile aynı desen);
+-- ödeme akışı Unpaid List ile aynı (paid_method/paid_at/paid_by/
+-- delivered_to). `sold_by` satışı giren kullanıcıdır — liste
+-- görünürlüğü bununla filtrelenir (manager hepsini görür).
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+create table if not exists public.alcohol_sales (
+  id            uuid primary key default gen_random_uuid(),
+  tour_id       uuid not null references public.tours(id) on delete cascade,
+  tour_code     text not null default '',
+  yacht         text not null default '',
+  items         jsonb not null default '[]'::jsonb,
+  currency      text not null default 'TRY',
+  amount        numeric not null default 0,
+  remarks       text not null default '',
+  paid_method   text,
+  paid_at       timestamptz,
+  paid_by       uuid references public.profiles(id),
+  delivered_to  text,
+  sold_by       uuid references public.profiles(id),
+  created_at    timestamptz not null default now()
+);
+alter table public.alcohol_sales enable row level security;
+create policy "as_select" on public.alcohol_sales for select using (auth.role()='authenticated');
+create policy "as_insert" on public.alcohol_sales for insert with check (auth.role()='authenticated');
+create policy "as_update" on public.alcohol_sales for update using (auth.role()='authenticated');
+create policy "as_delete" on public.alcohol_sales for delete using (auth.role()='authenticated');
