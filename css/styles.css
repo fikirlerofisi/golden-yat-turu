@@ -132,7 +132,7 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 
 .sidebar {
   flex-shrink: 0; width: 190px; overflow-y: auto;
-  background: var(--navy2); border-right: 1px solid rgba(201,151,43,.18);
+  background: var(--navy); border-right: 1px solid rgba(201,151,43,.18);
 }
 .sidebar-brand {
   display: flex; justify-content: center;
@@ -368,6 +368,7 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 /* İsim hücresi — checkbox + metin */
 .name-cell { display: flex; align-items: center; gap: 7px; font-weight: 600; }
 .row-chk   { width: 14px; height: 14px; flex-shrink: 0; cursor: pointer; accent-color: var(--gold); }
+.row-chk:disabled { opacity: .3; cursor: not-allowed; }
 
 /* Yacht badge — dar kolon */
 .col-yacht { width: 58px; min-width: 58px; max-width: 58px; }

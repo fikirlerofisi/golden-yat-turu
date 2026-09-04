@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=43"/>
+  <link rel="stylesheet" href="css/styles.css?v=44"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=43",
-      "./js/auth.js":     "./js/auth.js?v=43",
-      "./js/tours.js":    "./js/tours.js?v=43",
-      "./js/bookings.js": "./js/bookings.js?v=43",
-      "./js/checkin.js":  "./js/checkin.js?v=43",
-      "./js/realtime.js": "./js/realtime.js?v=43",
-      "./js/config.js":   "./js/config.js?v=43",
-      "./js/supabase.js": "./js/supabase.js?v=43"
+      "./js/app.js":      "./js/app.js?v=44",
+      "./js/auth.js":     "./js/auth.js?v=44",
+      "./js/tours.js":    "./js/tours.js?v=44",
+      "./js/bookings.js": "./js/bookings.js?v=44",
+      "./js/checkin.js":  "./js/checkin.js?v=44",
+      "./js/realtime.js": "./js/realtime.js?v=44",
+      "./js/config.js":   "./js/config.js?v=44",
+      "./js/supabase.js": "./js/supabase.js?v=44"
     }
   }
   </script>
@@ -145,7 +145,7 @@
                 <th>Phone</th>
                 <th>Payment</th>
                 <th>Transfer</th>
-                <th>Tour Guide</th>
+                <th>Guide</th>
                 <th>Crew</th>
                 <th>Remarks</th>
                 <th></th>
@@ -293,7 +293,7 @@
       <div class="frow hidden" id="f-unpaid-wrap">
         <div class="fg">
           <label>Amount</label>
-          <input name="unpaid_amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"/>
+          <input name="unpaid_amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0"/>
         </div>
         <div class="fg">
           <label>Currency</label>
@@ -330,7 +330,7 @@
       <div class="frow hidden prv-only" id="f-prv-time-wrap">
         <div class="fg">
           <label>Time</label>
-          <input name="prv_start_time" type="time"/>
+          <input name="prv_start_time" type="time" step="900"/>
         </div>
         <div class="fg">
           <label>Duration (hours)</label>
@@ -359,15 +359,15 @@
               <option value="USD">USD</option>
             </select>
           </div>
-          <div class="prv-extra-row"><span>Transfer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Transfer" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Belly Dancer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Belly Dancer" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Live Guitar Or Violin</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Live Guitar Or Violin" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Photographer</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Photographer" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Dj</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Dj" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Tour Guide</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Tour Guide" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Menu Options</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Menu Options" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Laser</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Laser" placeholder="0.00"/></div>
-          <div class="prv-extra-row"><span>Swimming</span><input type="number" min="0" step="0.01" class="prv-extra-input" data-item="Swimming" placeholder="0.00"/></div>
+          <div class="prv-extra-row"><span>Transfer</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Transfer" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Belly Dancer</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Belly Dancer" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Live Guitar Or Violin</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Live Guitar Or Violin" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Photographer</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Photographer" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Dj</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Dj" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Tour Guide</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Tour Guide" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Menu Options</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Menu Options" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Laser</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Laser" placeholder="0"/></div>
+          <div class="prv-extra-row"><span>Swimming</span><input type="number" min="0" step="1" class="prv-extra-input" data-item="Swimming" placeholder="0"/></div>
         </div>
       </div>
 
@@ -446,7 +446,7 @@
     </div>
     <div class="modal-body">
       <div class="status-opt-grid">
-        <button class="status-opt-btn" id="status-btn-noshow" data-status="noshow">Noshow</button>
+        <button class="status-opt-btn" id="status-btn-noshow" data-status="noshow">No Show</button>
         <button class="status-opt-btn" id="status-btn-refunded" data-status="refunded">Refunded</button>
       </div>
       <button class="status-clear-btn" id="status-clear">Clear Status</button>
@@ -558,6 +558,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=43"></script>
+<script type="module" src="js/app.js?v=44"></script>
 </body>
 </html>

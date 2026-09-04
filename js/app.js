@@ -428,7 +428,7 @@ function bookingRowHtml(b) {
       <td style="font-weight:600">${esc(b.tour_code || '')}</td>
       <td class="col-name">
         <div class="name-cell">
-          <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''}/>
+          <input type="checkbox" class="row-chk" data-sel="${b.id}" ${selected.has(b.id) ? 'checked' : ''} ${b.checked_in ? '' : 'disabled title="Check the person in first"'}/>
           ${esc(b.name)}
         </div>
       </td>
@@ -437,7 +437,7 @@ function bookingRowHtml(b) {
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
       <td class="cell-secondary">${esc(b.phone)}</td>
       <td>${payBadge(b.payment, b.attendance_status)}</td>
-      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
+      <td style="text-align:center">${isTransferred(b) ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td>${esc(state.crews[b.yacht]?.tour_guide || '')}</td>
       <td>${esc((state.crews[b.yacht]?.staff || []).join(', '))}</td>
       <td class="cell-remarks">${esc(b.remarks)}</td>
@@ -603,6 +603,8 @@ async function handleCheckin(e) {
     const updated = await toggleCheckin(id, bk.checked_in);
     const i = state.bookings.findIndex(x => x.id === id);
     if (i >= 0) state.bookings[i] = updated;
+    // Check-in kaldırılınca yat/ekip ataması için seçilmiş olamaz.
+    if (!updated.checked_in) selected.delete(id);
     renderTable(); renderStats();
   } catch (err) { console.error(err); }
   finally { btn.disabled = false; }
@@ -785,7 +787,7 @@ function collectPrvExtras(f) {
   const extras = {};
   f.querySelectorAll('.prv-extra-input').forEach(inp => {
     const val = inp.value.trim();
-    if (val !== '') extras[inp.dataset.item] = parseFloat(val);
+    if (val !== '') extras[inp.dataset.item] = Math.round(parseFloat(val));
   });
   return extras;
 }
@@ -950,7 +952,7 @@ function yachtBadge(y) {
 // sadece görsel bir tercih, altta yatan `payment` alanına dokunulmaz,
 // dolayısıyla Unpaid List gibi başka yerlerdeki filtreleme etkilenmez.
 function payBadge(p, attendanceStatus) {
-  if (attendanceStatus === 'noshow')   return `<span class="pay pay-noshow">Noshow</span>`;
+  if (attendanceStatus === 'noshow')   return `<span class="pay pay-noshow">No Show</span>`;
   if (attendanceStatus === 'refunded') return `<span class="pay pay-refunded">Refunded</span>`;
   if (!p) return '—';
   const cls = p === 'Received' ? 'pay-received' : p === 'Unpaid' ? 'pay-unpaid' : '';
@@ -960,6 +962,40 @@ function payBadge(p, attendanceStatus) {
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// PRV'de genel Transfer checkbox'ı gizli olduğu için, Extras listesindeki
+// "Transfer" kalemine tutar girilmiş olması da transfer edilmiş sayılır.
+function isTransferred(b) {
+  return !!b.transfer || (parseFloat(b.prv_extras?.Transfer) > 0);
+}
+
+// prv_extras {kalem: tutar} map'indeki tüm tutarların toplamı.
+function sumPrvExtras(extras) {
+  return Object.values(extras || {}).reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+}
+
+// Unpaid List'te gösterilecek tutar: PRV'de Unpaid ise tur fiyatı +
+// extras (aynı para birimindeyse toplanır, farklıysa ayrı ayrı yazılır);
+// Received ise (sadece PRV+extras'ı ödenmemiş kayıtlar için) yalnız
+// extras toplamı gösterilir.
+function unpaidAmountDisplay(b) {
+  const tourAmt = b.unpaid_amount;
+  const tourCur = b.unpaid_currency || 'EUR';
+  const extrasAmt = sumPrvExtras(b.prv_extras);
+  const extrasCur = b.prv_extras_currency || 'EUR';
+
+  if (b.tour_code !== 'PRV' || extrasAmt <= 0) {
+    return tourAmt != null ? `${tourAmt} ${esc(tourCur)}` : '—';
+  }
+  if (b.payment === 'Received') {
+    // Tur fiyatı zaten alınmış, sadece extras borcu kaldı.
+    return `${extrasAmt} ${esc(extrasCur)}`;
+  }
+  if (tourAmt == null) return `${extrasAmt} ${esc(extrasCur)}`;
+  return tourCur === extrasCur
+    ? `${tourAmt + extrasAmt} ${esc(tourCur)}`
+    : `${tourAmt} ${esc(tourCur)} + ${extrasAmt} ${esc(extrasCur)}`;
 }
 
 // İsim karşılaştırmalarını Türkçe karakter/büyük-küçük harf farklarına
@@ -1157,6 +1193,14 @@ function renderUnpaidTable() {
     });
   }
 
+  // PRV + Received kayıtları sadece extras'ı henüz ödenmemişse (extras
+  // tutarı var ve Pay ile hiç kaydedilmemişse) listede kalır — tur fiyatı
+  // zaten alındığı, extras'ı da yoksa/ödendiyse borç kalmamış demektir.
+  data = data.filter(b => {
+    if (b.payment !== 'Received') return true;
+    return b.tour_code === 'PRV' && sumPrvExtras(b.prv_extras) > 0 && !b.paid_method;
+  });
+
   if (state.unpaidCodeFilter === 'sunset') {
     data = data.filter(b => SUNSET_CODES.includes(b.tour_code));
   } else if (state.unpaidCodeFilter) {
@@ -1183,11 +1227,11 @@ function renderUnpaidTable() {
       <td style="text-align:center;font-weight:600">${b.pax}</td>
       <td>${esc(b.source)}</td>
       <td class="col-yacht">${yachtBadge(b.yacht)}</td>
-      <td style="font-weight:600">${b.unpaid_amount != null ? `${b.unpaid_amount} ${esc(b.unpaid_currency || 'EUR')}` : '—'}</td>
+      <td style="font-weight:600">${unpaidAmountDisplay(b)}</td>
       <td>${esc(b.paid_method || '—')}</td>
       <td>${esc(b.delivered_to || '—')}</td>
       <td>${esc(b.paid_by_profile?.full_name || '—')}</td>
-      <td style="text-align:center">${b.transfer ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
+      <td style="text-align:center">${isTransferred(b) ? (b.transfer_note ? `<span class="tf-yes">${esc(b.transfer_note)}</span>` : '<span class="tf-yes">✓</span>') : '<span class="tf-no">—</span>'}</td>
       <td class="cell-remarks">${esc(b.remarks)}</td>
       <td><button class="act-btn edit" data-pay="${b.id}" title="Pay" style="width:auto;padding:0 8px;">Pay</button></td>
     </tr>`;

@@ -13,12 +13,16 @@ export async function getBookingsByTours(tourIds) {
 }
 
 // ── Turlara ait Unpaid rezervasyonları getir (Refunded hariç) ──
+// PRV turlarda ana ödeme "Received" olsa bile Extras (ör. DJ, Transfer)
+// ayrıca tekne üzerinde tahsil edilebildiği için PRV+Received kayıtları
+// da çekilir; hangilerinin gerçekten borcu kaldığı (extras var mı, daha
+// önce ödenmiş mi) istemci tarafında (renderUnpaidTable) süzülür.
 export async function getUnpaidBookings(tourIds) {
   const { data, error } = await supabase
     .from('bookings')
     .select('*, checked_in_by_profile:profiles!checked_in_by(full_name), paid_by_profile:profiles!paid_by(full_name)')
     .in('tour_id', tourIds)
-    .eq('payment', 'Unpaid')
+    .or('payment.eq.Unpaid,and(tour_code.eq.PRV,payment.eq.Received)')
     .or('attendance_status.is.null,attendance_status.neq.refunded')
     .order('created_at');
   if (error) throw error;
