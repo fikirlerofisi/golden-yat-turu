@@ -681,7 +681,9 @@ function openBookingModal(bookingId) {
   f.elements['unpaid_amount'].value   = b?.unpaid_amount ?? '';
   f.elements['unpaid_currency'].value = b?.unpaid_currency || 'EUR';
   f.elements['prv_extras_currency'].value = b?.prv_extras_currency || 'EUR';
-  f.elements['prv_start_time'].value      = b?.prv_start_time      || '';
+  const [prvHour, prvMin] = (b?.prv_start_time || '').split(':');
+  f.elements['prv_start_hour'].value = prvHour || '';
+  f.elements['prv_start_min'].value  = prvMin  || '';
   f.elements['prv_duration_hours'].value  = b?.prv_duration_hours  ?? '';
   f.elements['prv_pier'].value            = b?.prv_pier            || '';
   f.querySelectorAll('.prv-extra-input').forEach(inp => {
@@ -723,7 +725,9 @@ async function handleBookingSubmit(e) {
     unpaid_currency: f.elements['payment'].value === 'Unpaid' ? f.elements['unpaid_currency'].value : null,
     prv_extras:          isPrv ? collectPrvExtras(f) : {},
     prv_extras_currency: isPrv ? f.elements['prv_extras_currency'].value : 'EUR',
-    prv_start_time:     isPrv ? (f.elements['prv_start_time'].value || null) : null,
+    prv_start_time:     isPrv && f.elements['prv_start_hour'].value && f.elements['prv_start_min'].value
+                           ? `${f.elements['prv_start_hour'].value}:${f.elements['prv_start_min'].value}`
+                           : null,
     prv_duration_hours: isPrv ? (parseFloat(f.elements['prv_duration_hours'].value) || null) : null,
     prv_pier:           isPrv ? (f.elements['prv_pier'].value || null) : null,
   };

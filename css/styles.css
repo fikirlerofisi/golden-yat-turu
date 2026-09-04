@@ -762,6 +762,11 @@ tr.sale-row { cursor: pointer; }
   border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12);
 }
 .fg textarea { resize: vertical; min-height: 56px; }
+
+/* PRV Time — saat/dakika iki ayrı select, dakika sadece 00/15/30/45 */
+.time-select-row { display: flex; align-items: center; gap: 6px; }
+.time-select-row select { flex: 1; min-width: 0; }
+.time-select-row span { color: var(--gray4); font-weight: 700; }
 .chk-label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 10px; }
 .chk-label input { width: 17px; height: 17px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
 .chk-label span  { font-size: .83rem; font-weight: 500; }

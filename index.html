@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=44"/>
+  <link rel="stylesheet" href="css/styles.css?v=45"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=44",
-      "./js/auth.js":     "./js/auth.js?v=44",
-      "./js/tours.js":    "./js/tours.js?v=44",
-      "./js/bookings.js": "./js/bookings.js?v=44",
-      "./js/checkin.js":  "./js/checkin.js?v=44",
-      "./js/realtime.js": "./js/realtime.js?v=44",
-      "./js/config.js":   "./js/config.js?v=44",
-      "./js/supabase.js": "./js/supabase.js?v=44"
+      "./js/app.js":      "./js/app.js?v=45",
+      "./js/auth.js":     "./js/auth.js?v=45",
+      "./js/tours.js":    "./js/tours.js?v=45",
+      "./js/bookings.js": "./js/bookings.js?v=45",
+      "./js/checkin.js":  "./js/checkin.js?v=45",
+      "./js/realtime.js": "./js/realtime.js?v=45",
+      "./js/config.js":   "./js/config.js?v=45",
+      "./js/supabase.js": "./js/supabase.js?v=45"
     }
   }
   </script>
@@ -330,7 +330,43 @@
       <div class="frow hidden prv-only" id="f-prv-time-wrap">
         <div class="fg">
           <label>Time</label>
-          <input name="prv_start_time" type="time" step="900"/>
+          <div class="time-select-row">
+            <select name="prv_start_hour">
+              <option value="">—</option>
+              <option value="00">00</option>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+            </select>
+            <span>:</span>
+            <select name="prv_start_min">
+              <option value="">—</option>
+              <option value="00">00</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+          </div>
         </div>
         <div class="fg">
           <label>Duration (hours)</label>
@@ -558,6 +594,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=44"></script>
+<script type="module" src="js/app.js?v=45"></script>
 </body>
 </html>
