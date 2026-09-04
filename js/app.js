@@ -30,6 +30,7 @@ const state = {
   unpaidBookings:   [],
   unpaidYachtCrews: {},   // { 'tourId|Yacht': {tour_guide, staff} }
   unpaidCodeFilter: null, // null | 'sunset' | 'TA' | 'TN' | 'PRV' | 'TS' | 'TC'
+  unpaidYachtFilter: null, // null (All) | 'unassigned' | yat adı
   payEditingId:     null,
   alcoholDate:        today(),
   alcoholTours:       [],
@@ -1177,24 +1178,39 @@ async function loadUnpaidList() {
     (data || []).forEach(c => { state.unpaidYachtCrews[`${c.tour_id}|${c.yacht}`] = c; });
   } catch { state.unpaidYachtCrews = {}; }
 
+  renderUnpaidYachtFilterBar();
   renderUnpaidTable();
+}
+
+// Unpaid List'in kendi tekne filtresi — herkes tüm kayıtları görebildiği
+// için (tekne atanmamış olsa bile) isteyen belirli bir tekneye daraltabilir.
+function renderUnpaidYachtFilterBar() {
+  const bar = el('unpaid-yacht-filter-bar');
+  const yachts = OPTIONS.yachts.filter(Boolean);
+  bar.innerHTML = `<button class="tourcode-filter-btn" data-uyacht="">All Yachts</button>` +
+    yachts.map(y => `<button class="tourcode-filter-btn" data-uyacht="${esc(y)}">${esc(y)}</button>`).join('') +
+    `<button class="tourcode-filter-btn" data-uyacht="unassigned">Unassigned</button>`;
+  bar.querySelectorAll('.tourcode-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', (btn.dataset.uyacht || null) === state.unpaidYachtFilter);
+    btn.addEventListener('click', () => {
+      state.unpaidYachtFilter = btn.dataset.uyacht || null;
+      bar.querySelectorAll('.tourcode-filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+      renderUnpaidTable();
+    });
+  });
 }
 
 function renderUnpaidTable() {
   const tbody = el('unpaid-tbody');
   let data = state.unpaidBookings;
 
-  // Ekip bazlı erişim: manager tüm tekneleri görür, diğerleri sadece
-  // kendi eşleştiği (tour_guide veya staff olarak yer aldığı) tekneyi.
-  if (currentProfile?.role !== 'manager') {
-    const myName = normalizeName(currentProfile?.full_name);
-    data = data.filter(b => {
-      if (!b.yacht) return false;
-      const crew = state.unpaidYachtCrews[`${b.tour_id}|${b.yacht}`];
-      if (!crew) return false;
-      return normalizeName(crew.tour_guide) === myName ||
-             (crew.staff || []).some(s => normalizeName(s) === myName);
-    });
+  // Tekne henüz atanmamış olsa bile (ör. PRV rezervasyonları çoğu zaman
+  // tekne atanmadan önce oluşturulur) tüm unpaid/ekstra kayıtları herkese
+  // görünür; isteyen kendi tekne filtresiyle daraltabilir (aşağıda).
+  if (state.unpaidYachtFilter === 'unassigned') {
+    data = data.filter(b => !b.yacht);
+  } else if (state.unpaidYachtFilter) {
+    data = data.filter(b => b.yacht === state.unpaidYachtFilter);
   }
 
   // PRV + Received kayıtları sadece extras'ı henüz ödenmemişse (extras

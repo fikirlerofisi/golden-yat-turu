@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=45"/>
+  <link rel="stylesheet" href="css/styles.css?v=46"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=45",
-      "./js/auth.js":     "./js/auth.js?v=45",
-      "./js/tours.js":    "./js/tours.js?v=45",
-      "./js/bookings.js": "./js/bookings.js?v=45",
-      "./js/checkin.js":  "./js/checkin.js?v=45",
-      "./js/realtime.js": "./js/realtime.js?v=45",
-      "./js/config.js":   "./js/config.js?v=45",
-      "./js/supabase.js": "./js/supabase.js?v=45"
+      "./js/app.js":      "./js/app.js?v=46",
+      "./js/auth.js":     "./js/auth.js?v=46",
+      "./js/tours.js":    "./js/tours.js?v=46",
+      "./js/bookings.js": "./js/bookings.js?v=46",
+      "./js/checkin.js":  "./js/checkin.js?v=46",
+      "./js/realtime.js": "./js/realtime.js?v=46",
+      "./js/config.js":   "./js/config.js?v=46",
+      "./js/supabase.js": "./js/supabase.js?v=46"
     }
   }
   </script>
@@ -167,7 +167,7 @@
           <input id="unpaid-date-input" type="date" aria-label="Select date"/>
         </div>
 
-        <!-- Tur kodu filtreleri — ayrı şerit, dar ekranda alt alta sarar -->
+        <!-- Tur kodu + tekne filtreleri — ayrı şerit, dar ekranda alt alta sarar -->
         <div class="filter-strip">
           <div class="tourcode-filter-bar" id="unpaid-filter-bar">
             <button class="tourcode-filter-btn active" data-ufilter="">All</button>
@@ -178,6 +178,7 @@
             <button class="tourcode-filter-btn" data-ufilter="TA">TA</button>
             <button class="tourcode-filter-btn" data-ufilter="TN">TN</button>
           </div>
+          <div class="tourcode-filter-bar" id="unpaid-yacht-filter-bar" style="margin-top:8px"></div>
         </div>
 
         <!-- Tablo (scroll kapsayıcısı içinde) -->
@@ -594,6 +595,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=45"></script>
+<script type="module" src="js/app.js?v=46"></script>
 </body>
 </html>
