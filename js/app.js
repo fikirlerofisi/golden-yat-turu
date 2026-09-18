@@ -86,6 +86,11 @@ const ALCOHOL_MENU = {
   ],
 };
 
+// Ekip (Crews) modalında rehber seçimini hızlandırmak için en sık
+// atanan 6 rehber — bu sırayla ilk pill grubunda gösterilir, geri
+// kalan isimlere "More" ile ulaşılır.
+const TOP_GUIDES = ['Celil', 'Erdem', 'Taner', 'Muhsin', 'Volkan', 'Erol'];
+
 // ── DOM kısayolları ────────────────────────────────────────────
 const el = (id) => document.getElementById(id);
 
@@ -1095,14 +1100,20 @@ function usedYachtsToday() {
 }
 
 // ── Ekip (Crews) modalı ────────────────────────────────────────
-function openCrewsModal() {
-  const guides = ['', ...OPTIONS.tourGuides.filter(x => x)];
-  const staffList = OPTIONS.staffList.filter(x => x);
-  const yachts = usedYachtsToday();
+// Rehber pill'i: "—" (temizle) her zaman ilk sırada; sonra top-6, ardından
+// (varsa) mevcut değer bilinen listede yer almayan bir isimse o isim de
+// eklenir ki veri sessizce kaybolmasın.
+function guidePillHtml(name, current) {
+  const label = name === '' ? '—' : name;
+  const active = name === current ? ' active' : '';
+  return `<button type="button" class="crew-guide-pill${active}" data-guide="${esc(name)}">${esc(label)}</button>`;
+}
 
-  const guideOpts = (sel) => guides.map(g =>
-    `<option value="${esc(g)}" ${g === sel ? 'selected' : ''}>${g || '—'}</option>`
-  ).join('');
+function openCrewsModal() {
+  const knownGuides = OPTIONS.tourGuides.filter(x => x);
+  const moreGuides  = knownGuides.filter(g => !TOP_GUIDES.includes(g));
+  const staffList   = OPTIONS.staffList.filter(x => x);
+  const yachts      = usedYachtsToday();
 
   if (yachts.length === 0) {
     el('crews-body').innerHTML = `<p style="color:var(--gray3);text-align:center;padding:20px 0">No yacht assigned yet — assign a yacht to a booking first.</p>`;
@@ -1111,15 +1122,34 @@ function openCrewsModal() {
   }
 
   el('crews-body').innerHTML = yachts.map(y => {
-    const crew  = state.crews[y] || {};
-    const staff = crew.staff || [];
+    const crew    = state.crews[y] || {};
+    const current = crew.tour_guide || '';
+    const staff   = crew.staff || [];
     const boxes = staffList.map(s =>
       `<label><input type="checkbox" value="${esc(s)}" ${staff.includes(s) ? 'checked' : ''}/> ${esc(s)}</label>`
     ).join('');
+
+    // Bilinen listede (top-6 + more) hiç yer almayan ama satıra zaten
+    // atanmış bir isim varsa (ör. veride kalmış eski bir kayıt), üstte
+    // ekstra bir pill olarak gösterilir — kaybolmasın diye.
+    const isUnknown = current && !TOP_GUIDES.includes(current) && !moreGuides.includes(current);
+    const topPills = ['', ...TOP_GUIDES, ...(isUnknown ? [current] : [])]
+      .map(g => guidePillHtml(g, current)).join('');
+
+    // "More" içinde mevcut seçim varsa liste başlangıçta açık gelir ki
+    // kullanıcı seçili olanı görebilsin.
+    const moreHasCurrent = moreGuides.includes(current);
+    const morePills = moreGuides.map(g => guidePillHtml(g, current)).join('');
+
     return `<div class="crew-row" data-yacht="${esc(y)}">
       <div class="crew-yacht-label">${yachtBadge(y)}</div>
       <div class="crew-controls">
-        <select class="crew-guide-sel">${guideOpts(crew.tour_guide || '')}</select>
+        <input type="hidden" class="crew-guide-value" value="${esc(current)}"/>
+        <div class="crew-guide-pills">
+          ${topPills}
+          <button type="button" class="crew-guide-more-btn" data-more-toggle>More ▾</button>
+        </div>
+        <div class="crew-guide-pills crew-guide-more${moreHasCurrent ? '' : ' hidden'}">${morePills}</div>
         <div class="crew-staff-group">${boxes || '<span style="color:var(--gray3)">No staff</span>'}</div>
       </div>
       <button class="btn-crew-save" data-yacht="${esc(y)}">Save</button>
@@ -1129,13 +1159,25 @@ function openCrewsModal() {
   el('crews-body').querySelectorAll('.btn-crew-save').forEach(btn =>
     btn.addEventListener('click', () => saveCrew(btn.dataset.yacht, btn))
   );
+  el('crews-body').querySelectorAll('[data-more-toggle]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      btn.closest('.crew-controls').querySelector('.crew-guide-more').classList.toggle('hidden');
+    })
+  );
+  el('crews-body').querySelectorAll('.crew-guide-pill').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const controls = btn.closest('.crew-controls');
+      controls.querySelector('.crew-guide-value').value = btn.dataset.guide;
+      controls.querySelectorAll('.crew-guide-pill').forEach(p => p.classList.toggle('active', p === btn));
+    })
+  );
 
   el('crews-modal').classList.remove('hidden');
 }
 
 async function saveCrew(yacht, btn) {
   const row   = btn.closest('.crew-row');
-  const guide = row.querySelector('.crew-guide-sel').value;
+  const guide = row.querySelector('.crew-guide-value').value;
   const staff = [...row.querySelectorAll('.crew-staff-group input:checked')].map(i => i.value);
   btn.disabled = true;
   try {
