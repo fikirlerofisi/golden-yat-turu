@@ -91,6 +91,10 @@ const ALCOHOL_MENU = {
 // kalan isimlere "More" ile ulaşılır.
 const TOP_GUIDES = ['Celil', 'Erdem', 'Taner', 'Muhsin', 'Volkan', 'Erol'];
 
+// Captain modalında sabit isim listesi — "Other" seçilirse elle isim
+// girilir (staffList gibi sabit, "New" ekranından yönetilmiyor).
+const CAPTAINS = ['Ender', 'Rıdvan', 'Emin', 'Kadir'];
+
 // ── DOM kısayolları ────────────────────────────────────────────
 const el = (id) => document.getElementById(id);
 
@@ -235,6 +239,11 @@ async function init() {
   el('crews-close').addEventListener('click',  () => el('crews-modal').classList.add('hidden'));
   el('crews-cancel').addEventListener('click', () => el('crews-modal').classList.add('hidden'));
 
+  // Kaptan (Captain) modalı
+  el('captain-btn').addEventListener('click',    openCaptainModal);
+  el('captain-close').addEventListener('click',  () => el('captain-modal').classList.add('hidden'));
+  el('captain-cancel').addEventListener('click', () => el('captain-modal').classList.add('hidden'));
+
   // Booking Status modalı (Noshow / Refunded)
   el('status-close').addEventListener('click',  closeStatusModal);
   el('status-cancel').addEventListener('click', closeStatusModal);
@@ -358,6 +367,7 @@ async function loadTours() {
   state.tourId = state.tours[0]?.id || null;
   el('add-booking-btn').disabled = !state.tourId;
   el('crews-btn').disabled = !state.tourId;
+  el('captain-btn').disabled = !state.tourId;
   await loadBookings();
 }
 
@@ -1185,8 +1195,91 @@ async function saveCrew(yacht, btn) {
       { tour_id: state.tourId, yacht, tour_guide: guide, staff },
       { onConflict: 'tour_id,yacht' }
     );
-    state.crews[yacht] = { tour_guide: guide, staff };
+    // Mevcut satırdaki diğer alanları (ör. captain) bellekte kaybetmemek
+    // için üzerine yazmak yerine birleştiriyoruz — DB tarafında zaten
+    // upsert sadece gönderilen kolonları güncelliyor.
+    state.crews[yacht] = { ...(state.crews[yacht] || {}), tour_guide: guide, staff };
     renderTable();
+    const old = btn.textContent;
+    btn.textContent = 'Saved';
+    btn.classList.add('saved');
+    setTimeout(() => { btn.textContent = old; btn.classList.remove('saved'); btn.disabled = false; }, 1500);
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+    btn.disabled = false;
+  }
+}
+
+// ── Kaptan (Captain) modalı ──────────────────────────────────────
+// Rehber pill'leriyle aynı görsel dil (.crew-guide-pill), ayrı bir
+// .captain-pill sınıfıyla event delegation'ı #captain-body içinde
+// tutuyoruz. "Other" seçilince serbest metin girişi açılır.
+function captainPillHtml(value, label, current) {
+  const active = value === current ? ' active' : '';
+  return `<button type="button" class="crew-guide-pill captain-pill${active}" data-captain="${esc(value)}">${esc(label)}</button>`;
+}
+
+function openCaptainModal() {
+  const yachts = usedYachtsToday();
+
+  if (yachts.length === 0) {
+    el('captain-body').innerHTML = `<p style="color:var(--gray3);text-align:center;padding:20px 0">No yacht assigned yet — assign a yacht to a booking first.</p>`;
+    el('captain-modal').classList.remove('hidden');
+    return;
+  }
+
+  el('captain-body').innerHTML = yachts.map(y => {
+    const crew    = state.crews[y] || {};
+    const current = crew.captain || '';
+    const isOther = current !== '' && !CAPTAINS.includes(current);
+
+    const pills = ['', ...CAPTAINS].map(v => captainPillHtml(v, v === '' ? '—' : v, current)).join('')
+      + captainPillHtml('__other__', 'Other', isOther ? '__other__' : '');
+
+    return `<div class="crew-row" data-yacht="${esc(y)}">
+      <div class="crew-yacht-label">${yachtBadge(y)}</div>
+      <div class="crew-controls">
+        <div class="crew-guide-pills">${pills}</div>
+        <input type="text" class="captain-other-input${isOther ? '' : ' hidden'}" placeholder="Captain name" value="${isOther ? esc(current) : ''}"/>
+      </div>
+      <button class="btn-crew-save" data-yacht="${esc(y)}">Save</button>
+    </div>`;
+  }).join('');
+
+  el('captain-body').querySelectorAll('.btn-crew-save').forEach(btn =>
+    btn.addEventListener('click', () => saveCaptain(btn.dataset.yacht, btn))
+  );
+  el('captain-body').querySelectorAll('.captain-pill').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const controls = btn.closest('.crew-controls');
+      controls.querySelectorAll('.captain-pill').forEach(p => p.classList.toggle('active', p === btn));
+      const otherInput = controls.querySelector('.captain-other-input');
+      if (btn.dataset.captain === '__other__') {
+        otherInput.classList.remove('hidden');
+        otherInput.focus();
+      } else {
+        otherInput.classList.add('hidden');
+      }
+    })
+  );
+
+  el('captain-modal').classList.remove('hidden');
+}
+
+async function saveCaptain(yacht, btn) {
+  const row = btn.closest('.crew-row');
+  const activePill = row.querySelector('.captain-pill.active');
+  const captain = !activePill ? ''
+    : activePill.dataset.captain === '__other__'
+      ? row.querySelector('.captain-other-input').value.trim()
+      : activePill.dataset.captain;
+  btn.disabled = true;
+  try {
+    await supabase.from('yacht_crews').upsert(
+      { tour_id: state.tourId, yacht, captain },
+      { onConflict: 'tour_id,yacht' }
+    );
+    state.crews[yacht] = { ...(state.crews[yacht] || {}), captain };
     const old = btn.textContent;
     btn.textContent = 'Saved';
     btn.classList.add('saved');

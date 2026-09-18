@@ -6,19 +6,19 @@
   <meta name="theme-color" content="#0A1830"/>
   <title>Golden City Tours — Operations</title>
   <link rel="icon" href="Logo/GoldenCity.png"/>
-  <link rel="stylesheet" href="css/styles.css?v=47"/>
+  <link rel="stylesheet" href="css/styles.css?v=48"/>
   <!-- Önbellek kırma: her yayında aşağıdaki ve üstteki tüm v= numaralarını birlikte artırın -->
   <script type="importmap">
   {
     "imports": {
-      "./js/app.js":      "./js/app.js?v=47",
-      "./js/auth.js":     "./js/auth.js?v=47",
-      "./js/tours.js":    "./js/tours.js?v=47",
-      "./js/bookings.js": "./js/bookings.js?v=47",
-      "./js/checkin.js":  "./js/checkin.js?v=47",
-      "./js/realtime.js": "./js/realtime.js?v=47",
-      "./js/config.js":   "./js/config.js?v=47",
-      "./js/supabase.js": "./js/supabase.js?v=47"
+      "./js/app.js":      "./js/app.js?v=48",
+      "./js/auth.js":     "./js/auth.js?v=48",
+      "./js/tours.js":    "./js/tours.js?v=48",
+      "./js/bookings.js": "./js/bookings.js?v=48",
+      "./js/checkin.js":  "./js/checkin.js?v=48",
+      "./js/realtime.js": "./js/realtime.js?v=48",
+      "./js/config.js":   "./js/config.js?v=48",
+      "./js/supabase.js": "./js/supabase.js?v=48"
     }
   }
   </script>
@@ -92,6 +92,7 @@
           <input class="search-box" id="search-box" type="search" placeholder="name or phone…" autocomplete="off"/>
           <button id="add-booking-btn" disabled>+ New Booking</button>
           <button id="crews-btn" disabled>Crews</button>
+          <button id="captain-btn" disabled>Captain</button>
           <button id="new-tour-btn">New</button>
         </div>
 
@@ -472,6 +473,24 @@
   </div>
 </div>
 
+<!-- ═══════════ YACHT CAPTAINS MODAL ═══════════ -->
+<div id="captain-modal" class="modal-overlay hidden"
+     role="dialog" aria-modal="true"
+     onclick="if(event.target===this)document.getElementById('captain-modal').classList.add('hidden')">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-head">
+      <h2>Yacht Captains</h2>
+      <button class="modal-x" id="captain-close" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="captain-body">
+      <!-- JS ile doldurulur -->
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn-cancel" id="captain-cancel">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ BOOKING STATUS MODAL ═══════════ -->
 <div id="status-modal" class="modal-overlay hidden"
      role="dialog" aria-modal="true"
@@ -595,6 +614,6 @@
   </div>
 </div>
 
-<script type="module" src="js/app.js?v=47"></script>
+<script type="module" src="js/app.js?v=48"></script>
 </body>
 </html>

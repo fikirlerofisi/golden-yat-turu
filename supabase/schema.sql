@@ -231,3 +231,11 @@ create policy "as_select" on public.alcohol_sales for select using (auth.role()=
 create policy "as_insert" on public.alcohol_sales for insert with check (auth.role()='authenticated');
 create policy "as_update" on public.alcohol_sales for update using (auth.role()='authenticated');
 create policy "as_delete" on public.alcohol_sales for delete using (auth.role()='authenticated');
+
+-- ── 18. Migrasyon: Yat başına Kaptan ataması (2026-09) ───────
+-- tour_guide/staff ile aynı satırda (yacht_crews), üçüncü bir kolon
+-- olarak kaptan adı. Sabit isim listesi (Ender/Rıdvan/Emin/Kadir) +
+-- serbest metin ("Other") uygulama tarafında (js/app.js CAPTAINS)
+-- tutulur, burada sadece düz metin kolonu var.
+-- Mevcut veritabanında SQL Editor'da bir kez çalıştırın:
+alter table public.yacht_crews add column if not exists captain text not null default '';

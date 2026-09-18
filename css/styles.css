@@ -229,15 +229,15 @@ hr.login-div { height: 2px; background: linear-gradient(90deg,transparent,var(--
 #tour-selector:focus { border-color: var(--gold); }
 #tour-selector option { background: var(--navy2); }
 
-/* İkincil butonlar (Crews / New tur) — koyu şerit üzerinde açık, "hafif" buton */
-#crews-btn, #new-tour-btn {
+/* İkincil butonlar (Crews / Captain / New tur) — koyu şerit üzerinde açık, "hafif" buton */
+#crews-btn, #captain-btn, #new-tour-btn {
   padding: 6px 14px; background: var(--gray1);
   border: 1.5px solid var(--gray2); border-radius: var(--radius-sm);
   color: var(--navy); font-family: var(--font); font-size: .78rem; font-weight: 700;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: var(--tr);
 }
-#crews-btn:hover:not(:disabled), #new-tour-btn:hover { background: #fff; border-color: var(--gray3); }
-#crews-btn:disabled { opacity: .4; cursor: not-allowed; }
+#crews-btn:hover:not(:disabled), #captain-btn:hover:not(:disabled), #new-tour-btn:hover { background: #fff; border-color: var(--gray3); }
+#crews-btn:disabled, #captain-btn:disabled { opacity: .4; cursor: not-allowed; }
 #new-tour-btn { margin-left: auto; }
 
 /* Aktif tur bilgi etiketi */
@@ -639,6 +639,14 @@ thead th.col-chk { z-index: 40; left: 0; box-shadow: 1px 0 0 var(--gray2); }
 }
 .crew-guide-more-btn:hover { border-color: var(--gold); color: var(--gold-dk); }
 .crew-guide-more { padding-top: 2px; }
+
+/* Kaptan modalı — "Other" seçilince açılan serbest metin girişi */
+.captain-other-input {
+  margin-top: 7px; width: 100%;
+  padding: 7px 10px; border: 1.5px solid var(--cream2); border-radius: var(--radius-sm);
+  font-family: var(--font); font-size: .82rem; color: var(--navy); outline: none;
+}
+.captain-other-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,43,.12); }
 .crew-staff-group { display: flex; flex-wrap: wrap; gap: 6px 12px; }
 .crew-staff-group label {
   display: inline-flex; align-items: center; gap: 5px;
