@@ -584,7 +584,10 @@ function renderFooter(data) {
     byYacht[b.yacht] = (byYacht[b.yacht] || 0) + (b.pax || 0);
   }
   const yachtSummary = Object.entries(byYacht)
-    .map(([y, p]) => `${yachtBadge(y)} <b>${p}</b>`)
+    .map(([y, p]) => {
+      const captain = state.crews[y]?.captain;
+      return `${yachtBadge(y)}${captain ? ` - ${esc(captain)}` : ''} <b>${p}</b>`;
+    })
     .join('&nbsp;&nbsp;&nbsp;');
 
   el('list-footer-bar').innerHTML = `
@@ -1280,6 +1283,7 @@ async function saveCaptain(yacht, btn) {
       { onConflict: 'tour_id,yacht' }
     );
     state.crews[yacht] = { ...(state.crews[yacht] || {}), captain };
+    renderTable();
     const old = btn.textContent;
     btn.textContent = 'Saved';
     btn.classList.add('saved');
